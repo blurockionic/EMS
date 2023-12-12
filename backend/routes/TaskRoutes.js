@@ -13,10 +13,10 @@ router.post("/new",isAuthenticated, task)
 router.get("/all",isAuthenticated, allTask)
 
 //route for get task of employee
-router.get("/:id", taskOfEmployee)
+router.get("/:id",isAuthenticated, taskOfEmployee)
 
 //router for update
-router.put("/:id", updateTask)
+router.put("/:id",isAuthenticated, updateTask)
 
 
 //route for delete task 

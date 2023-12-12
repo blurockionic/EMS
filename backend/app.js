@@ -19,10 +19,11 @@ dotenv.config({
     path:"./configuration/.env"
 })
 
-//using middleware
+//middleware
 app.use(express.json());
 app.use(cookieParser())
 
+// middleware for recieve request from other device 
 app.use(cors({
     origin:[process.env.FRONTEND_URL],
     methods:["GET","PUT","POST","DELETE"],

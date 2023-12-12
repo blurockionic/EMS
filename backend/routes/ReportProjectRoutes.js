@@ -9,13 +9,13 @@ const router =  express.Router()
 router.post("/:id",isAuthenticated, reportProject)
 
 //route for get all report of specific id 
-router.get("/:id", allReportOfSpecificProject)
+router.get("/:id",isAuthenticated, allReportOfSpecificProject)
 
 //route for modify
-router.put("/:id", updateProjectReport)
+router.put("/:id",isAuthenticated, updateProjectReport)
 
 // route for delete report of project
-router.delete("/:id", deleteReport)
+router.delete("/:id",isAuthenticated, deleteReport)
 
 
 export default router 
