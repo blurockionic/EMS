@@ -45,7 +45,7 @@ export const newEmployee = async (req, res) => {
     const userDesignationType = req.user.designationType;
 
 
-    if(userDesignationType != "Human Resources"){
+    if(userDesignationType != "Human Resources" || userDesignationType != "Admin"){
       return res.status(400).json({
         success:false,
         message: "Only HR can add the employee Details"

@@ -1,17 +1,19 @@
 import {User} from "../model/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
+import { sendCookie } from "../utilities/features.js";
+
 
 
 // register
 export const registration = async (req, res) => {
   // console.log(req.body)
   // fetch all data from request body
-  const { name, email, password, designation } = req.body;
+  const { name, email, password, designation, designationType } = req.body;
   
   try {
     // validation
-    if (!name || !email || !password || !designation) {
+    if (!name || !email || !password || !designation || !designationType) {
       return res.status(400).json({
         success: false,
         message: "Please fill all the details",
@@ -37,29 +39,12 @@ export const registration = async (req, res) => {
       email,
       password: hashPassword,
       designation,
+      designationType
     });
 
-    
-
-    // Generate a JSON Web Token (JWT)
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
-    // const token = jwt.sign({ _id: user._id }, "dfdfdsfdsfdsb");
-
-    // Set cookie for token and return success response
-    const options = {
-      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-      httpOnly: true,
-    };
-
-    res
-      .cookie("token", token, options)
-      .status(200)
-      .json({
-        success: true,
-        token,
-        user,
-        message: `Account Created Successfully!`,
-      });
+    //return the result
+    sendCookie(user, res, `Account created successfully!`, 201);
+   
   } catch (error) {
     return res.status(500).json({
         success:false,
@@ -109,27 +94,7 @@ export const login =  async(req, res)=>{
 
 
          // Generate a JSON Web Token (JWT)
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
-    // const token = jwt.sign({ _id: user._id }, "dfdfdsfdsfdsb");
-
-    // Set cookie for token and return success response
-    const options = {
-      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-      httpOnly: true,
-      secure:true,
-      sameSite: "None"
-    };
-
-    return res
-      .cookie("token", token, options)
-      .status(200)
-      .json({
-        success: true,
-        token,
-        user,
-        message: `${user.name} welcome back!`,
-      });
-
+      sendCookie(user, res, `welcome back ${user.name} `, 200);
     } catch (error) {
         res.status(500).json({
           success:false,
