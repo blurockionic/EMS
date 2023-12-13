@@ -1,17 +1,34 @@
 import React, { useState } from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom"
 
 const LoginPage = () => {
+  const navigate = useNavigate()
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
   const changehandleLogin = async () => {
-    const data = await axios.post(
-      "http://192.168.1.9:4000/api/v1/users/login",
+    const response = await axios.post(
+      "http://localhost:4000/api/v1/users/login",
       { email, password },
-      { headers: { "Content-Type": "application/json" }, withCredentials: true }
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
     );
-    console.log(data);
+
+    const {success, user} = response.data
+    console.log(success);
+    console.log(user);
+    if(success){
+      navigate("../dashboard")
+    }
+
+    //redirect to dashboard
+    
+    
   };
 
   return (

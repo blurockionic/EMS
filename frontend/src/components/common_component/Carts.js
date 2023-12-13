@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { MdOutlineDashboard } from "react-icons/md";
 import { IoPeopleSharp } from "react-icons/io5";
 import { GoProjectRoadmap } from "react-icons/go";
 import { SlNote } from "react-icons/sl";
 import { TbFileReport } from "react-icons/tb";
+import axios from "axios";
 
 const Carts = () => {
+ 
   return (
     <div>
       <div className="flex flex-row justify-evenly">
         {/* Single div for a cart 1st   */}
-        <div className="flex flex-col mt-4 ml- bg-slate-700  h-36 w-52">
+        <div className="flex flex-col mt-4 ml- bg-slate-700  h-36 w-52 rounded">
           {/* {Menus.map((menu, index) => ( ))} */}
           <div className="flex justify-center text-lg mt-4"> Emplooyees</div>
 

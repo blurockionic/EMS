@@ -41,7 +41,7 @@ export const newEmployee = async (req, res) => {
       });
     }
 
-    // Check if the user is an HR
+    // // Check if the user is an HR
     const userDesignationType = req.user.designationType;
 
 

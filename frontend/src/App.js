@@ -18,6 +18,8 @@ import Home_page from "./components/admindashboard/Home_page.jsx";
 
 // import LoginPage from "./components/login/LoginPage.js";
 
+export const server = "http://0.0.0.0:0/api/v1"
+
 function App() {
   const [isloggedIn, setloggedIn] = useState(true);
 
