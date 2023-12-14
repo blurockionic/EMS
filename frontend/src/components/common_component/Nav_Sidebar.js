@@ -27,8 +27,8 @@ export const Nav_Sidebar = (props) => {
   return (
     <div className="flex ">
       <div className=" flex flex-col w-[20rem] h-[100vh] bg-slate-900">
-        <Link to="/" className="w-[160] h-[32] loading = lazy">
-          Logo
+        <Link to="/" className="w-[160] h-[32] loading = lazy text-white font-extrabold text-4xl mt-[-1rem] mx-auto">
+         Blurock. 
         </Link>
         <div className="mx-auto w-[8rem] h-[8rem] rounded-full mt-[2.5rem] bg-white"></div>
         <div className="w-[70%]  mt-10 mx-auto h-1 bg-white"></div>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Title_name from "../common_component/Title_name";
 import Search_button from "../common_component/Search_button";
 import Title_bar from "../common_component/Title_bar";
-import Data_bar from "../common_component/Data_bar";
+// import Data_bar from "../common_component/Data_bar";
 
 // import ModelDialoge from "../common_component/ModelDialoge";
 import ModelForm from "../common_component/ModelForm";
@@ -28,7 +28,7 @@ const Admin_Reports = () => {
         </div>
       </div>
       <button onClick={() => setShowModel(true)}>
-        <Data_bar setShowModel />
+        {/* <Data_bar setShowModel /> */}
       </button>
     </div>
   );

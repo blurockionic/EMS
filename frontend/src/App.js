@@ -15,11 +15,20 @@ import { Nav_Sidebar } from "./components/common_component/Nav_Sidebar.js";
 import { useState } from "react";
 import LoginPage from "./components/login/LoginPage.js";
 import Home_page from "./components/admindashboard/Home_page.jsx";
+import { useEffect } from "react";
+import axios from "axios";
 
 // import LoginPage from "./components/login/LoginPage.js";
 
 function App() {
   const [isloggedIn, setloggedIn] = useState(true);
+
+  // useEffect(()=>{
+  //   const data =  axios.get("http://192.168.1.9:4000/api/v1/users/me", {
+  //     withCredentials: true 
+  //   })
+  //   console.log(data)
+  // },[])
 
   return (
     <Router>

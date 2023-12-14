@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Btn from "../common_component/Btn";
 import Title_name from "../common_component/Title_name";
+import axios from "axios";
 
 function Admin_NewProject() {
   // const [projectdata, setProjectData] = useState({
@@ -22,18 +23,57 @@ function Admin_NewProject() {
   const [projectPrioroty, setProjectPriority] = useState("");
   const [websiteUrls, setWebsiteUrls] = useState("");
 
-  function dataSubmit() {
-    console.log(
-      projectName,
-      ManagerName,
-      projectDescription,
-      projectEndingdate,
-      projectPrioroty,
-      projectRequirement,
-      projectStartingdate,
-      websiteUrls
-    );
+  const [managerData, setManegerData] = useState([]);
+  const mangerId = [];
+
+  useEffect(() => {
+    const mangerData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:4000/api/v1/employee/all",
+          { withCredentials: true }
+        );
+
+        // console.log(response)
+        setManegerData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // Handle errors here
+      }
+    };
+
+    mangerData();
+  }, []);
+  // traverse project
+  for (let i = 0; i < managerData.length; i++) {
+    if (managerData[i].designationType === "Manager") {
+      mangerId.push(managerData[i]);
+    }
+    console.log("total data", managerData[i]);
   }
+
+  console.log("it is ", mangerId);
+
+  const sendProjectData = async () => {
+    const request = await axios.post(
+      "http://localhost:4000/api/v1/project/new",
+      {
+        projectName,
+        ManagerName,
+        projectDescription,
+        projectEndingdate,
+        projectPrioroty,
+        projectRequirement,
+        projectStartingdate,
+        websiteUrls,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      }
+    );
+    console.log(request);
+  };
 
   return (
     <>
@@ -105,12 +145,16 @@ function Admin_NewProject() {
                 Manager To Assign
               </label>
               <br />
-              <input
+              <select
                 value={ManagerName}
                 onChange={(e) => setManegerName(e.target.value)}
                 name="ManagerName"
-                className="bg-white w-[22rem] h-[3rem]  mt-2 rounded-md border-black ml-4"
-              ></input>
+               
+              >
+                {mangerId.map((item) => (
+                  <option key={item.id}>{console.log(item.employeeName)}</option>
+                ))}
+              </select>
             </div>
 
             <div className="mt-6">
@@ -154,7 +198,7 @@ function Admin_NewProject() {
           </div>
         </div>
 
-        <div onClick={dataSubmit} className="mt-10">
+        <div onClick={sendProjectData} className="mt-10">
           <Btn></Btn>
         </div>
       </div>
