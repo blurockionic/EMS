@@ -25,10 +25,11 @@ app.use(cookieParser())
 
 // middleware for recieve request from other device 
 app.use(cors({
-    origin:[process.env.FRONTEND_URL],
+    origin:["http://localhost:3000"],
     methods:["GET","PUT","POST","DELETE"],
     credentials: true
 }))
+// app.use(cors())
 
 // // Routes for user
 app.use('/api/v1/users', userRoutes);

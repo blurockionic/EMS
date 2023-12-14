@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
+=======
+import React, { useEffect } from "react";
+import { MdOutlineDashboard } from "react-icons/md";
+>>>>>>> 6f4f080f29800f5424f3156c3c15d71392fc7b4e
 import { IoPeopleSharp } from "react-icons/io5";
 import { GoProjectRoadmap } from "react-icons/go";
 import { SlNote } from "react-icons/sl";
@@ -6,6 +11,7 @@ import { TbFileReport } from "react-icons/tb";
 import axios from "axios";
 
 const Carts = () => {
+<<<<<<< HEAD
   const [employeeData, setEmployeeData] =  useState([])
    const [project, setProject] = useState([])
    const ongoingProject = []
@@ -56,11 +62,14 @@ const Carts = () => {
   
 
   
+=======
+ 
+>>>>>>> 6f4f080f29800f5424f3156c3c15d71392fc7b4e
   return (
     <div>
       <div className="flex flex-row justify-evenly">
         {/* Single div for a cart 1st   */}
-        <div className="flex flex-col mt-4 ml- bg-slate-700  h-36 w-52">
+        <div className="flex flex-col mt-4 ml- bg-slate-700  h-36 w-52 rounded">
           {/* {Menus.map((menu, index) => ( ))} */}
           <div className="flex justify-center text-lg mt-4"> Emplooyees</div>
 

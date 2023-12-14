@@ -20,6 +20,8 @@ import axios from "axios";
 
 // import LoginPage from "./components/login/LoginPage.js";
 
+export const server = "http://0.0.0.0:0/api/v1"
+
 function App() {
   const [isloggedIn, setloggedIn] = useState(true);
 

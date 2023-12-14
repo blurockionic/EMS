@@ -11,17 +11,32 @@ const LoginPage = () => {
     const response = await axios.post(
       "http://localhost:4000/api/v1/users/login",
       { email, password },
-      { headers: { "Content-Type": "application/json" }, withCredentials: true }
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
     );
 
     const {success, user} = response.data
+<<<<<<< HEAD
     console.log(success)
     console.log(user)
       
+=======
+    console.log(success);
+    console.log(user);
+>>>>>>> 6f4f080f29800f5424f3156c3c15d71392fc7b4e
     if(success){
       navigate("../dashboard")
     }
 
+<<<<<<< HEAD
+=======
+    //redirect to dashboard
+    
+>>>>>>> 6f4f080f29800f5424f3156c3c15d71392fc7b4e
     
   };
 
