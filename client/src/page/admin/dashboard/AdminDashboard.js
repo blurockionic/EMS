@@ -19,7 +19,7 @@ const AdminDashboard = () => {
             {/* SideNavbar end */}
 
             {/* outlet  */}
-            <div className='col-span-10 bg-slate-50'>
+            <div className='col-span-10 bg-slate-50 p-4'>
                 <Outlet/>
             </div>
         </div>
