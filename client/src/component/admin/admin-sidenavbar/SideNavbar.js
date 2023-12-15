@@ -68,23 +68,111 @@ const SideNavbar = () => {
               </li>
             )}
 
-            <li
-              className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
-          
-            `}
-            >
-              <Link to={"./employee"} className="uppercase  font-bold">
-                <button
-                  className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
-                    path === "employee"
-                      ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
-                      : "bg-white"
-                  }`}
-                >
-                  Employee
-                </button>
-              </Link>
-            </li>
+             {/* HR dashboard  */}
+             {profile.designationType === "human resources" && (
+              <li
+                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+            
+              `}
+              >
+                <Link to={"./hrdashboard"} className="uppercase  font-bold">
+                  <button
+                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "hrdashboard"
+                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Dashboard
+                  </button>
+                </Link>
+              </li>
+            )}
+             {/* Manager   */}
+             {profile.designationType === "manager" && (
+              <li
+                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+            
+              `}
+              >
+                <Link to={"./managerdashboard"} className="uppercase  font-bold">
+                  <button
+                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "managerdashboard"
+                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Dashboard
+                  </button>
+                </Link>
+              </li>
+            )}
+             {profile.designationType === "manager" && (
+              <li
+                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+            
+              `}
+              >
+                <Link to={"./task"} className="uppercase  font-bold">
+                  <button
+                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "task"
+                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    New Task
+                  </button>
+                </Link>
+              </li>
+            )}
+             {profile.designationType === "manager" && (
+              <li
+                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+            
+              `}
+              >
+                <Link to={"./alltask"} className="uppercase  font-bold">
+                  <button
+                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "alltask"
+                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    All Task
+                  </button>
+                </Link>
+              </li>
+            )}
+
+            
+
+            {/* end manager  */}
+
+            
+            {
+              (profile.designationType === "admin" || profile.designationType === "human resources" || profile.designationType === "manager" ) && ( <li
+                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+            
+              `}
+              >
+                <Link to={"./employee"} className="uppercase  font-bold">
+                  <button
+                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "employee"
+                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Employee
+                  </button>
+                </Link>
+              </li>)
+            }
+
+           
 
             {/* // it visible when user type is admin  */}
             {profile.designationType === "admin" && (
@@ -148,6 +236,31 @@ const SideNavbar = () => {
                 </Link>
               </li>
             )}
+
+
+
+            {/* employee  */}
+            {
+              profile.designationType === "employee" && (
+                <li
+                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+              
+                `}
+              >
+                <Link to={"./employeedashboard"} className="uppercase  font-bold">
+                  <button
+                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "employeedashboard"
+                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Dashboard
+                  </button>
+                </Link>
+              </li>
+              )
+            }
           </ul>
         </div>
       </nav>

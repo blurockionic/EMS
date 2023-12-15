@@ -1,4 +1,6 @@
+import axios from "axios";
 import React, { useState } from "react";
+import { server } from "../../../App";
 
 const NewEmployee = () => {
   const [formData, setFormData] = useState({
@@ -28,10 +30,63 @@ const NewEmployee = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission logic here
     console.log("Form submitted:", formData);
+
+    const {
+      employeeId,
+      employeeName,
+      gender,
+      employeeEmail,
+      password,
+      employeePhoneNumber,
+      dateOfBirth,
+      address,
+      postOffice,
+      policeStation,
+      city,
+      state,
+      pinNumber,
+      designation,
+      designationType,
+      department,
+    } = formData;
+
+    const response = await axios.post(
+      `${server}/employee/new`,
+      {
+        employeeId,
+        employeeName,
+        gender,
+        employeeEmail,
+        password,
+        employeePhoneNumber,
+        dateOfBirth,
+        address,
+        postOffice,
+        policeStation,
+        city,
+        state,
+        pinNumber,
+        designation,
+        designationType,
+        department,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
+    console.log(response)
+
+    const {success, message} = response.data
+    if(success){
+        alert(message)
+    }
   };
 
   return (
@@ -44,7 +99,6 @@ const NewEmployee = () => {
           <h2 className="text-2xl font-semibold mb-6">Employee Information</h2>
 
           <div className="grid grid-cols-2 gap-4">
-
             {/* employees Id  */}
             <div className="mb-4">
               <label
@@ -70,7 +124,7 @@ const NewEmployee = () => {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="employeeName"
               >
-                  Name
+                Name
               </label>
               <input
                 type="text"
@@ -89,7 +143,7 @@ const NewEmployee = () => {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="gender"
               >
-               Gender
+                Gender
               </label>
               <input
                 type="text"
@@ -102,14 +156,13 @@ const NewEmployee = () => {
               />
             </div>
 
-
             {/* EmployeeEmail */}
             <div className="mb-4">
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="employeeEmail"
               >
-               Email
+                Email
               </label>
               <input
                 type="email"
@@ -128,10 +181,10 @@ const NewEmployee = () => {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="password"
               >
-               Password
+                Password
               </label>
               <input
-                type="password "
+                type="password"
                 id="password"
                 name="password"
                 value={formData.password}
@@ -147,7 +200,7 @@ const NewEmployee = () => {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="employeePhoneNumber"
               >
-               Phone Number
+                Phone Number
               </label>
               <input
                 type="text"
@@ -166,7 +219,7 @@ const NewEmployee = () => {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="dateOfBirth"
               >
-               Date of Birth
+                Date of Birth
               </label>
               <input
                 type="date"
@@ -185,7 +238,7 @@ const NewEmployee = () => {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="address"
               >
-               Address 
+                Address
               </label>
               <input
                 type="text"
@@ -204,7 +257,7 @@ const NewEmployee = () => {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="postOffice"
               >
-               Post Office 
+                Post Office
               </label>
               <input
                 type="text"
@@ -223,7 +276,7 @@ const NewEmployee = () => {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="policeStation"
               >
-               Post Office 
+                Police Station
               </label>
               <input
                 type="text"
@@ -243,7 +296,7 @@ const NewEmployee = () => {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="city"
               >
-               City 
+                City
               </label>
               <input
                 type="text"
@@ -261,7 +314,7 @@ const NewEmployee = () => {
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="state"
-               >
+              >
                 State
               </label>
               <input
@@ -280,11 +333,11 @@ const NewEmployee = () => {
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="pinNumber"
-               >
-                Pin Code 
+              >
+                Pin Code
               </label>
               <input
-                type="number"
+                type="text"
                 id="pinNumber"
                 name="pinNumber"
                 value={formData.pinNumber}
@@ -299,7 +352,7 @@ const NewEmployee = () => {
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="designation"
-               >
+              >
                 Designation
               </label>
               <input
@@ -318,8 +371,8 @@ const NewEmployee = () => {
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="designationType"
-               >
-                Designation Type 
+              >
+                Designation Type
               </label>
               <input
                 type="text"
@@ -334,28 +387,22 @@ const NewEmployee = () => {
 
             {/* department */}
             <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="department"
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="department"
               >
-              Designation Type 
-            </label>
-            <input
-              type="text"
-              id="department"
-              name="department"
-              value={formData.department}
-              onChange={handleChange}
-              className="border p-2 w-full"
-              required
-            />
+                Department
+              </label>
+              <input
+                type="text"
+                id="department"
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                className="border p-2 w-full"
+                required
+              />
             </div>
-
-
-
-
-
-
 
             {/* Add more fields as needed */}
           </div>
