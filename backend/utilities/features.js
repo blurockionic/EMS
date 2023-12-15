@@ -23,11 +23,11 @@ export const sendCookie = (
       expires: new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000),
       httpOnly: true,
       // Add the 'SameSite=None' attribute for cross-origin requests
-<<<<<<< HEAD
+// <<<<<<< HEAD
       // sameSite: "None",
-=======
+// =======
       //sameSite: "None",
->>>>>>> 6f4f080f29800f5424f3156c3c15d71392fc7b4e
+// >>>>>>> 6f4f080f29800f5424f3156c3c15d71392fc7b4e 
       // Add the 'Secure' attribute for HTTPS connections
     //   secure: true,
     };

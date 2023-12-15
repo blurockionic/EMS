@@ -45,20 +45,21 @@ const SideNavbar = () => {
   return (
     <aside className="bg-gray-800 text-white h-[630px]  flex flex-col">
       <nav className="flex-1">
-        <div className="flex h-full w-64">
-          <ul className="flex-row justify-center w-full p-2">
+        <div className="flex h-full w-64 mt-3 ">
+          <ul className="flex-row justify-center w-full ">
             {/* admin dashboard  */}
             {profile.designationType === "admin" && (
               <li
-                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer 
             
               `}
               >
+                {/* Dashboard button  */}
                 <Link to={"./home"} className="uppercase  font-bold">
                   <button
-                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                       path === "home"
-                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
                         : "bg-white"
                     }`}
                   >
@@ -69,15 +70,16 @@ const SideNavbar = () => {
             )}
 
             <li
-              className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+              className={`flex items-center text-start text-black mb-2 cursor-pointer
           
             `}
             >
+              {/* Employee */}
               <Link to={"./employee"} className="uppercase  font-bold">
                 <button
-                  className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                  className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                     path === "employee"
-                      ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                      ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
                       : "bg-white"
                   }`}
                 >
@@ -89,15 +91,16 @@ const SideNavbar = () => {
             {/* // it visible when user type is admin  */}
             {profile.designationType === "admin" && (
               <li
-                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+                className={`flex items-center text-start text-black mb-2 cursor-pointer
                 
                   `}
               >
+                {/* New Project  */}
                 <Link to={"./newProject"} className="uppercase  font-bold">
                   <button
-                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5 z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                       path === "newProject"
-                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
                         : "bg-white"
                     }`}
                   >
@@ -110,15 +113,16 @@ const SideNavbar = () => {
             {/* // it visible when user type is admin  */}
             {profile.designationType === "admin" && (
               <li
-                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+                className={`flex items-center text-start text-black mb-2 cursor-pointer
               
                 `}
               >
+                {/* All Project */}
                 <Link to={"./allProject"} className="uppercase  font-bold">
                   <button
-                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5 z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                       path === "allProject"
-                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
                         : "bg-white"
                     }`}
                   >
@@ -131,15 +135,16 @@ const SideNavbar = () => {
             {/* //new employee for humanresources */}
             {profile.designationType === "human resources"  && (
               <li
-                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
               
                 `}
               >
+                {/* New Employees */}
                 <Link to={"./newEmployee"} className="uppercase  font-bold">
                   <button
-                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                       path === "newEmployee"
-                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
                         : "bg-white"
                     }`}
                   >

@@ -108,22 +108,18 @@ const NewProject = () => {
   };
   return (
     <>
-      <div>
-        <div>
-          <Titlebar title={"New Project"} />
-        </div>
-      </div>
-
       {/* form for new project  */}
-      <div className="container mx-auto my-8">
+      <div className="container  max-w-xl mx-auto flex flex-col ">
         <form
           onSubmit={handleSubmit}
-          className="max-w-lg mx-auto bg-white p-8 rounded shadow-md"
+          className=" mx-auto bg-white p-8 rounded shadow-md"
         >
-          <h2 className="text-2xl font-semibold mb-6">Project Information</h2>
+          <h2 className="text-2xl flex justify-center font-bold mb-6">Project Information</h2>
 
           {/* Add more input fields as needed */}
-          <div className="mb-4">
+
+          {/* project information */}
+          <div className="mb-4 w-[32rem]">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="projectName"
@@ -136,14 +132,16 @@ const NewProject = () => {
               name="projectName"
               value={formData.projectName}
               onChange={handleChange}
-              className="border p-2 w-full"
+              className="border border-black rounded-lg  p-2 w-full"
               required
             />
           </div>
 
+            {/* stating and submition date */}
+          <div className=" flex flex-row flex-wrap gap-5 justify-between">
           <div className="mb-4">
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className=" text-gray-700 text-sm font-bold mb-2"
               htmlFor="projectStartDate"
             >
               Start Date
@@ -154,14 +152,14 @@ const NewProject = () => {
               name="projectStartDate"
               value={formData.projectStartDate}
               onChange={handleChange}
-              className="border p-2 w-full"
+              className="border border-black rounded-lg p-2 w-full"
               required
             />
           </div>
 
           <div className="mb-4">
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="  text-gray-700 text-sm font-bold mb-2"
               htmlFor="projectStartDate"
             >
               Submission Date
@@ -172,35 +170,58 @@ const NewProject = () => {
               name="projectEndDate"
               value={formData.projectEndDate}
               onChange={handleChange}
-              className="border p-2 w-full"
+              className="border border-black rounded-lg p-2 w-full"
               required
             />
           </div>
 
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="priority"
-            >
-              Priority
-            </label>
-            <select
-              id="priority"
-              name="priority"
-              value={formData.priority}
-              onChange={handleChange}
-              className="border p-2 w-full"
-              required
-            >
-              <option value="" disabled>
-                Select Priority
-              </option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
+
           </div>
 
+          {/* priority and manager name  */}
+          <div className=" flex flex-row flex-wrap gap-5 justify-between">
+
+            <div className="mb-4">
+              <label
+                className=" text-gray-700 text-sm font-bold mb-2"
+                htmlFor="priority"
+              >
+                Priority
+              </label>
+              <select
+                id="priority"
+                name="priority"
+                value={formData.priority}
+                onChange={handleChange}
+                className="border border-black rounded-lg p-2 w-full"
+                required
+              >
+                <option value="" disabled>
+                  Select Priority
+                </option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+            <label
+              className=" text-gray-700 text-sm font-bold mb-2"
+              htmlFor="projectStartDate"
+            >
+              Mnagaer Name
+            </label>
+            <Select
+              onChange={handleSelectChange}
+              options={options}
+              className=" border border-black rounded-lg w-64 py-1 px-2"
+            />
+            </div>
+
+          </div>
+        
+          {/* Description */}
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -214,24 +235,12 @@ const NewProject = () => {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="border p-2 w-full"
+              className="border border-black rounded-lg p-2 w-full"
               required
             />
           </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="projectStartDate"
-            >
-              Mnagaer Name
-            </label>
-            <Select
-              onChange={handleSelectChange}
-              options={options}
-              className="w-64 py-1 px-2"
-            />
-          </div>
 
+          {/* website Urls */}
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -245,7 +254,7 @@ const NewProject = () => {
               name="websiteUrl"
               value={formData.websiteUrl}
               onChange={handleChange}
-              className="border p-2 w-full"
+              className="border border-black rounded-lg p-2 w-full"
               required
             />
           </div>
@@ -286,7 +295,7 @@ const NewProject = () => {
             />
           </div> */}
 
-          <div className="mt-6">
+          <div className="mt-6 flex justify-center">
             <button
               type="submit"
               className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
