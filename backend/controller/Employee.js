@@ -41,16 +41,16 @@ export const newEmployee = async (req, res) => {
       });
     }
 
-    // // Check if the user is an HR
-    const userDesignationType = req.user.designationType;
+    // // // Check if the user is an HR
+    // const userDesignationType = req.user.designationType;
 
 
-    if(userDesignationType != "Human Resources" || userDesignationType != "Admin"){
-      return res.status(400).json({
-        success:false,
-        message: "Only HR can add the employee Details"
-      })
-    }
+    // if(userDesignationType != "human resources" || userDesignationType != "admin"){
+    //   return res.status(400).json({
+    //     success:false,
+    //     message: "Only HR can add the employee Details"
+    //   })
+    // }
 
 
     // Encrypt password
@@ -219,3 +219,4 @@ export const deleteEmployee = async (req, res) => {
     });
   } catch (error) {}
 };
+

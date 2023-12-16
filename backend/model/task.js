@@ -12,6 +12,12 @@ const taskSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    employeeName:{
+      type:String,
+    },
+    projectName:{
+      type:String
+    },
     assignTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "employee_details",
