@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { server } from "../../../App";
 
 const SideNavbar = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [profile, setProfile] = useState({});
   const location = useLocation();
   const [path, setPath] = useState(location?.pathname);
@@ -27,21 +27,20 @@ const SideNavbar = () => {
     myProfile();
   }, []);
 
+  // handle for logout
 
-  // handle for logout 
-
-  const handleOnLogout =async()=>{
+  const handleOnLogout = async () => {
     const response = await axios.get(`${server}/users/logout`, {
       withCredentials: true,
     });
 
-    const {success, message} = response.data
+    const { success, message } = response.data;
 
-    if(success){
-      alert(message)
-      navigate("../login")
+    if (success) {
+      alert(message);
+      navigate("../login");
     }
-  }
+  };
   return (
     <aside className="bg-gray-800 text-white h-[630px]  flex flex-col">
       <nav className="flex-1">
@@ -69,23 +68,51 @@ const SideNavbar = () => {
               </li>
             )}
 
-            <li
-              className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
-          
-            `}
-            >
-              <Link to={"./employee"} className="uppercase  font-bold">
-                <button
-                  className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
-                    path === "employee"
-                      ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
-                      : "bg-white"
-                  }`}
-                >
-                  Employee
-                </button>
-              </Link>
-            </li>
+              {/* manager  */}
+              {profile.designationType === "manager" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link to={"./managerdashboard"} className="uppercase  font-bold">
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "managerdashboard"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Dashboard
+                  </button>
+                </Link>
+              </li>
+            )}
+
+            {/* // employee section visible for admin and human resources and manager  */}
+            {profile.designationType === "admin" ||
+            profile.designationType === "human resoures" ||
+            profile.designationType === "manager" ? (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+            
+              `}
+              >
+                {/* New Employees */}
+                <Link to={"./employee"} className="uppercase  font-bold">
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "employee"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Employee
+                  </button>
+                </Link>
+              </li>
+            ) : null}
 
             {/* // it visible when user type is admin  */}
             {profile.designationType === "admin" && (
@@ -132,7 +159,7 @@ const SideNavbar = () => {
             )}
 
             {/* //new employee for humanresources */}
-            {profile.designationType === "human resources"  && (
+            {profile.designationType === "human resources" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               
@@ -153,17 +180,64 @@ const SideNavbar = () => {
               </li>
             )}
 
+            {/* manager  */}
+            
 
+            {profile.designationType === "manager" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link to={"./task"} className="uppercase  font-bold">
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "task"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    New Task
+                  </button>
+                </Link>
+              </li>
+            )}
+
+            {profile.designationType === "manager" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link to={"./alltask"} className="uppercase  font-bold">
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "alltask"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    All Task
+                  </button>
+                </Link>
+              </li>
+            )}
+
+            {/* manager end  */}
 
             {/* employee  */}
-            {
-              profile.designationType === "employee" && (
-                <li
+            {profile.designationType === "employee" && (
+              <li
                 className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
               
                 `}
               >
-                <Link to={"./employeedashboard"} className="uppercase  font-bold">
+                <Link
+                  to={"./employeedashboard"}
+                  className="uppercase  font-bold"
+                >
                   <button
                     className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                       path === "employeedashboard"
@@ -175,13 +249,15 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-              )
-            }
+            )}
           </ul>
         </div>
       </nav>
       <div className="p-4">
-        <button className="bg-white text-gray-800 px-4 py-2 rounded-md w-full" onClick={handleOnLogout}>
+        <button
+          className="bg-white text-gray-800 px-4 py-2 rounded-md w-full"
+          onClick={handleOnLogout}
+        >
           Logout
         </button>
       </div>
