@@ -1,29 +1,27 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { server } from "../../App";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-    const navigate = useNavigate()
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Add your login logic here
-    console.log("Login submitted:", { email, password });
 
-    if (!email) {
+    try {
+      if (!email) {
         alert("Please Enter Email");
       }
       if (!password) {
         alert("Please Enter Password");
       }
 
-      console.log(server)
-
       //LOGIN
-    const { data } = await axios.post(
+      const { data } = await axios.post(
         `${server}/users/login`,
         {
           email,
@@ -37,14 +35,16 @@ const Login = () => {
         }
       );
 
-     const {success, user} = data 
-     console.log(success, user)
-     if(success){
-        alert("Login Successfully!")
+      const { success, message } = data;
+
+      if (success) {
+        alert(message);
         //navigate to dashboard
-        navigate("../dashboard")
-     }
-     
+        navigate("../dashboard");
+      }
+    } catch (error) {
+      alert(error.response.data.message)
+    }
   };
   return (
     <div className="grid grid-cols-12 h-screen">

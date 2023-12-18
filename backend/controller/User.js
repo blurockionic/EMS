@@ -66,7 +66,7 @@ export const login =  async(req, res)=>{
     if(!email || !password){
       return res.status(400).json({
         success: false,
-        message: "Please Register"
+        message: "Email does not exist! Please Register!"
       })
     }
     
@@ -76,7 +76,7 @@ export const login =  async(req, res)=>{
     if(!user){
       return res.status(400).json({
         success:false,
-        message:"Please register!"
+        message:"Email does not exist! Please Register!"
       })
       
     }

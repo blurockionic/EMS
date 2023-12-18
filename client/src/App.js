@@ -32,7 +32,7 @@ function App() {
         {/* //protected route  */}
         <Route path="/dashboard" element={<Home/>}>
           <Route path="" element={<Navigate to="home" />} />
-          <Route path="home" element={<AdminDashboard />} />
+          <Route path="home" element={<MainDashboard />} />
           <Route path="employee" element={<Employee/>}/>
           <Route path="newProject" element={<NewProject/>}/>
           <Route path="allProject" element={<AllProject/>}/>

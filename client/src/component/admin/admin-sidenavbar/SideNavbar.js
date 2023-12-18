@@ -68,7 +68,7 @@ const SideNavbar = () => {
               </li>
             )}
 
-            {/* manager  */}
+            {/* manager dashboard */}
             {profile.designationType === "manager" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
@@ -93,9 +93,36 @@ const SideNavbar = () => {
               </li>
             )}
 
+            {/* manager dashboard */}
+            {profile.designationType === "human resources" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link
+                  to={"./hrdashboard"}
+                  className="uppercase  font-bold"
+                >
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "hrdashboard"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Dashboard
+                  </button>
+                </Link>
+              </li>
+            )}
+
+
+
             {/* // employee section visible for admin and human resources and manager  */}
             {profile.designationType === "admin" ||
-            profile.designationType === "human resoures" ||
+            profile.designationType === "human resources" ||
             profile.designationType === "manager" ? (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
@@ -253,7 +280,7 @@ const SideNavbar = () => {
               </li>
             )}
 
-            {profile.designationType === "employee" && (
+            {/* {profile.designationType === "employee" && (
               <li
                 className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
               
@@ -274,7 +301,7 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-            )}
+            )} */}
           </ul>
         </div>
       </nav>
