@@ -15,6 +15,18 @@ const reportTaskSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    projetName:{
+      type:String,
+    },
+    employeeName:{
+      type:String,
+    },
+    taskTitle:{
+      type:String,
+    },
+    managerName:{
+      type:String 
+    },
     projectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "project",

@@ -14,9 +14,9 @@ export const task = async (req, res) => {
     taskEndDate,
     isTaskCompleted,
   } = req.body;
-
-
-
+  
+  
+  
   try {
     //validation
     if (
@@ -26,66 +26,70 @@ export const task = async (req, res) => {
       !taskOf ||
       !taskAssignDate ||
       !taskEndDate
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "All field are required",
-      });
-    }
-
-    
-
-    // //check designation
-    // const { designationType } = req.user;
-    // if (designationType != "Manager") {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Only manager can assign the task!",
-    //   });
-    // }
-
-    // check user
-    const isEmployeeExist = await Employee.find({employeeName: assignTo});
-    if (!isEmployeeExist) {
-      return res.status(500).json({
-        success: false,
-        message: "Employee not found! Please select another employee",
-      });
-    }
-
-    
-    //check project 
-    const isProjectExist = await Project.find({projectName: taskOf});
-    if (!isEmployeeExist) {
-      return res.status(400).json({
-        success: false,
-        message: "Project not found! Please select another Project",
-      });
-    }
-
-    // console.log(...isProjectExist)
-    const [project] = isProjectExist; // Assuming isProjectExist is an array
-    // const { id } = project || {}; // Destructure id from the first element or provide a default empty object
-    
-    console.log(project._id);
-
-    const [employee] = isEmployeeExist
-
-    
-    
-    //create entry on db
-    const task = await Task.create({
-      taskTitle,
-      taskDescription,
-      employeeName: employee.employeeName,
-      projectName: project.projectName,
-      assignTo: employee._id,
-      taskOf : project._id,
-      managerId: req.user._id,
-      isTaskCompleted,
-      taskAssignDate,
-      taskEndDate,
-    });
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "All field are required",
+        });
+      }
+      
+      
+      
+      // //check designation
+      // const { designationType } = req.user;
+      // if (designationType != "Manager") {
+        //   return res.status(400).json({
+          //     success: false,
+          //     message: "Only manager can assign the task!",
+          //   });
+          // }
+          
+          
+          // check user
+          const isEmployeeExist = await Employee.find({employeeName: assignTo});
+          if (!isEmployeeExist) {
+            return res.status(500).json({
+              success: false,
+              message: "Employee not found! Please select another employee",
+            });
+          }
+          
+          
+          //check project 
+          const isProjectExist = await Project.find({projectName: taskOf});
+          if (!isEmployeeExist) {
+            return res.status(400).json({
+              success: false,
+              message: "Project not found! Please select another Project",
+            });
+          }
+          
+          // console.log(req.user)
+          // console.log(...isProjectExist)
+          const [project] = isProjectExist; // Assuming isProjectExist is an array
+          // const { id } = project || {}; // Destructure id from the first element or provide a default empty object
+          
+          console.log(project._id);
+          
+          const [employee] = isEmployeeExist
+          
+          
+          
+          //create entry on db
+          const task = await Task.create({
+            taskTitle,
+            taskDescription,
+            employeeName: employee.employeeName,
+            projectName: project.projectName,
+            managerName: req.user.name, 
+            assignTo: employee._id,
+            taskOf : project._id,
+            managerId: req.user._id,
+            isTaskCompleted,
+            taskAssignDate,
+            taskEndDate,
+          });
+          
     
     //return success
     return res.status(200).json({

@@ -68,6 +68,7 @@ export const newEmployee = async (req, res) => {
     
       // Create a user entry for authentication
       const user = await User.create({
+        employeeId,
         name: employeeName,
         email: employeeEmail,
         password: hashPassword,

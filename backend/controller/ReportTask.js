@@ -45,11 +45,19 @@ export const reportTask = async (req, res) => {
       });
     }
 
+    console.log(isTaskExist)
+
+    return
+
     //create entry on db
     const reportTask = await ReportTask.create({
       reportTitle,
       reportDescription,
       isTaskCompleted,
+      projectName: isTaskExist.projectName, 
+      employeeName: isTaskExist.employeeName,
+      taksTitle: isTaskExist.taskTitle,
+      managerName: isTaskExist.managerName,
       projectId: isTaskExist.taskOf,
       employeeId: isTaskExist.assignTo,
       managerId: isTaskExist.managerId,
@@ -75,6 +83,7 @@ export const allReport = async (req, res) => {
   // fetch employeeId
   const { id } = req.params;
   console.log(id)
+  
 
   try {
     // validation
@@ -82,10 +91,10 @@ export const allReport = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Id is invalid or null",
-      });
+      }); 
     }
 
-    const allReport = await ReportTask.find({ employeeId: id }).sort({createdAt: 1});
+    const allReport = await ReportTask.find({ _id: id }).sort({createdAt: 1});
     if (!allReport) {
       return res.status(400).json({
         success: false,

@@ -18,6 +18,9 @@ const taskSchema = new mongoose.Schema(
     projectName:{
       type:String
     },
+    managerName:{
+      type:String,
+    },
     assignTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "employee_details",

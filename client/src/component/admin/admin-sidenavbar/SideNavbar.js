@@ -68,15 +68,18 @@ const SideNavbar = () => {
               </li>
             )}
 
-              {/* manager  */}
-              {profile.designationType === "manager" && (
+            {/* manager  */}
+            {profile.designationType === "manager" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               
                 `}
               >
                 {/* New Employees */}
-                <Link to={"./managerdashboard"} className="uppercase  font-bold">
+                <Link
+                  to={"./managerdashboard"}
+                  className="uppercase  font-bold"
+                >
                   <button
                     className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                       path === "managerdashboard"
@@ -181,7 +184,6 @@ const SideNavbar = () => {
             )}
 
             {/* manager  */}
-            
 
             {profile.designationType === "manager" && (
               <li
@@ -246,6 +248,29 @@ const SideNavbar = () => {
                     }`}
                   >
                     Dashboard
+                  </button>
+                </Link>
+              </li>
+            )}
+
+            {profile.designationType === "employee" && (
+              <li
+                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
+              
+                `}
+              >
+                <Link
+                  to={"./reporthistory"}
+                  className="uppercase  font-bold"
+                >
+                  <button
+                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "reporthistory"
+                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Report History
                   </button>
                 </Link>
               </li>
