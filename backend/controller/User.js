@@ -33,6 +33,10 @@ export const registration = async (req, res) => {
     
     //encrypt password
     const hashPassword = await bcrypt.hash(password, 10);
+
+
+    //designation type convert it into lowercase()
+    const lowercaseDesignationType = designationType.toLowerCase();
     
     // create entry on db
     const user = await User.create({
@@ -40,7 +44,7 @@ export const registration = async (req, res) => {
       email,
       password: hashPassword,
       designation,
-      designationType
+      designationType: lowercaseDesignationType
     });
 
     //return the result

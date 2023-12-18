@@ -6,7 +6,6 @@ import { User } from "../model/user.js";
 export const newEmployee = async (req, res) => {
   // Fetch all the details from the request body
   const {
-    employeeId,
     employeeName,
     gender,
     employeeEmail,
@@ -27,7 +26,6 @@ export const newEmployee = async (req, res) => {
   try {
     // Validation
     if (
-      !employeeId ||
       !employeeName ||
       !employeeEmail ||
       !employeePhoneNumber ||
@@ -40,17 +38,6 @@ export const newEmployee = async (req, res) => {
         message: "All fields are required!",
       });
     }
-
-    // // // Check if the user is an HR
-    // const userDesignationType = req.user.designationType;
-
-
-    // if(userDesignationType != "human resources" || userDesignationType != "admin"){
-    //   return res.status(400).json({
-    //     success:false,
-    //     message: "Only HR can add the employee Details"
-    //   })
-    // }
 
 
     // Encrypt password
@@ -65,20 +52,14 @@ export const newEmployee = async (req, res) => {
       });
     }
 
-    
-      // Create a user entry for authentication
-      const user = await User.create({
-        employeeId,
-        name: employeeName,
-        email: employeeEmail,
-        password: hashPassword,
-        designation,
-        designationType,
-      });
 
+    //convert the designation type into lowercase character
+    const lowerDesignationType = designationType.toLowerCase();
+
+
+    
       // Create an entry in the employee collection
       const employee = await Employee.create({
-        employeeId,
         employeeName,
         employeeEmail,
         password: hashPassword,
@@ -92,9 +73,21 @@ export const newEmployee = async (req, res) => {
         state,
         pinNumber,
         designation,
-        designationType,
+        designationType: lowercaseDesignationType,
         department,
       });
+
+      
+      // Create a user entry for authentication
+      const user = await User.create({
+        employeeId: employee._id,
+        name: employeeName,
+        email: employeeEmail,
+        password: hashPassword,
+        designation,
+        designationType,
+      });
+
 
       return res.status(200).json({
         success: true,

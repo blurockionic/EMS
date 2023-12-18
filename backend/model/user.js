@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema(
   {
     employeeId:{
-      type:String,
-      require:true 
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"employee_details",
     },
     name: {
       type: String,

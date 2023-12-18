@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
+  const [reportHistory, setReportHistory] = useState([]);
   const [formData, setFormData] = useState({
     reportTitle: "",
     reportDescription: "",
@@ -20,6 +21,24 @@ const EmployeeDashboard = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+
+
+   //all profile
+   useEffect(() => {
+    const myProfile = async () => {
+      try {
+        const response = await axios.get(`${server}/users/me`, {
+          withCredentials: true,
+        });
+
+        setProfile(response.data.user);
+      } catch (error) {
+        console.error("Error fetching user profile:", error.message);
+      }
+    };
+
+    myProfile();
+  }, []);
 
   const closeModal = () => {
     setShowModal(false);
@@ -39,28 +58,11 @@ const EmployeeDashboard = () => {
         });
         setEmployee(allEmployee.data.data);
       } catch (error) {
-        console.error("Error fetching employee data:", error.message);
+        console.error("Error fetching employee data:", error.response.data.message);
       }
     };
 
     fetchData();
-  }, []);
-
-  //all profile
-  useEffect(() => {
-    const myProfile = async () => {
-      try {
-        const response = await axios.get(`${server}/users/me`, {
-          withCredentials: true,
-        });
-
-        setProfile(response.data.user);
-      } catch (error) {
-        console.error("Error fetching user profile:", error.message);
-      }
-    };
-
-    myProfile();
   }, []);
 
   //all task
@@ -74,12 +76,41 @@ const EmployeeDashboard = () => {
         // console.log(response);
         setAllTask(response.data.allTask);
       } catch (error) {
-        console.error("Error fetching task:", error.message);
+        console.error("Error fetching task:", error.responce.data.message);
       }
     };
 
     getMyTask();
   }, []);
+
+  // const [profile, setProfile] =  useState({})
+
+  
+
+  //load history
+  useEffect(() => {
+    // validation 
+    if(selectedTask === null){
+      alert("invalid id or null")
+      return
+    }
+
+    try {
+      const taskReportHistory = async () => {
+        const response = await axios.get(`${server}/reportTask/${selectedTask.assignTo}`);
+        alert("ok")
+        console.log(response);
+        setReportHistory(response)
+      };
+
+      //invoke
+      taskReportHistory();
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  }, []);
+
+  console.log(reportHistory)
 
   for (let i = 0; i < employee.length; i++) {
     if (employee[i].employeeEmail === profile.email) {
@@ -96,6 +127,7 @@ const EmployeeDashboard = () => {
     setShowModal(true);
   };
 
+
   // for update the form
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -105,52 +137,53 @@ const EmployeeDashboard = () => {
     });
   };
 
+
+  //submit the report for create the entry on db
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Perform any additional validation if needed
-    // onSubmit(formData);
 
     // Optionally, reset the form after submission
     const { reportTitle, reportDescription, isTaskCompleted } = formData;
 
-    console.log(reportTitle, reportDescription, isTaskCompleted);
+    // console.log(reportTitle, reportDescription, isTaskCompleted);
 
-    const responce = await axios.post(
-      `${server}/reportTask/${selectedTask._id}`,
-      {
-        reportTitle,
-        reportDescription,
-        isTaskCompleted,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const responce = await axios.post(
+        `${server}/reportTask/${selectedTask._id}`,
+        {
+          reportTitle,
+          reportDescription,
+          isTaskCompleted,
         },
-        withCredentials: true,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log(responce);
+
+      const { success, message } = responce.data;
+
+      if (success) {
+        alert(message);
       }
-    );
 
-    console.log(responce);
+      //set id at local storage
+      localStorage.setItem("id", selectedTask.employeeId);
 
-    const { success, message } = responce.data.reportTask;
+      setFormData({
+        reportTitle: "",
+        reportDescription: "",
+        isTaskCompleted: false,
+      });
 
-    if (success) {
-      alert(message);
+      setShowModal(false);
+    } catch (error) {
+      alert(error.response.data.message);
     }
-
-    //set id at local storage
-    localStorage.setItem("id", selectedTask.employeeId);
-
-    setFormData({
-      reportTitle: "",
-      reportDescription: "",
-      isTaskCompleted: false,
-    });
-
-    setShowModal(false);
-
-    //navigate to report history
-    navigate("../reporthistory");
   };
 
   return (

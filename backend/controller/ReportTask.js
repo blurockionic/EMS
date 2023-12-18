@@ -47,7 +47,7 @@ export const reportTask = async (req, res) => {
 
     console.log(isTaskExist)
 
-    return
+    
 
     //create entry on db
     const reportTask = await ReportTask.create({
@@ -68,7 +68,7 @@ export const reportTask = async (req, res) => {
     return res.status(200).json({
       success: true,
       reportTask,
-      message: "Report succeefully send to Manager!",
+      message: `Report succeefully send to concern manager ${reportTask.managerName}!`,
     });
   } catch (error) {
     return res.status(200).json({
@@ -94,7 +94,7 @@ export const allReport = async (req, res) => {
       }); 
     }
 
-    const allReport = await ReportTask.find({ _id: id }).sort({createdAt: 1});
+    const allReport = await ReportTask.find({ employeeId: id })
     if (!allReport) {
       return res.status(400).json({
         success: false,

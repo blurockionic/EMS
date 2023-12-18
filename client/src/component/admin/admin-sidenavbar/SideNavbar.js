@@ -189,7 +189,7 @@ const SideNavbar = () => {
             )}
 
             {/* //new employee for humanresources */}
-            {profile.designationType === "human resources" && (
+            {profile.designationType === "human resources" || profile.designationType === "admin"  ?(
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               
@@ -208,7 +208,7 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-            )}
+            ): null}
 
             {/* manager  */}
 
