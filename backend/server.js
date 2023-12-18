@@ -8,5 +8,5 @@ const PORT = process.env.PORT || 5000
 //connect database
 connectDB()
 app.listen(PORT, ()=>{
-    console.log(`server is wprking on port ${PORT}`);  
+    console.log(`server is wrking on port ${PORT}`);  
 })

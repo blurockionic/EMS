@@ -10,6 +10,7 @@ export const registration = async (req, res) => {
   // console.log(req.body)
   // fetch all data from request body
   const { name, email, password, designation, designationType } = req.body;
+
   
   try {
     // validation
@@ -103,11 +104,8 @@ export const login =  async(req, res)=>{
     }
 }
 
-
-
 //handle for get user details
 export const getMyProfile = (req, res) => {
-  console.log("working1")
   try {
     res.status(200).json({
       success: true,

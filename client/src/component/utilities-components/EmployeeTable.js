@@ -9,7 +9,6 @@ const EmployeeTable = ({ employeeData }) => {
             <thead className="bg-slate-400">
               <tr>
                 <th className="border px-4 py-2">S.No</th>
-                <th className="border px-4 py-2">ID</th>
                 <th className="border px-4 py-2">Name</th>
                 <th className="border px-4 py-2">Designation</th>
                 <th className="border px-4 py-2">Designation Type</th>
@@ -20,7 +19,6 @@ const EmployeeTable = ({ employeeData }) => {
               {employeeData.map((employee, index) => (
                 <tr key={employee._id} className="text-center">
                   <td className="border px-4 py-2">{index + 1}</td>
-                  <td className="border px-4 py-2">{employee._id}</td>
                   <td className="border px-4 py-2">{employee.employeeName}</td>
                   <td className="border px-4 py-2">{employee.designation}</td>
                   <td className="border px-4 py-2">

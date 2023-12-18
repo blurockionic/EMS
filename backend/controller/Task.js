@@ -1,4 +1,5 @@
 import { Employee } from "../model/employee.js";
+import { Project } from "../model/project.js";
 import { Task } from "../model/task.js";
 
 // create new task //tested
@@ -13,6 +14,8 @@ export const task = async (req, res) => {
     taskEndDate,
     isTaskCompleted,
   } = req.body;
+
+
 
   try {
     //validation
@@ -30,17 +33,19 @@ export const task = async (req, res) => {
       });
     }
 
-    //check designation
-    const { designationType } = req.user;
-    if (designationType != "Manager") {
-      return res.status(400).json({
-        success: false,
-        message: "Only manager can assign the task!",
-      });
-    }
+    
+
+    // //check designation
+    // const { designationType } = req.user;
+    // if (designationType != "Manager") {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Only manager can assign the task!",
+    //   });
+    // }
 
     // check user
-    const isEmployeeExist = await Employee.findById(assignTo);
+    const isEmployeeExist = await Employee.find({employeeName: assignTo});
     if (!isEmployeeExist) {
       return res.status(500).json({
         success: false,
@@ -48,23 +53,45 @@ export const task = async (req, res) => {
       });
     }
 
+    
+    //check project 
+    const isProjectExist = await Project.find({projectName: taskOf});
+    if (!isEmployeeExist) {
+      return res.status(400).json({
+        success: false,
+        message: "Project not found! Please select another Project",
+      });
+    }
+
+    // console.log(...isProjectExist)
+    const [project] = isProjectExist; // Assuming isProjectExist is an array
+    // const { id } = project || {}; // Destructure id from the first element or provide a default empty object
+    
+    console.log(project._id);
+
+    const [employee] = isEmployeeExist
+
+    
+    
     //create entry on db
     const task = await Task.create({
       taskTitle,
       taskDescription,
-      assignTo,
-      taskOf,
+      employeeName: employee.employeeName,
+      projectName: project.projectName,
+      assignTo: employee._id,
+      taskOf : project._id,
       managerId: req.user._id,
       isTaskCompleted,
       taskAssignDate,
       taskEndDate,
     });
-
+    
     //return success
     return res.status(200).json({
       success: true,
       task,
-      message: `Task assign successsfully to ${isEmployeeExist.employeeName}`,
+      message: `Task assign successsfully to ${employee.employeeName}`,
     });
   } catch (error) {
     return res.status(500).json({
@@ -77,16 +104,16 @@ export const task = async (req, res) => {
 //get all task manager //tested
 export const allTask = async (req, res) => {
   try {
-    // check user
-    const { designationType } = req.user;
+    // // check user
+    // const { designationType } = req.user;
 
-    if (designationType != "Manager") {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Only manager can check the task! Please concern deparment to get access.",
-      });
-    }
+    // if (designationType != "Manager") {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message:
+    //       "Only manager can check the task! Please concern deparment to get access.",
+    //   });
+    // }
 
     //validation
     const allTask = await Task.find({});

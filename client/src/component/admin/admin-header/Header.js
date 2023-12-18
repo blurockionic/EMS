@@ -23,10 +23,11 @@ const Header = () => {
     </div>
     <div >
       <div
-        className=" text-white px-4 py-2 rounded-md uppercase"
+        className=" text-white  rounded-md "
       >
-       {profile.name}
+       {profile.name} 
       </div>
+      <span className='text-white capitalize'>{profile.designationType}</span>
     </div>
   </header></div>
   )

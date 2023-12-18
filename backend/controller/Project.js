@@ -42,7 +42,7 @@ export const newProject = async (req, res) => {
 
     // check designation
     const { designationType } = req.user;
-    if (designationType === "Admin") {
+    if (designationType === "admin") {
       // create entry for project
       const project = await Project.create({
         projectName,
@@ -83,7 +83,7 @@ export const allProject = async (req, res) => {
   try {
     const { designationType } = req.user;
 
-    if (designationType === "Admin") {
+    // if (designationType === "admin") {
       // get all project from the collection
       const allProject = await Project.find({});
 
@@ -99,7 +99,7 @@ export const allProject = async (req, res) => {
         allProject,
         message: "All project fetched successfully!",
       });
-    }
+    
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -137,7 +137,7 @@ export const updateProject = async (req, res) => {
 
     //check designation 
     const {designationType} = req.user
-    if(designationType != "Admin"){
+    if(designationType != "admin"){
       return res.status(400).json({
         success: false,
         message: "Only admin can update the details"
@@ -199,7 +199,7 @@ export const deleteProject = async (req, res) => {
 
     const {designationType} = req.user
 
-    if(designationType != "Admin"){
+    if(designationType != "admin"){
       return res.status(400).json({
         success: false,
         message: "Only admin can delete the existing project!"
