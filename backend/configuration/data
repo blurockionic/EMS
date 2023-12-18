@@ -1,0 +1,34 @@
+
+
+
+
+
+
+
+          
+        <div className="flex flex-row bg-slate-500 w-full mx-auto  justify-between rounded-lg mt-2 p-3">
+
+          <div className="bg-white rounded-lg h-9 hover:bg-black">
+          <div className="bg-sky-500 font-bold  pt-1 pb-1 px-2 rounded-md w-[13.5rem] text-center hover:text-white">
+              <button>Personal Information </button>
+            </div>
+        
+          </div>
+
+            <div  className="bg-white rounded-lg h-9 hover:bg-black">
+            <div className="bg-sky-500 font-bold  pt-1 pb-1 px-2 rounded-md w-[13.5rem] text-center hover:text-white">
+                <button>Address </button>
+              </div>
+          
+            </div>
+
+            <div className="bg-white rounded-lg h-9 hover:bg-black">
+            <div className="bg-sky-500 font-bold  pt-1 pb-1 px-2 rounded-md w-[13.5rem] text-center hover:text-white">
+                <button>Professional Information </button>
+              </div>
+          
+            </div>
+        
+
+      
+        </div>
