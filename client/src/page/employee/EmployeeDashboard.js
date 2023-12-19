@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
-  const [reportHistory, setReportHistory] = useState([]);
   const [formData, setFormData] = useState({
     reportTitle: "",
     reportDescription: "",
@@ -17,14 +16,13 @@ const EmployeeDashboard = () => {
   const myInformation = [];
   const [employee, setEmployee] = useState([]);
   const [profile, setProfile] = useState({});
-  const [activeTab, setActiveTab] = useState("Personal Information");
+  const [activeTab, setActiveTab] = useState("Task");
 
   const [showModal, setShowModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
-
-   //all profile
-   useEffect(() => {
+  //all profile
+  useEffect(() => {
     const myProfile = async () => {
       try {
         const response = await axios.get(`${server}/users/me`, {
@@ -58,7 +56,10 @@ const EmployeeDashboard = () => {
         });
         setEmployee(allEmployee.data.data);
       } catch (error) {
-        console.error("Error fetching employee data:", error.response.data.message);
+        console.error(
+          "Error fetching employee data:",
+          error.response.data.message
+        );
       }
     };
 
@@ -85,48 +86,33 @@ const EmployeeDashboard = () => {
 
   // const [profile, setProfile] =  useState({})
 
-  
-
-  //load history
-  useEffect(() => {
-    // validation 
-    if(selectedTask === null){
-      alert("invalid id or null")
-      return
-    }
-
-    try {
-      const taskReportHistory = async () => {
-        const response = await axios.get(`${server}/reportTask/${selectedTask.assignTo}`);
-        alert("ok")
-        console.log(response);
-        setReportHistory(response)
-      };
-
-      //invoke
-      taskReportHistory();
-    } catch (error) {
-      alert(error.response.data.message);
-    }
-  }, []);
-
-  console.log(reportHistory)
-
   for (let i = 0; i < employee.length; i++) {
-    if (employee[i].employeeEmail === profile.email) {
+    if (employee[i]._id === profile.employeeId) {
       myInformation.push(employee[i]);
     }
   }
 
   const [myInfo] = myInformation;
 
+  // console.log(myInfo)
+
   // handle for report button clicked
   const handleReportClick = (task) => {
     //  alert(id)
     setSelectedTask(task);
     setShowModal(true);
-  };
 
+    // Assuming selectedTask and selectedTask.employeeId are defined
+    if (selectedTask && selectedTask.assignTo) {
+      // Set id in local storage
+      localStorage.setItem("id", selectedTask.assignTo);
+    } else {
+      // Handle the case where selectedTask or selectedTask.employeeId is not defined
+      console.error(
+        "Unable to set id in local storage. Check selectedTask and selectedTask.employeeId."
+      );
+    }
+  };
 
   // for update the form
   const handleChange = (e) => {
@@ -136,7 +122,6 @@ const EmployeeDashboard = () => {
       [name]: type === "checkbox" ? checked : value,
     });
   };
-
 
   //submit the report for create the entry on db
   const handleSubmit = async (e) => {
@@ -149,7 +134,7 @@ const EmployeeDashboard = () => {
 
     try {
       const responce = await axios.post(
-        `${server}/reportTask/${selectedTask._id}`,
+        `${server}/taskreport/${selectedTask._id}`,
         {
           reportTitle,
           reportDescription,
@@ -171,9 +156,7 @@ const EmployeeDashboard = () => {
         alert(message);
       }
 
-      //set id at local storage
-      localStorage.setItem("id", selectedTask.employeeId);
-
+      //reset the form
       setFormData({
         reportTitle: "",
         reportDescription: "",
@@ -181,6 +164,7 @@ const EmployeeDashboard = () => {
       });
 
       setShowModal(false);
+      navigate("../reporthistory");
     } catch (error) {
       alert(error.response.data.message);
     }
@@ -220,7 +204,7 @@ const EmployeeDashboard = () => {
         >
           Attendance
         </div>
-        <div
+        {/* <div
           className={`cursor-pointer uppercase  py-2 px-4  ${
             activeTab === "Report History"
               ? "border-b-4 border-blue-500 text-blue-500 font-bold"
@@ -229,15 +213,14 @@ const EmployeeDashboard = () => {
           onClick={() => handleTabClick("Report History")}
         >
           Report History
-        </div>
+        </div> */}
       </div>
 
       <div className="mt-4">
         {activeTab === "Personal Information" && (
           <div>
-            {/* <div className="bg-gray-200 p-4 rounded shadow-md w-full mx-auto my-4">
+            <div className="bg-gray-200 p-4 rounded shadow-md w-full mx-auto my-4">
               <div className="text-center mb-4">
-                
                 <h2 className="text-lg font-bold capitalize">
                   {myInfo.employeeName}
                 </h2>
@@ -261,7 +244,7 @@ const EmployeeDashboard = () => {
                 <p className="text-sm font-semibold mb-1">Address</p>
                 <p className="text-gray-600">{myInfo.address}</p>
               </div>
-            </div> */}
+            </div>
           </div>
         )}
 
@@ -299,12 +282,16 @@ const EmployeeDashboard = () => {
                         </td>
                         {/* Add more cells based on your task object */}
                         <td className="py-2 px-4 border-b flex items-center">
-                          <button
-                            className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={() => handleReportClick(task)}
-                          >
-                            Report
-                          </button>
+                          {task.isTaskCompleted ? (
+                            "Completed"
+                          ) : (
+                            <button
+                              className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                              onClick={() => handleReportClick(task)}
+                            >
+                              Report
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -316,17 +303,19 @@ const EmployeeDashboard = () => {
 
         {activeTab === "Attendance" && (
           <div>
-            <h2 className="text-lg font-bold mb-2">Content for Tab 2</h2>
-            <p>This is the content for Tab 3.</p>
+            <h2 className="text-lg font-bold mb-2 text-center">
+              This Feature Coming Soon
+            </h2>
+            <p className="text-center">Not Available</p>
           </div>
         )}
 
-        {activeTab === "Report History" && (
+        {/* {activeTab === "Report History" && (
           <div>
             <h2 className="text-lg font-bold mb-2">Content for Tab 2</h2>
             <p>This is the content for Tab 4.</p>
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Modal */}

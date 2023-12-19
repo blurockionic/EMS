@@ -83,7 +83,7 @@ const AllTask = () => {
                   <td className="border px-4 py-2">{task.taskTitle}</td>
                   <td className="border px-4 py-2">{task.taskAssignDate}</td>
                   <td className="border px-4 py-2">{task.taskEndDate}</td>
-                  <td className="border px-4 py-2">{task.isCompleted ? (<span className='text-green-800'>Completed</span>) : (<span className='text-red-800'>Not Completed</span>)}</td>
+                  <td className="border px-4 py-2">{task.isTaskCompleted ? (<span className='text-green-800'>Completed</span>) : (<span className='text-red-800'>Not Completed</span>)}</td>
                   <td className="border px-4 py-2">{task.employeeName}</td>
                   
                   {/* Add more cells as needed */}

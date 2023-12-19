@@ -44,7 +44,7 @@ const NewProject = () => {
 
   //load
   for (let i = 0; i < employeeData.length; i++) {
-    if (employeeData[i].designationType === "Manager") {
+    if (employeeData[i].designationType === "manager") {
       const value = employeeData[i]._id;
       const label = employeeData[i].employeeName;
       options.push({ value, label });

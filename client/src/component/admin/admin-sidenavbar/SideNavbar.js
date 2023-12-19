@@ -167,7 +167,7 @@ const SideNavbar = () => {
             )}
 
             {/* // it visible when user type is admin  */}
-            {profile.designationType === "admin" && (
+            {profile.designationType === "admin" || profile.designationType === "manager" ? (
               <li
                 className={`flex items-center text-start text-black mb-2 cursor-pointer
               
@@ -186,7 +186,7 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-            )}
+            ): null}
 
             {/* //new employee for humanresources */}
             {profile.designationType === "human resources" || profile.designationType === "admin"  ?(
@@ -280,7 +280,7 @@ const SideNavbar = () => {
               </li>
             )}
 
-            {/* {profile.designationType === "employee" && (
+            {profile.designationType === "employee" && (
               <li
                 className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
               
@@ -301,7 +301,7 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-            )} */}
+            )}
           </ul>
         </div>
       </nav>

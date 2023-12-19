@@ -54,7 +54,7 @@ export const newEmployee = async (req, res) => {
 
 
     //convert the designation type into lowercase character
-    const lowerDesignationType = designationType.toLowerCase();
+    const lowercaseDesignationType = designationType.toLowerCase();
 
 
     
@@ -85,7 +85,7 @@ export const newEmployee = async (req, res) => {
         email: employeeEmail,
         password: hashPassword,
         designation,
-        designationType,
+        designationType : lowercaseDesignationType,
       });
 
 

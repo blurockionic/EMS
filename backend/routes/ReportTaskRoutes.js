@@ -9,13 +9,13 @@ router.post("/:id",isAuthenticated, reportTask)
 
 
 //route for get all task
-router.get("/:id",isAuthenticated, allReport)
+router.get("/:id", allReport)
 
 //route for update specific report 
-router.put("/:id",isAuthenticated, updateReport)
+// router.put("/:id",isAuthenticated, updateReport)
 
 //route for delete report
-router.delete("/:id",isAuthenticated, deleteReport)
+// router.delete("/:id",isAuthenticated, deleteReport)
 
 
 export default router 

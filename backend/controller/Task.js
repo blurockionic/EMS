@@ -108,17 +108,6 @@ export const task = async (req, res) => {
 //get all task manager //tested
 export const allTask = async (req, res) => {
   try {
-    // // check user
-    // const { designationType } = req.user;
-
-    // if (designationType != "Manager") {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message:
-    //       "Only manager can check the task! Please concern deparment to get access.",
-    //   });
-    // }
-
     //validation
     const allTask = await Task.find({});
 

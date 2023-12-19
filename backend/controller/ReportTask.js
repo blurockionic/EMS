@@ -26,14 +26,7 @@ export const reportTask = async (req, res) => {
       });
     }
 
-    // check user designation
-    // const { designationType } = req.user;
-    // if (designationType != "Employee") {
-    //   return res.status(200).json({
-    //     success: false,
-    //     message: "Only employee can report the task",
-    //   });
-    // }
+   
 
     //   check task exist or not
     const isTaskExist = await Task.findById(id);
@@ -44,8 +37,20 @@ export const reportTask = async (req, res) => {
         message: "Task not found!",
       });
     }
+    // //check taskTitle 
+    // if(!isTaskExist.taskTitle){
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "task title is required!"
+    //   })
+    // }
 
-    console.log(isTaskExist)
+    // if task is completed then  update the status
+    if(isTaskCompleted ===  true){
+      isTaskExist.isTaskCompleted = isTaskCompleted
+      const updateTask = await isTaskExist.save()
+      console.log(updateTask)
+    }
 
     
 
@@ -56,7 +61,7 @@ export const reportTask = async (req, res) => {
       isTaskCompleted,
       projectName: isTaskExist.projectName, 
       employeeName: isTaskExist.employeeName,
-      taksTitle: isTaskExist.taskTitle,
+      taskTitle: isTaskExist.taskTitle,
       managerName: isTaskExist.managerName,
       projectId: isTaskExist.taskOf,
       employeeId: isTaskExist.assignTo,
@@ -82,8 +87,8 @@ export const reportTask = async (req, res) => {
 export const allReport = async (req, res) => {
   // fetch employeeId
   const { id } = req.params;
-  console.log(id)
   
+  console.log(id)
 
   try {
     // validation

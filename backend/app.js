@@ -47,7 +47,7 @@ app.use("/api/v1/task", taskRoutes)
 app.use("/api/v1/reportProject", reportProjectRoutes)
 
 //route for report task
-app.use("/api/v1/reportTask", reportTaskRoutes)
+app.use("/api/v1/taskreport", reportTaskRoutes)
 
 
 
