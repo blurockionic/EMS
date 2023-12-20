@@ -162,8 +162,7 @@ const SideNavbar = () => {
             )}
 
             {/* // it visible when user type is admin  */}
-            {profile.designationType === "admin"
-            ? (
+            {profile.designationType === "admin" ? (
               <li
                 className={`flex items-center text-start text-black mb-2 cursor-pointer
               
@@ -206,6 +205,27 @@ const SideNavbar = () => {
                 </Link>
               </li>
             ) : null}
+
+            {profile.designationType === "admin" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link to={"./adminreport"} className="uppercase  font-bold">
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "adminreport"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Report
+                  </button>
+                </Link>
+              </li>
+            )}
 
             {/* manager  */}
             {profile.designationType === "manager" && (
@@ -270,8 +290,26 @@ const SideNavbar = () => {
                 </Link>
               </li>
             )}
-
-           
+            {profile.designationType === "manager" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link to={"./managerreport"} className="uppercase  font-bold">
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "managerreport"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Report
+                  </button>
+                </Link>
+              </li>
+            )}
 
             {/* manager end  */}
 

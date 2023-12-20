@@ -14,6 +14,12 @@ const reportProjectSchema = new mongoose.Schema( {
       type: Boolean,
       default: false,
     },
+    managerName:{
+      type:String
+    },
+    projectName:{
+      type: String
+    },
     projectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "project",

@@ -1,12 +1,15 @@
 import express from "express"
-import { allReportOfSpecificProject, deleteReport, reportProject, updateProjectReport } from "../controller/ReportProject.js"
+import { allReport, allReportOfSpecificProject, deleteReport, reportProject, updateProjectReport } from "../controller/ReportProject.js"
 import { isAuthenticated } from "../middleware/auth.js"
 
 const router =  express.Router()
 
 
 //route for new report controller 
-router.post("/:id",isAuthenticated, reportProject)
+router.post("/new",isAuthenticated, reportProject)
+ 
+// route for get allt the report 
+router.get("/all",isAuthenticated, allReport)
 
 //route for get all report of specific id 
 router.get("/:id",isAuthenticated, allReportOfSpecificProject)

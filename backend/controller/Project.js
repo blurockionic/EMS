@@ -51,6 +51,7 @@ export const newProject = async (req, res) => {
         priority,
         description,
         managerId: foundMnager._id,
+        adminId: req.user._id,
         websiteUrl,
         isCompleted,
         isScrap,
@@ -81,11 +82,10 @@ export const newProject = async (req, res) => {
 // get all project
 export const allProject = async (req, res) => {
   try {
-    const { designationType } = req.user;
+   
 
-    // if (designationType === "admin") {
       // get all project from the collection
-      const allProject = await Project.find({});
+      const allProject = await Project.find({})
 
       if (!allProject) {
         return res.status(400).json({

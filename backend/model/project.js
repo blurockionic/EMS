@@ -22,6 +22,11 @@ const projectSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    adminId:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"users",
+      required: true
+    },
     managerId: {
       type:mongoose.Schema.Types.ObjectId,
         ref:"employee_details",
