@@ -101,10 +101,7 @@ const SideNavbar = () => {
                 `}
               >
                 {/* New Employees */}
-                <Link
-                  to={"./hrdashboard"}
-                  className="uppercase  font-bold"
-                >
+                <Link to={"./hrdashboard"} className="uppercase  font-bold">
                   <button
                     className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                       path === "hrdashboard"
@@ -117,8 +114,6 @@ const SideNavbar = () => {
                 </Link>
               </li>
             )}
-
-
 
             {/* // employee section visible for admin and human resources and manager  */}
             {profile.designationType === "admin" ||
@@ -167,7 +162,8 @@ const SideNavbar = () => {
             )}
 
             {/* // it visible when user type is admin  */}
-            {profile.designationType === "admin" || profile.designationType === "manager" ? (
+            {profile.designationType === "admin"
+            ? (
               <li
                 className={`flex items-center text-start text-black mb-2 cursor-pointer
               
@@ -186,10 +182,11 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-            ): null}
+            ) : null}
 
             {/* //new employee for humanresources */}
-            {profile.designationType === "human resources" || profile.designationType === "admin"  ?(
+            {profile.designationType === "human resources" ||
+            profile.designationType === "admin" ? (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               
@@ -208,9 +205,29 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-            ): null}
+            ) : null}
 
             {/* manager  */}
+            {profile.designationType === "manager" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link to={"./managerproject"} className="uppercase  font-bold">
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "managerproject"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Project
+                  </button>
+                </Link>
+              </li>
+            )}
 
             {profile.designationType === "manager" && (
               <li
@@ -254,6 +271,8 @@ const SideNavbar = () => {
               </li>
             )}
 
+           
+
             {/* manager end  */}
 
             {/* employee  */}
@@ -286,10 +305,7 @@ const SideNavbar = () => {
               
                 `}
               >
-                <Link
-                  to={"./reporthistory"}
-                  className="uppercase  font-bold"
-                >
+                <Link to={"./reporthistory"} className="uppercase  font-bold">
                   <button
                     className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                       path === "reporthistory"

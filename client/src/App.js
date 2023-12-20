@@ -19,6 +19,7 @@ import NewTask from "./page/manager/task/NewTask";
 import AllTask from "./page/manager/task/AllTask";
 import EmployeeDashboard from "./page/employee/EmployeeDashboard";
 import ReportHistory from "./page/employee/ReportHistory";
+import ManagerProject from "./page/manager/project/ManagerProject";
 
 export const server = "http://localhost:4000/api/v1"
 
@@ -46,6 +47,8 @@ function App() {
           <Route path="managerdashboard" element={<ManagerDashboard/>}/>
           <Route path="task" element={<NewTask/>}/>
           <Route path="alltask" element={<AllTask/>}/>
+          <Route path="managerproject" element={<ManagerProject/>}/>
+
 
 
 
