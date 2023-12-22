@@ -222,3 +222,43 @@ export const deleteProject = async (req, res) => {
     });
   }
 };
+
+
+//get all task of specific project // tested 
+export const specificProject = async (req, res) => {
+  // fetch project id from params
+  const { id } = req.params;
+  try {
+    // validation
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid request",
+      });
+    }
+
+    //check user
+    
+
+    //all task filtered by id
+    const specificProject = await Project.findById(id);
+
+    if (!specificProject) {
+      return res.status(400).json({
+        success: false,
+        message: "No task Available!",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      specificProject,
+      message: "All task fetched successfully!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
+};

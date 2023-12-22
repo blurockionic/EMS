@@ -1,5 +1,5 @@
 import express from "express"
-import { allProject, deleteProject, newProject, updateProject } from "../controller/Project.js"
+import { allProject, deleteProject, newProject, specificProject, updateProject } from "../controller/Project.js"
 import { isAuthenticated } from "../middleware/auth.js"
 
 const router =  express.Router()
@@ -16,6 +16,9 @@ router.put("/:id",isAuthenticated, updateProject)
 
 // route for delete project
 router.delete("/:id",isAuthenticated, deleteProject)
+
+//specific project 
+router.get("/specific/:id", isAuthenticated, specificProject)
 
 
 

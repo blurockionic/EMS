@@ -273,6 +273,14 @@ const ManagerProject = () => {
     }
   };
 
+
+  //hnadle for show mare
+  const handleOnShowMore =(projectId)=>{
+    localStorage.setItem("projectId", projectId)
+
+    navigate("../projectdetails")
+  }
+
   return (
     <>
       <div className="flex justify-between">
@@ -357,7 +365,7 @@ const ManagerProject = () => {
                     <td className="border px-4 py-2">
                       <button
                         className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        //   onClick={() => handleReportClick(task)}
+                          onClick={() => handleOnShowMore(project._id)}
                       >
                         View
                       </button>
@@ -454,62 +462,6 @@ const ManagerProject = () => {
                   <span className="text-sm">Check if project is completed</span>
                 </div>
 
-                {/* <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="projectId"
-                  >
-                    Project ID
-                  </label>
-                  <input
-                    type="text"
-                    id="projectId"
-                    name="projectId"
-                    disabled
-                    value={formData.projectId}
-                    onChange={handleChange}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="Enter project ID"
-                  />
-                </div> */}
-
-                {/* <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="managerId"
-                  >
-                    Manager ID
-                  </label>
-                  <input
-                    type="text"
-                    id="managerId"
-                    name="managerId"
-                    disabled
-                    value={formData.managerId}
-                    onChange={handleChange}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="Enter manager ID"
-                  />
-                </div> */}
-
-                {/* <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="adminId"
-                  >
-                    Admin ID
-                  </label>
-                  <input
-                    type="text"
-                    id="adminId"
-                    name="adminId"
-                    disabled
-                    value={formData.adminId}
-                    onChange={handleChange}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="Enter admin ID"
-                  />
-                </div> */}
 
                 <div className="flex items-center justify-between">
                   <button

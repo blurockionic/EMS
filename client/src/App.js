@@ -22,6 +22,7 @@ import ReportHistory from "./page/employee/ReportHistory";
 import ManagerProject from "./page/manager/project/ManagerProject";
 import ManagerReport from "./page/manager/report/ManagerReport";
 import AdminReport from "./page/admin/report/AdminReport";
+import ManagerProjectDetails from "./page/manager/project/ManagerProjectDetails";
 
 export const server = "http://localhost:4000/api/v1"
 
@@ -53,6 +54,7 @@ function App() {
           <Route path="alltask" element={<AllTask/>}/>
           <Route path="managerproject" element={<ManagerProject/>}/>
           <Route path="managerreport" element={<ManagerReport/>}/>
+          <Route path="projectdetails" element={<ManagerProjectDetails/>}/>
 
 
 
