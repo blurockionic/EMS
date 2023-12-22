@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { server } from "../../../App";
+import { useLocation } from "react-router-dom";
 
 const NewTask = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,14 @@ const NewTask = () => {
 
   const [employeeData, setEmployeeData] = useState([]);
   const [allProject, setAllProject] = useState([]);
+
+
+  // recieve data from url 
+  const location = useLocation();
+  const searchData = new URLSearchParams(location.search).get('data');
+  const project = searchData ? JSON.parse(decodeURIComponent(searchData)) : null;
+
+  console.log(project)
 
   //employee
   useEffect(() => {

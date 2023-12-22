@@ -249,13 +249,13 @@ const SideNavbar = () => {
               </li>
             )}
 
-            {profile.designationType === "manager" && (
+            {/* {profile.designationType === "manager" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               
                 `}
               >
-                {/* New Employees */}
+                {/* New Employees 
                 <Link to={"./task"} className="uppercase  font-bold">
                   <button
                     className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
@@ -268,7 +268,7 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-            )}
+            {/* )} */} 
 
             {profile.designationType === "manager" && (
               <li
@@ -285,7 +285,7 @@ const SideNavbar = () => {
                         : "bg-white"
                     }`}
                   >
-                    All Task
+                     Task Reports
                   </button>
                 </Link>
               </li>
@@ -305,7 +305,7 @@ const SideNavbar = () => {
                         : "bg-white"
                     }`}
                   >
-                    Report
+                     Project Report
                   </button>
                 </Link>
               </li>

@@ -2,10 +2,10 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { server } from "../../../App";
 import Titlebar from "../../../component/utilities-components/Titlebar";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ManagerProject = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const initialFormData = {
     reportTitle: "",
     reportDescription: "",
@@ -13,9 +13,24 @@ const ManagerProject = () => {
     projectId: "",
     managerId: "",
     adminId: "",
-  }
+  };
   const [formData, setFormData] = useState(initialFormData);
+
+  const [formTaskData, setFormTaskData] = useState({
+    taskTitle: "",
+    taskDescription: "",
+    assignTo: "",
+    taskOf: "",
+    taskAssignDate: "",
+    taskEndDate: "",
+    isTaskCompleted: false,
+  });
+
+  const [employeeData, setEmployeeData] = useState([]);
+  // const [allProject, setAllProject] = useState([]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
   const [profile, setProfile] = useState({});
 
   const [allProject, setAllProject] = useState([]);
@@ -79,7 +94,7 @@ const ManagerProject = () => {
   // handle for report button
   const handleReportClick = (project) => {
     setIsModalOpen(true);
-  
+
     // set values in a single call
     setFormData({
       ...formData,
@@ -88,15 +103,15 @@ const ManagerProject = () => {
       projectId: project._id,
       reportTitle: project.projectName,
     });
-  
+
     // set project
     setSelectedProject(project);
   };
-  
 
   // control for show the modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setIsNewTaskModalOpen(false);
   };
 
   // handle for the change in value
@@ -109,7 +124,7 @@ const ManagerProject = () => {
   };
 
   // handle for submit
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Add logic to handle form submission, e.g., send data to server
     // console.log("Form submitted with data:", formData);
@@ -143,23 +158,121 @@ const ManagerProject = () => {
       );
 
       // console.log(response.data.reportProject.managerId)
-      //when success 
-      const {success, message} = response.data
+      //when success
+      const { success, message } = response.data;
       // console.log(message)
-      localStorage.setItem("id", response.data.reportProject.managerId)
-      setIsModalOpen(false)
-      if(success){
-        setFormData(initialFormData)
-        alert(message)
-        navigate("../managerreport")
+      localStorage.setItem("id", response.data.reportProject.managerId);
+      setIsModalOpen(false);
+      if (success) {
+        setFormData(initialFormData);
+        alert(message);
+        navigate("../managerreport");
       }
-
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
       alert(error.response.data.message);
     }
   };
+
+  //handle for assign task to user
+  const handleAssignTask = (project) => {
+    setIsNewTaskModalOpen(true);
+
+    setFormTaskData((prevData) => ({
+      ...prevData,
+      taskOf: project.projectName,
+    }));
+
+    // navigate("../task");
+  };
+
+  //employee
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const allEmployee = await axios.get(`${server}/employee/all`, {
+          withCredentials: true,
+        });
+        setEmployeeData(allEmployee.data.data);
+      } catch (error) {
+        console.error("Error fetching employee data:", error.message);
+      }
+    };
+
+    fetchData();
+  }, [setEmployeeData]);
+
+  // project
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const projectData = await axios.get(`${server}/project/all`, {
+  //         withCredentials: true,
+  //       });
+  //       setAllProject(projectData.data.allProject);
+  //       // console.log(projectData)
+  //     } catch (error) {
+  //       console.error("Error fetching project data:", error.message);
+  //       alert(error.message);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [setAllProject]);
+
+  //handle for change
+  const handleOnTaskChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    setFormTaskData((prevData) => ({
+      ...prevData,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  //handle for submit
+  const handleOnTaskSubmit = async (e) => {
+    e.preventDefault();
+    // Handle form submission here, for example, send the formData to the server
+    const {
+      taskTitle,
+      taskDescription,
+      taskAssignDate,
+      taskEndDate,
+      taskOf,
+      assignTo,
+    } = formTaskData;
+
+    try {
+      const response = await axios.post(
+        `${server}/task/new`,
+        {
+          taskTitle,
+          taskDescription,
+          taskAssignDate,
+          taskEndDate,
+          taskOf,
+          assignTo,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log(response);
+      const { success, message } = response.data;
+      if (success) {
+        alert(message);
+        setIsNewTaskModalOpen(false)
+      }
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+
   return (
     <>
       <div className="flex justify-between">
@@ -187,10 +300,10 @@ const ManagerProject = () => {
               <tr>
                 <th className="border px-4 py-2">S.No</th>
                 <th className="border px-4 py-2">Project Name</th>
-                <th className="border px-4 py-2">Description</th>
                 <th className="border px-4 py-2">Start Date</th>
                 <th className="border px-4 py-2">Submission Date</th>
                 <th className="border px-4 py-2">Status</th>
+                <th className="border px-4 py-2">Assign Task</th>
                 <th className="border px-4 py-2">Action</th>
                 <th className="border px-4 py-2">Details</th>
                 {/* Add more columns as needed */}
@@ -206,7 +319,6 @@ const ManagerProject = () => {
                   <tr key={project._id} className="text-center">
                     <td className="border px-4 py-2">{index + 1}</td>
                     <td className="border px-4 py-2">{project.projectName}</td>
-                    <td className="border px-4 py-2">{project.description}</td>
                     <td className="border px-4 py-2">
                       {project.projectStartDate}
                     </td>
@@ -219,6 +331,20 @@ const ManagerProject = () => {
                       ) : (
                         <span className="text-red-800">Not Completed</span>
                       )}
+                    </td>
+                    <td className="border px-4 py-2">
+                      <button
+                        className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        onClick={() => handleAssignTask(project)}
+                      >
+                        {/* <Link
+                          to={`/dashboard/task?data=${encodeURIComponent(
+                            JSON.stringify(project)
+                          )}`}
+                        >
+                        </Link> */}
+                        Assign Task
+                      </button>
                     </td>
                     <td className="border px-4 py-2">
                       <button
@@ -249,7 +375,7 @@ const ManagerProject = () => {
         </div>
       )}
 
-      {/* show modal  */}
+      {/* show modal for report the project  */}
 
       {isModalOpen && (
         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -262,6 +388,17 @@ const ManagerProject = () => {
             </div>
 
             <div className="relative bg-white rounded-lg p-6 w-[500px] mx-auto">
+            <div className="flex justify-between">
+                <div>
+                  <h1 className="ml-40 uppercase font-bold text-xl">Report Project</h1>
+                </div>
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={handleCloseModal}
+                >
+                  X
+                </button>
+              </div>
               {/* Your modal content goes here */}
               <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8">
                 <div className="mb-4">
@@ -383,12 +520,136 @@ const ManagerProject = () => {
                   </button>
                 </div>
               </form>
-              <button
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                onClick={handleCloseModal}
+             
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* show model for assign the task  */}
+      {isNewTaskModalOpen && (
+        <div className="fixed inset-0 z-10 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen">
+            <div
+              className="fixed inset-0 transition-opacity"
+              onClick={handleCloseModal}
+            >
+              <div className="absolute inset-0 bg-black opacity-50"></div>
+            </div>
+
+            <div className="relative bg-white rounded-lg p-6 w-[500px] mx-auto">
+              <div className="flex justify-between">
+                <div>
+                  <h1 className="ml-40 uppercase font-bold text-xl">Assign Task</h1>
+                </div>
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={handleCloseModal}
+                >
+                  X
+                </button>
+              </div>
+              {/* Your modal content goes here */}
+
+              <form
+                onSubmit={handleOnTaskSubmit}
+                className="max-w-md mx-auto mt-8 p-4 bg-white rounded shadow-md"
               >
-                Close
-              </button>
+                <label className="block mb-2">
+                  <span className="text-gray-700">Task Title:</span>
+                  <input
+                    type="text"
+                    name="taskTitle"
+                    value={formTaskData.taskTitle}
+                    onChange={handleOnTaskChange}
+                    className="form-input mt-1 block w-full border"
+                  />
+                </label>
+                <label className="block mb-2">
+                  <span className="text-gray-700">Project:</span>
+                  <select
+                    name="taskOf"
+                    value={formTaskData.taskOf}
+                    onChange={handleOnTaskChange}
+                    className="form-select mt-1 block w-full border"
+                  >
+                    <option value="" disabled>
+                      Select a project
+                    </option>
+                    {allProject.map((project) => (
+                      <option key={project._id} value={project.projectName}>
+                        {project.projectName}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block mb-2">
+                  <span className="text-gray-700">Task Description:</span>
+                  <textarea
+                    name="taskDescription"
+                    value={formTaskData.taskDescription}
+                    onChange={handleOnTaskChange}
+                    className="form-input mt-1 block w-full border"
+                  />
+                </label>
+
+                <label className="block mb-2">
+                  <span className="text-gray-700">Assign To:</span>
+                  <select
+                    name="assignTo"
+                    value={formTaskData.assignTo}
+                    onChange={handleOnTaskChange}
+                    className="form-select mt-1 block w-full border"
+                  >
+                    <option value="" disabled>
+                      Select an employee
+                    </option>
+                    {employeeData
+                      .filter(
+                        (employee) => employee.designationType === "employee"
+                      )
+                      .map((employee) => (
+                        <option
+                          key={employee.employeeId}
+                          value={employee.employeeName}
+                        >
+                          {employee.employeeName}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+
+                <label className="block mb-2">
+                  <span className="text-gray-700">Assign Date:</span>
+                  <input
+                    type="date"
+                    name="taskAssignDate"
+                    value={formTaskData.taskAssignDate}
+                    onChange={handleOnTaskChange}
+                    className="form-input mt-1 block w-full border"
+                  />
+                </label>
+                <label className="block mb-2">
+                  <span className="text-gray-700">Submission Date:</span>
+                  <input
+                    type="date"
+                    name="taskEndDate"
+                    value={formTaskData.taskEndDate}
+                    onChange={handleOnTaskChange}
+                    className="form-input mt-1 block w-full border"
+                  />
+                </label>
+
+                <div className="flex items-center justify-between mt-4">
+                  <button
+                    type="submit"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
