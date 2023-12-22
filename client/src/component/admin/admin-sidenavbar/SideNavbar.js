@@ -29,18 +29,18 @@ const SideNavbar = () => {
 
   // handle for logout
 
-  const handleOnLogout = async () => {
-    const response = await axios.get(`${server}/users/logout`, {
-      withCredentials: true,
-    });
+  // const handleOnLogout = async () => {
+  //   const response = await axios.get(`${server}/users/logout`, {
+  //     withCredentials: true,
+  //   });
 
-    const { success, message } = response.data;
+  //   const { success, message } = response.data;
 
-    if (success) {
-      alert(message);
-      navigate("../login");
-    }
-  };
+  //   if (success) {
+  //     alert(message);
+  //     navigate("../login");
+  //   }
+  // };
   return (
     <aside className="bg-gray-800 text-white h-[630px]  flex flex-col">
       <nav className="flex-1">
@@ -359,14 +359,14 @@ const SideNavbar = () => {
           </ul>
         </div>
       </nav>
-      <div className="p-4">
+      {/* <div className="p-4">
         <button
           className="bg-white text-gray-800 px-4 py-2 rounded-md w-full"
           onClick={handleOnLogout}
         >
           Logout
         </button>
-      </div>
+      </div> */}
     </aside>
   );
 };

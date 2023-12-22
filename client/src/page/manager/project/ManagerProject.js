@@ -112,7 +112,7 @@ const ManagerProject = () => {
   const handleSubmit = async(e) => {
     e.preventDefault();
     // Add logic to handle form submission, e.g., send data to server
-    console.log("Form submitted with data:", formData);
+    // console.log("Form submitted with data:", formData);
     // You can add additional logic here, such as API calls to submit the data.
     const {
       reportTitle,
