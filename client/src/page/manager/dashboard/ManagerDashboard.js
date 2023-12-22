@@ -117,7 +117,7 @@ const ManagerDashboard = () => {
       </div>
       <div className="col-span-3">
         <Card
-          title="tasl"
+          title="task"
           imageUrl="https://placekitten.com/100/100" // Replace with your actual image URL
           number={allTask.length}
           bgColor={`bg-green-200`}
