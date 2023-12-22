@@ -6,7 +6,7 @@ import Card from '../../../component/admin/admin-card/Card';
 
 const ManagerDashboard = () => {
     const [employeeData, setEmployeeData] = useState([]);
-  const [allProject, setAllProject] = useState([]);
+  const [allTask, setAllTask] = useState([]);
 
   const data = [
     {
@@ -74,31 +74,32 @@ const ManagerDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const projectData = await axios.get(`${server}/project/all`, {
+        const projectData = await axios.get(`${server}/task/all`, {
           withCredentials: true,
         });
-        setAllProject(projectData.data.allProject);
-        console.log(projectData)
+        setAllTask(projectData.data.allTask);
+        // console.log(projectData)
       } catch (error) {
         console.error("Error fetching project data:", error.message);
-        alert(error.message)
+        alert(error.response.data.message)
       }
     };
   
     fetchData();
-  }, [setAllProject]);
-  
-  
+  }, []);
 
-
+  console.log(allTask)
   
 
-  // filter out iscompleted or not
-  const completedProjects = allProject.filter(
-    (project) => project.isCompleted === true
+
+  
+
+  // // filter out iscompleted or not
+  const completedTask = allTask.filter(
+    (task) => task.isTaskCompleted === true
   );
-  const inCcompletedProjects = allProject.filter(
-    (project) => project.isCompleted === false
+  const inCcompletedtask = allTask.filter(
+    (task) => task.isTaskCompleted === false
   );
   // console.log(completedProjects.length)
 
@@ -116,25 +117,25 @@ const ManagerDashboard = () => {
       </div>
       <div className="col-span-3">
         <Card
-          title="Project"
+          title="tasl"
           imageUrl="https://placekitten.com/100/100" // Replace with your actual image URL
-          number={allProject.length}
+          number={allTask.length}
           bgColor={`bg-green-200`}
         />
       </div>
       <div className="col-span-3">
         <Card
-          title="Ongoing "
+          title="Completed"
           imageUrl="https://placekitten.com/100/100" // Replace with your actual image URL
-          number={inCcompletedProjects.length}
+          number={completedTask.length}
           bgColor={`bg-yellow-200`}
         />
       </div>
       <div className="col-span-3">
         <Card
-          title="Completed "
+          title="Incompleted "
           imageUrl="https://placekitten.com/100/100" // Replace with your actual image URL
-          number={completedProjects.length}
+          number={inCcompletedtask.length}
           bgColor={`bg-blue-200`}
         />
       </div>
