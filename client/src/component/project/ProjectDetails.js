@@ -5,9 +5,11 @@ import { server } from '../../App';
 const ProjectDetails = ({projectId}) => {
 
     const [project, setProject]= useState({})
+    const [task, setTask] = useState([])
 
 
     useEffect(() => {
+      //fetch specific project details
         const fetchData = async () => {
           try {
             const response = await axios.get(
@@ -25,14 +27,36 @@ const ProjectDetails = ({projectId}) => {
             // Handle errors, e.g., alert(error.response.data.message);
           }
         };
+
+        //fetch all task report
+        const fetchTaskReport = async () => {
+          try {
+            const response = await axios.get(
+              `${server}/task/specific/${projectId}`,
+              { withCredentials: true }
+            );
+      
+            setTask(response.data.specificProjectTask);
+            // console.log(response)
+            const { success} = response.data;
+      
+            if (success) {
+            //   alert(message);
+            }
+          } catch (error) {
+            // Handle errors, e.g., alert(error.response.data.message);
+          }
+        };
       
         // Invoke the fetchData function immediately
+        fetchTaskReport()
         fetchData();
       }, [projectId]); // Add projectId as a dependency
       
+    console.log(task)
     
-    console.log(project)
   return (
+    <>
     <div className="max-w-md mx-auto mt-8 p-4 bg-white rounded shadow-md">
     <h2 className="text-2xl font-bold mb-4">{project.projectName}</h2>
 
@@ -57,6 +81,35 @@ const ProjectDetails = ({projectId}) => {
       <p className="text-gray-600">Status: {project.isCompleted ? 'Completed' : 'In Progress'}</p>
     </div>
   </div>
+
+    <div>
+      <div>
+        <h1 className='font-bold'> All Task</h1>
+      </div>
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-white border border-gray-300">
+        <thead>
+          <tr>
+            <th className="py-2 px-4 border-b"> Title</th>
+            <th className="py-2 px-4 border-b">Description</th>
+            <th className="py-2 px-4 border-b">Status</th>
+            {/* Add more table headers as needed */}
+          </tr>
+        </thead>
+        <tbody>
+          {task.map((task) => (
+            <tr key={task._id}>
+              <td className="py-2 px-4 border-b text-center">{task.taskTitle}</td>
+              <td className="py-2 px-4 border-b text-center">{task.taskDescription}</td>
+              <td className="py-2 px-4 border-b text-center">{task.isTaskCompleted ? 'Completed' : 'In Progress'}</td>
+              {/* Add more table cells for additional task properties */}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    </div>
+    </>
   )
 }
 
