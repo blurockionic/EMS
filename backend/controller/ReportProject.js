@@ -124,7 +124,7 @@ export const updateProjectReport = async (req, res) => {
   const { id } = req.params;
 
   // fetch all the detail for modification
-  const { reportTitle, reportDescription, adminId } = req.body;
+  const { reportTitle, reportDescription, isProjectCompleted } = req.body;
 
   try {
     // validation
@@ -138,9 +138,11 @@ export const updateProjectReport = async (req, res) => {
     // update the details
     const fetchedReport = await ReportProject.findById(id);
 
+    console.log(fetchedReport)
+
     fetchedReport.reportTitle = reportTitle;
     fetchedReport.reportDescription = reportDescription;
-    fetchedReport.adminId = adminId;
+    fetchedReport.isProjectCompleted = isProjectCompleted
 
     const modifiedDetails = await fetchedReport.save();
 

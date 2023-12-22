@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ProjectDetails from "../../../component/project/ProjectDetails";
-import axios from "axios";
-import { server } from "../../../App";
+
 
 const ManagerProjectDetails = () => {
 
