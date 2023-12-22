@@ -266,20 +266,21 @@ const ManagerProject = () => {
       const { success, message } = response.data;
       if (success) {
         alert(message);
-        setIsNewTaskModalOpen(false)
+        setIsNewTaskModalOpen(false);
       }
     } catch (error) {
       alert(error.response.data.message);
     }
   };
 
-
   //hnadle for show mare
-  const handleOnShowMore =(projectId)=>{
-    localStorage.setItem("projectId", projectId)
+  const handleOnShowMore = (projectId) => {
+    localStorage.setItem("projectId", projectId);
 
-    navigate("../projectdetails")
-  }
+    navigate("../projectdetails");
+  };
+
+  console.log(allProject);
 
   return (
     <>
@@ -341,31 +342,46 @@ const ManagerProject = () => {
                       )}
                     </td>
                     <td className="border px-4 py-2">
-                      <button
+                    {project.isCompleted ? (
+                         <button
+                         disabled
+                         className="mx-auto bg-blue-500 hover:bg-blue-700 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                         onClick={() => handleAssignTask(project)}
+                       >
+                         Assign Task
+                       </button>
+                      ) : (
+                        <button
                         className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                         onClick={() => handleAssignTask(project)}
                       >
-                        {/* <Link
-                          to={`/dashboard/task?data=${encodeURIComponent(
-                            JSON.stringify(project)
-                          )}`}
-                        >
-                        </Link> */}
                         Assign Task
                       </button>
+                      )}
+                     
+                    </td>
+                    <td className="border px-4 py-2">
+                      {project.isCompleted ? (
+                         <button
+                         disabled
+                         className="mx-auto bg-blue-500 hover:bg-blue-700 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                         onClick={() => handleReportClick(project)}
+                       >
+                         Report
+                       </button>
+                      ) : (
+                        <button
+                          className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                          onClick={() => handleReportClick(project)}
+                        >
+                          Report
+                        </button>
+                      )}
                     </td>
                     <td className="border px-4 py-2">
                       <button
                         className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => handleReportClick(project)}
-                      >
-                        Report
-                      </button>
-                    </td>
-                    <td className="border px-4 py-2">
-                      <button
-                        className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                          onClick={() => handleOnShowMore(project._id)}
+                        onClick={() => handleOnShowMore(project._id)}
                       >
                         View
                       </button>
@@ -396,9 +412,11 @@ const ManagerProject = () => {
             </div>
 
             <div className="relative bg-white rounded-lg p-6 w-[500px] mx-auto">
-            <div className="flex justify-between">
+              <div className="flex justify-between">
                 <div>
-                  <h1 className="ml-40 uppercase font-bold text-xl">Report Project</h1>
+                  <h1 className="ml-40 uppercase font-bold text-xl">
+                    Report Project
+                  </h1>
                 </div>
                 <button
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -462,7 +480,6 @@ const ManagerProject = () => {
                   <span className="text-sm">Check if project is completed</span>
                 </div>
 
-
                 <div className="flex items-center justify-between">
                   <button
                     type="submit"
@@ -472,7 +489,6 @@ const ManagerProject = () => {
                   </button>
                 </div>
               </form>
-             
             </div>
           </div>
         </div>
@@ -492,7 +508,9 @@ const ManagerProject = () => {
             <div className="relative bg-white rounded-lg p-6 w-[500px] mx-auto">
               <div className="flex justify-between">
                 <div>
-                  <h1 className="ml-40 uppercase font-bold text-xl">Assign Task</h1>
+                  <h1 className="ml-40 uppercase font-bold text-xl">
+                    Assign Task
+                  </h1>
                 </div>
                 <button
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"

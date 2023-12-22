@@ -47,30 +47,36 @@ export const reportProject = async (req, res) => {
         message: "project not found",
       });
     }
-    
+
     // check check admin id
     const foundAdmin = await User.findById(adminId);
     if (!foundAdmin) {
-        return res.status(400).json({
-            success: false,
-            message: "Admin not found!",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Admin not found!",
+      });
     }
 
-    
     //  if enverthis is correct then create the report entry for project on db
-    
+
     const reportProject = await ReportProject.create({
-        reportTitle,
-        reportDescription,
-        isProjectCompleted,
-        managerName: req.user.name,
-        projectName: foundProject.projectName,
-        managerId,
-        adminId,
-        projectId,
+      reportTitle,
+      reportDescription,
+      isProjectCompleted,
+      managerName: req.user.name,
+      projectName: foundProject.projectName,
+      managerId,
+      adminId,
+      projectId,
     });
-    
+
+    //check if project is completed
+    // update the project
+    if (isProjectCompleted) {
+      foundProject.isCompleted = isProjectCompleted;
+      await foundProject.save();
+    }
+
     return res.status(200).json({
       success: true,
       reportProject,
@@ -138,11 +144,11 @@ export const updateProjectReport = async (req, res) => {
     // update the details
     const fetchedReport = await ReportProject.findById(id);
 
-    console.log(fetchedReport)
+    console.log(fetchedReport);
 
     fetchedReport.reportTitle = reportTitle;
     fetchedReport.reportDescription = reportDescription;
-    fetchedReport.isProjectCompleted = isProjectCompleted
+    fetchedReport.isProjectCompleted = isProjectCompleted;
 
     const modifiedDetails = await fetchedReport.save();
 
@@ -191,24 +197,24 @@ export const deleteReport = async (req, res) => {
 
 // //get all project report for admin
 
-export const allReport = async(req, res)=>{
-    try {
-        // validation
-        //fetch previous and latest project report
-    
-        const allReportOfProject = await ReportProject.find({}).sort(
-          { createdAt: 1 }
-        );
-    
-        return res.status(200).json({
-          success: true,
-          allReportOfProject,
-          message: "all report fetched successfully!",
-        });
-      } catch (error) {
-        return res.status(500).json({
-          success: false,
-          message: error,
-        });
-      }
-}
+export const allReport = async (req, res) => {
+  try {
+    // validation
+    //fetch previous and latest project report
+
+    const allReportOfProject = await ReportProject.find({}).sort({
+      createdAt: 1,
+    });
+
+    return res.status(200).json({
+      success: true,
+      allReportOfProject,
+      message: "all report fetched successfully!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
+};
