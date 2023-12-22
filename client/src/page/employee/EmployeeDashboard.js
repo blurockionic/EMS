@@ -228,16 +228,6 @@ const EmployeeDashboard = () => {
         >
           Attendance
         </div>
-        {/* <div
-          className={`cursor-pointer uppercase  py-2 px-4  ${
-            activeTab === "Report History"
-              ? "border-b-4 border-blue-500 text-blue-500 font-bold"
-              : "bg-white"
-          }`}
-          onClick={() => handleTabClick("Report History")}
-        >
-          Report History
-        </div> */}
       </div>
 
       <div className="mt-4">
@@ -345,6 +335,8 @@ const EmployeeDashboard = () => {
                         <th className="py-2 px-4 border-b">Task ID</th>
                         <th className="py-2 px-4 border-b">Task Name</th>
                         <th className="py-2 px-4 border-b">Employee Name</th>
+                        <th className="py-2 px-4 border-b">Employee Name</th>
+                        <th className="py-2 px-4 border-b">Status</th>
                         {/* Add more columns as needed */}
                         <th className="py-2 px-4 border-b">Actions</th>
                       </tr>
@@ -366,10 +358,19 @@ const EmployeeDashboard = () => {
                             <td className="py-2 px-4 border-b text-center">
                               {task.managerName}
                             </td>
+                            <td className="py-2 px-4 border-b text-center">
+                              {task.isTaskCompleted ? "Completed": "In progress"}
+                            </td>
                             {/* Add more cells based on your task object */}
                             <td className="py-2 px-4 border-b flex items-center">
                               {task.isTaskCompleted ? (
-                                "Completed"
+                                 <button
+                                 disabled
+                                 className="mx-auto bg-blue-500 hover:bg-blue-700 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                                 onClick={() => handleReportClick(task)}
+                               >
+                                 Report
+                               </button>
                               ) : (
                                 <button
                                   className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -416,6 +417,7 @@ const EmployeeDashboard = () => {
                     <th className="py-2 px-4 border-b">Task ID</th>
                     <th className="py-2 px-4 border-b">Task Name</th>
                     <th className="py-2 px-4 border-b">Employee Name</th>
+                    <th className="py-2 px-4 border-b">Status</th>
                     {/* Add more columns as needed */}
                     <th className="py-2 px-4 border-b">Actions</th>
                   </tr>
@@ -437,10 +439,19 @@ const EmployeeDashboard = () => {
                         <td className="py-2 px-4 border-b text-center">
                           {task.managerName}
                         </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          {task.isTaskCompleted? "Completed" : "In Progress"}
+                        </td>
                         {/* Add more cells based on your task object */}
                         <td className="py-2 px-4 border-b flex items-center">
                           {task.isTaskCompleted ? (
-                            "Completed"
+                            <button
+                            disabled
+                            className="mx-auto bg-red-300 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                            onClick={() => handleReportClick(task)}
+                          >
+                            Report
+                          </button>
                           ) : (
                             <button
                               className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -467,12 +478,7 @@ const EmployeeDashboard = () => {
           </div>
         )}
 
-        {/* {activeTab === "Report History" && (
-          <div>
-            <h2 className="text-lg font-bold mb-2">Content for Tab 2</h2>
-            <p>This is the content for Tab 4.</p>
-          </div>
-        )} */}
+       
       </div>
 
       {/* Modal */}

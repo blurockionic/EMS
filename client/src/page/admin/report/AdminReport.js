@@ -54,8 +54,6 @@ const AdminReport = () => {
            <th className="border bg-gray-200 p-2">Status</th>
            <th className="border bg-gray-200 p-2">Submision Date</th>
            <th className="border bg-gray-200 p-2">Actions</th>
-           <th className="border bg-gray-200 p-2">Scrap</th>
-
          </tr>
        </thead>
        <tbody>
@@ -81,9 +79,9 @@ const AdminReport = () => {
                  Delete
                </button>
              </td>
-             <td className='border p-2'>
+             {/* <td className='border p-2'>
                 <input type='checkbox' value={isScrap} onClick={(e)=>handleOncheckBox(e.target.value)}  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" />
-             </td>
+             </td> */}
            </tr>
          ))}
        </tbody>
