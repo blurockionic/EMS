@@ -4,7 +4,7 @@ import { server } from "../../../App";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [profile, setProfile] = useState({});
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   //get profile
@@ -26,8 +26,8 @@ const Header = () => {
     setIsProfileOpen((prev) => !prev);
   };
 
-  //handle logout 
-  const handleOnLogout =async()=>{
+  //handle logout
+  const handleOnLogout = async () => {
     const response = await axios.get(`${server}/users/logout`, {
       withCredentials: true,
     });
@@ -36,9 +36,17 @@ const Header = () => {
 
     if (success) {
       alert(message);
+      // Assuming you want to remove an item with the key 'myItem' from local storage
+      localStorage.removeItem("id");
+      localStorage.removeItem("managerId");
       navigate("../login");
     }
-  }
+  };
+
+  //set managerId local storage
+  localStorage.setItem("managerId", profile.employeeId);
+  localStorage.setItem("id", profile.employeeId);
+
 
   return (
     <>
@@ -97,13 +105,18 @@ const Header = () => {
               {/* Profile Details */}
               <div>
                 <h2 className="text-xl font-bold"> Name : {profile.name}</h2>
-                <p className="text-gray-600 capitalize">Designation: {profile.designation}</p>
+                <p className="text-gray-600 capitalize">
+                  Designation: {profile.designation}
+                </p>
               </div>
             </div>
 
             {/* Additional Profile Information */}
             <div className="mt-4 flex items-center justify-center">
-              <button className="text-white bg-red-600 p-2 rounded px-4" onClick={handleOnLogout}>
+              <button
+                className="text-white bg-red-600 p-2 rounded px-4"
+                onClick={handleOnLogout}
+              >
                 Logout
               </button>
             </div>

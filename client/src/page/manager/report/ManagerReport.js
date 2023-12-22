@@ -7,7 +7,7 @@ const ManagerReport = () => {
   const [loading, setLoading] = useState(false)
 
   // get manager id from local storage
-  const managerid = localStorage.getItem("id");
+  const managerid = localStorage.getItem("managerId");
   // load all the reports
   useEffect(() => {
     const reportData = async () => {

@@ -88,7 +88,7 @@ const ManagerDashboard = () => {
     fetchData();
   }, []);
 
-  console.log(allTask)
+  
   
 
 
