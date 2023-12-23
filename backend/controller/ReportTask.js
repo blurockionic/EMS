@@ -120,6 +120,43 @@ export const allReport = async (req, res) => {
   }
 };
 
+// get all task report on specific project  //tested  
+export const allTaskReport = async (req, res) => {
+  // fetch employeeId
+  const { id } = req.params;
+  
+  console.log(id)
+
+  try {
+    // validation
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Id is invalid or null",
+      }); 
+    }
+
+    const allTaskReport = await ReportTask.find({ projectId: id })
+    if (!allTaskReport) {
+      return res.status(400).json({
+        success: false,
+        message: "No report found!",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      allTaskReport,
+      message: "All report fetched successfully!",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "Please check the above code!",
+    });
+  }
+};
+
 //update report details   //tested
 export const updateReport = async (req, res) => {
   // fetch report id

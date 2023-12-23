@@ -19,12 +19,12 @@ const ManagerReport = () => {
   const [selectedProject, setSelectedProject] = useState({});
 
   // get manager id from local storage
-  const managerid = localStorage.getItem("managerId");
-  // load all the reports
+  const managerId = localStorage.getItem("managerId");
+  // load all the reports to the admin
   useEffect(() => {
     const reportData = async () => {
       try {
-        const data = await axios.get(`${server}/reportProject/${managerid}`, {
+        const data = await axios.get(`${server}/reportProject/${managerId}`, {
           withCredentials: true,
         });
 
@@ -44,7 +44,7 @@ const ManagerReport = () => {
 
     // Invoke
     reportData();
-  }, [managerid, loading]);
+  }, [managerId, loading]);
 
   const onDeleteClick = async (id) => {
     console.log(id);
@@ -58,6 +58,8 @@ const ManagerReport = () => {
     }
   };
 
+
+// manager can update the report 
   const onUpdateClick = async (project) => {
     setIsOpenModal(true);
 
@@ -85,7 +87,7 @@ const ManagerReport = () => {
     }));
   };
 
-  console.log(selectedProject);
+  
 
   // handle for submit
   const handleSubmit = async (e) => {
