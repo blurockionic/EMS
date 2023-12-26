@@ -10,6 +10,7 @@ const EmployeeDashboard = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     reportTitle: "",
+    gitLink: "",
     reportDescription: "",
     isTaskCompleted: false,
   });
@@ -132,7 +133,7 @@ const EmployeeDashboard = () => {
     e.preventDefault();
 
     // Optionally, reset the form after submission
-    const { reportTitle, reportDescription, isTaskCompleted } = formData;
+    const { reportTitle, reportDescription, gitLink  } = formData;
 
     // console.log(reportTitle, reportDescription, isTaskCompleted);
 
@@ -142,7 +143,9 @@ const EmployeeDashboard = () => {
         {
           reportTitle,
           reportDescription,
-          isTaskCompleted,
+          isTaskCompleted: false,
+          gitLink,
+          isRequested: true
         },
         {
           headers: {
@@ -152,7 +155,6 @@ const EmployeeDashboard = () => {
         }
       );
 
-      console.log(responce);
 
       const { success, message } = responce.data;
 
@@ -230,6 +232,7 @@ const EmployeeDashboard = () => {
         </div>
       </div>
 
+          {/* Personal Information  */}
       <div className="mt-4">
         {activeTab === "Personal Information" && (
           <div className="mt-4">
@@ -406,6 +409,8 @@ const EmployeeDashboard = () => {
           </div>
         )}
 
+
+        {/* task  */}
         {activeTab === "Task" && (
           <div>
             <h2 className="text-lg font-bold mb-2">Task Details</h2>
@@ -418,8 +423,7 @@ const EmployeeDashboard = () => {
                     <th className="py-2 px-4 border-b">Task Name</th>
                     <th className="py-2 px-4 border-b">Employee Name</th>
                     <th className="py-2 px-4 border-b">Status</th>
-                    {/* Add more columns as needed */}
-                    <th className="py-2 px-4 border-b">Actions</th>
+                    <th className="py-2 px-4 border-b">Request for Completion</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -442,22 +446,21 @@ const EmployeeDashboard = () => {
                         <td className="py-2 px-4 border-b text-center">
                           {task.isTaskCompleted? "Completed" : "In Progress"}
                         </td>
-                        {/* Add more cells based on your task object */}
                         <td className="py-2 px-4 border-b flex items-center">
-                          {task.isTaskCompleted ? (
+                          {task.isRequested ? (
                             <button
                             disabled
                             className="mx-auto bg-red-300 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
                             onClick={() => handleReportClick(task)}
                           >
-                            Report
+                            Requested
                           </button>
                           ) : (
                             <button
                               className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                               onClick={() => handleReportClick(task)}
                             >
-                              Report
+                              Request
                             </button>
                           )}
                         </td>
@@ -469,6 +472,9 @@ const EmployeeDashboard = () => {
           </div>
         )}
 
+
+
+        {/* Attendance  */}
         {activeTab === "Attendance" && (
           <div>
             <h2 className="text-lg font-bold mb-2 text-center">
@@ -486,7 +492,7 @@ const EmployeeDashboard = () => {
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
           <div className="bg-white p-8 rounded shadow-md">
             <div className="flex justify-between">
-              <h2 className="text-lg font-bold mb-4">Report Task</h2>
+              <h2 className="text-lg font-bold mb-4">Request</h2>
               {/* Add more content for your report modal */}
               <button
                 className="   font-bold text-red-600 text-2xl rounded-xl"
@@ -503,6 +509,7 @@ const EmployeeDashboard = () => {
               onSubmit={handleSubmit}
               className="w-96 mx-auto bg-white p-8 rounded shadow-md mt-4"
             >
+              {/* report title  */}
               <div className="mb-4">
                 <label
                   htmlFor="reportTitle"
@@ -521,6 +528,26 @@ const EmployeeDashboard = () => {
                 />
               </div>
 
+              {/* git link  */}
+              <div className="mb-4">
+                <label
+                  htmlFor="reportTitle"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
+                   Git Link
+                </label>
+                <input
+                  type="text"
+                  id="gitLink"
+                  name="gitLink"
+                  value={formData.gitLink}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              {/* report description  */}
               <div className="mb-4">
                 <label
                   htmlFor="reportDescription"
@@ -539,7 +566,8 @@ const EmployeeDashboard = () => {
                 ></textarea>
               </div>
 
-              <div className="mb-4">
+
+              {/* <div className="mb-4">
                 <label htmlFor="isTaskCompleted" className="flex items-center">
                   <input
                     type="checkbox"
@@ -551,7 +579,7 @@ const EmployeeDashboard = () => {
                   />
                   <span className="text-sm">Is Task Completed?</span>
                 </label>
-              </div>
+              </div> */}
 
               <div className="flex items-center justify-end">
                 <button

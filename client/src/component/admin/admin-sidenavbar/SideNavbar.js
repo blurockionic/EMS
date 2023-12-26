@@ -42,7 +42,7 @@ const SideNavbar = () => {
   //   }
   // };
   return (
-    <aside className="bg-gray-800 text-white h-[630px]  flex flex-col">
+    <aside className="bg-slate-800 text-white h-[630px]  flex flex-col">
       <nav className="flex-1">
         <div className="flex h-full w-64 mt-3 ">
           <ul className="flex-row justify-center w-full ">

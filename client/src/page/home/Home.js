@@ -17,7 +17,7 @@ const Home = () => {
         {/* main content  */}
         <div className='grid grid-cols-12'>
             {/* SideNavbar  */}
-            <div className='col-span-2'>
+            <div className='col-span-2 bg-slate-800'>
                     <SideNavbar/>
             </div>
             {/* SideNavbar end */}

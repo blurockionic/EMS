@@ -42,8 +42,7 @@ const ReportHistory = () => {
           <th className="py-2 px-4 border-b">Report Title</th>
           <th className="py-2 px-4 border-b">Report Description </th>
           <th className="py-2 px-4 border-b">Concern Manager </th>
-          <th className="py-2 px-4 border-b">Report Status</th>
-          {/* Add more table headers based on your data */}
+          <th className="py-2 px-4 border-b">Request Status</th>
         </tr>
       </thead>
       <tbody>
@@ -52,8 +51,7 @@ const ReportHistory = () => {
             <td className="py-2 px-4 border-b text-center">{report.reportTitle}</td>
             <td className="py-2 px-4 border-b text-center">{report.reportDescription}</td>
             <td className="py-2 px-4 border-b text-center capitalize">{report.managerName}</td>
-            <td className="py-2 px-4 border-b text-center">{report.isTaskCompleted ? "Completed" : "Not Completed"}</td>
-            {/* Add more table cells based on your data */}
+            <td className="py-2 px-4 border-b text-center">{report.isTaskCompleted ? (<span className='font-bold text-green-600'>Completed</span>) : (<span className='font-bold text-red-600'>Pending</span>)}</td>
           </tr>
         ))}
       </tbody>
