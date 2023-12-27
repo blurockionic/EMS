@@ -133,7 +133,7 @@ const EmployeeDashboard = () => {
     e.preventDefault();
 
     // Optionally, reset the form after submission
-    const { reportTitle, reportDescription, gitLink  } = formData;
+    const { reportTitle, reportDescription, gitLink } = formData;
 
     // console.log(reportTitle, reportDescription, isTaskCompleted);
 
@@ -145,7 +145,7 @@ const EmployeeDashboard = () => {
           reportDescription,
           isTaskCompleted: false,
           gitLink,
-          isRequested: true
+          isRequested: true,
         },
         {
           headers: {
@@ -154,7 +154,6 @@ const EmployeeDashboard = () => {
           withCredentials: true,
         }
       );
-
 
       const { success, message } = responce.data;
 
@@ -232,7 +231,7 @@ const EmployeeDashboard = () => {
         </div>
       </div>
 
-          {/* Personal Information  */}
+      {/* Personal Information  */}
       <div className="mt-4">
         {activeTab === "Personal Information" && (
           <div className="mt-4">
@@ -362,18 +361,20 @@ const EmployeeDashboard = () => {
                               {task.managerName}
                             </td>
                             <td className="py-2 px-4 border-b text-center">
-                              {task.isTaskCompleted ? "Completed": "In progress"}
+                              {task.isTaskCompleted
+                                ? "Completed"
+                                : "In progress"}
                             </td>
                             {/* Add more cells based on your task object */}
                             <td className="py-2 px-4 border-b flex items-center">
                               {task.isTaskCompleted ? (
-                                 <button
-                                 disabled
-                                 className="mx-auto bg-blue-500 hover:bg-blue-700 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
-                                 onClick={() => handleReportClick(task)}
-                               >
-                                 Report
-                               </button>
+                                <button
+                                  disabled
+                                  className="mx-auto bg-blue-500 hover:bg-blue-700 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                                  onClick={() => handleReportClick(task)}
+                                >
+                                  Report
+                                </button>
                               ) : (
                                 <button
                                   className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -409,7 +410,6 @@ const EmployeeDashboard = () => {
           </div>
         )}
 
-
         {/* task  */}
         {activeTab === "Task" && (
           <div>
@@ -423,7 +423,9 @@ const EmployeeDashboard = () => {
                     <th className="py-2 px-4 border-b">Task Name</th>
                     <th className="py-2 px-4 border-b">Employee Name</th>
                     <th className="py-2 px-4 border-b">Status</th>
-                    <th className="py-2 px-4 border-b">Request for Completion</th>
+                    <th className="py-2 px-4 border-b">
+                      Request for Completion
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -444,17 +446,19 @@ const EmployeeDashboard = () => {
                           {task.managerName}
                         </td>
                         <td className="py-2 px-4 border-b text-center">
-                          {task.isTaskCompleted? "Completed" : "In Progress"}
+                          {task.isTaskCompleted ? "Completed" : "In Progress"}
                         </td>
                         <td className="py-2 px-4 border-b flex items-center">
-                          {task.isRequested ? (
+                          {task.isTaskCompleted ? (
+                            "completed"
+                          ) : task.isRequested ? (
                             <button
-                            disabled
-                            className="mx-auto bg-red-300 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
-                            onClick={() => handleReportClick(task)}
-                          >
-                            Requested
-                          </button>
+                              disabled
+                              className="mx-auto bg-red-300 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                              onClick={() => handleReportClick(task)}
+                            >
+                              Requested
+                            </button>
                           ) : (
                             <button
                               className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -472,8 +476,6 @@ const EmployeeDashboard = () => {
           </div>
         )}
 
-
-
         {/* Attendance  */}
         {activeTab === "Attendance" && (
           <div>
@@ -483,8 +485,6 @@ const EmployeeDashboard = () => {
             <p className="text-center">Not Available</p>
           </div>
         )}
-
-       
       </div>
 
       {/* Modal */}
@@ -534,7 +534,7 @@ const EmployeeDashboard = () => {
                   htmlFor="reportTitle"
                   className="block text-gray-700 text-sm font-bold mb-2"
                 >
-                   Git Link
+                  Git Link
                 </label>
                 <input
                   type="text"
@@ -565,7 +565,6 @@ const EmployeeDashboard = () => {
                   required
                 ></textarea>
               </div>
-
 
               {/* <div className="mb-4">
                 <label htmlFor="isTaskCompleted" className="flex items-center">

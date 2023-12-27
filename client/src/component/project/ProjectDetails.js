@@ -10,6 +10,16 @@ const ProjectDetails = ({ projectId }) => {
   const [task, setTask] = useState([]);
   const [taskReport, setTaskReport] = useState([]);
 
+  const [isTaskCompleted, setIsTaskCompleted] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
+  const [employeeName, setEmployeeName] = useState("");
+  const [taskId, setTaskId] = useState("");
+  const [taskReportId, setTaskReportId] = useState("");
+  const [taskTitle, setTaskTitle] = useState("");
+  const [taskReportDesc, setTaskReportDesc] = useState("");
+  const [reportTitle, setReportTitle] = useState("");
+
   useEffect(() => {
     //fetch specific project details
     const fetchData = async () => {
@@ -81,15 +91,67 @@ const ProjectDetails = ({ projectId }) => {
     );
     setUserReport(filteredTaskReport);
     setIsOpenReport(true);
-    console.log(filteredTaskReport);
   };
 
-  const openModal = () => {
+  const openModal = (taskReport) => {
     setIsModalOpen(true);
+    console.log(taskReport);
+    setTaskReportId(taskReport._id);
+    setEmployeeId(taskReport.employeeId);
+    setTaskId(taskReport.taskId);
+    setEmployeeName(taskReport.employeeName);
+    setTaskTitle(taskReport.taskTitle);
+    setTaskReportDesc(taskReport.reportDescription);
+    setReportTitle(taskReport.reportTitle);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  // handle for change the checkbox
+  const handleCheckboxChange = () => {
+    setIsTaskCompleted(!isTaskCompleted);
+  };
+
+  // handle on task report feedback
+  const handleOnTaskReportFeedback = async (e) => {
+    const data = {
+      isTaskCompleted,
+      feedback,
+      employeeId,
+      taskId,
+      taskReportId,
+      employeeName,
+      taskTitle,
+      taskReportDesc,
+      reportTitle,
+    };
+
+    try {
+      const responce = await axios.post(
+        `${server}/taskReportFeedback/new`,
+        { data },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      const {success, message} = responce.data
+      if(success){
+        alert(message)
+        setFeedback("")
+        setIsTaskCompleted(false)
+        setIsModalOpen(false)
+      }
+    } catch (error) {
+      alert(error.response.data.message)
+    }
+    
+
   };
 
   return (
@@ -228,7 +290,7 @@ const ProjectDetails = ({ projectId }) => {
                       <td className="py-2 px-4 border-b text-center">
                         <button
                           className="px-4 py-2 bg-green-600 text-white font-bold rounded-sm"
-                          onClick={openModal}
+                          onClick={() => openModal(taskReport)}
                         >
                           Add Feedback
                         </button>
@@ -262,7 +324,7 @@ const ProjectDetails = ({ projectId }) => {
               </button>
             </div>
             {/* form for submit the feedback on report of specific Task  */}
-            <form>
+            <div>
               <div>
                 <label htmlFor="Feedback" className="block mb-2">
                   Feedback
@@ -272,24 +334,32 @@ const ProjectDetails = ({ projectId }) => {
                   id="feedback"
                   cols="50"
                   rows="5"
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
                   className=" border border-slate-600 outline-none rounded-sm"
                 ></textarea>
               </div>
               <div>
                 <label className="block mb-2 text-sm font-bold">
-                  <input type="checkbox" className="mr-2" />
-                   Approved Task Completion Request
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={isTaskCompleted}
+                    onChange={() => handleCheckboxChange()}
+                  />
+                  Approved Task Completion Request
                 </label>
               </div>
               <div className="flex justify-center mt-4">
                 <button
                   type="submit"
                   className=" w-full px-4 py-2 bg-green-600 text-white rounded-sm"
+                  onClick={handleOnTaskReportFeedback}
                 >
                   Submit
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
