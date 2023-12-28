@@ -23,6 +23,7 @@ import ManagerProject from "./page/manager/project/ManagerProject";
 import ManagerReport from "./page/manager/report/ManagerReport";
 import AdminReport from "./page/admin/report/AdminReport";
 import ManagerProjectDetails from "./page/manager/project/ManagerProjectDetails";
+import TaskReportFeedback from "./page/employee/TaskReportFeedback";
 
 export const server = "http://localhost:4000/api/v1"
 
@@ -62,6 +63,7 @@ function App() {
           {/* employee  */}
           <Route path="employeedashboard" element={<EmployeeDashboard/>}/>
           <Route path="reporthistory" element={<ReportHistory/>}/>
+          <Route path="taskreportfeedback" element={<TaskReportFeedback/>}/>
 
 
 

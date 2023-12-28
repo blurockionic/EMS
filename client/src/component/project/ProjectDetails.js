@@ -140,18 +140,16 @@ const ProjectDetails = ({ projectId }) => {
         }
       );
 
-      const {success, message} = responce.data
-      if(success){
-        alert(message)
-        setFeedback("")
-        setIsTaskCompleted(false)
-        setIsModalOpen(false)
+      const { success, message } = responce.data;
+      if (success) {
+        alert(message);
+        setFeedback("");
+        setIsTaskCompleted(false);
+        setIsModalOpen(false);
       }
     } catch (error) {
-      alert(error.response.data.message)
+      alert(error.response.data.message);
     }
-    
-
   };
 
   return (
@@ -288,12 +286,22 @@ const ProjectDetails = ({ projectId }) => {
                           : "In Progress"}
                       </td>
                       <td className="py-2 px-4 border-b text-center">
-                        <button
-                          className="px-4 py-2 bg-green-600 text-white font-bold rounded-sm"
-                          onClick={() => openModal(taskReport)}
-                        >
-                          Add Feedback
-                        </button>
+                        {taskReport.isTaskCompleted ? (
+                          <button
+                            disabled
+                            className="px-4 py-2 bg-red-300 text-white font-bold rounded-sm cursor-not-allowed"
+                            onClick={() => openModal(taskReport)}
+                          >
+                            Add Feedback
+                          </button>
+                        ) : (
+                          <button
+                            className="px-4 py-2 bg-green-600 text-white font-bold rounded-sm"
+                            onClick={() => openModal(taskReport)}
+                          >
+                            Add Feedback
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

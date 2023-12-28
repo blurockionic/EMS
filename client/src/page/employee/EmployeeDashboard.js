@@ -195,6 +195,13 @@ const EmployeeDashboard = () => {
     }
   };
 
+
+  //handle on feedback
+  const handleOnFeedback = (taskId)=>{
+     localStorage.setItem("taskId",taskId)
+     navigate('../taskreportfeedback')
+  }
+
   return (
     <div className="w-full mx-auto mt-2 p-4 bg-white rounded shadow-md">
       <div className="flex">
@@ -419,7 +426,6 @@ const EmployeeDashboard = () => {
                 <thead>
                   <tr>
                     <th className="py-2 px-4 border-b">S.No</th>
-                    <th className="py-2 px-4 border-b">Task ID</th>
                     <th className="py-2 px-4 border-b">Task Name</th>
                     <th className="py-2 px-4 border-b">Manager Name</th>
                     <th className="py-2 px-4 border-b">Status</th>
@@ -437,9 +443,7 @@ const EmployeeDashboard = () => {
                         <td className="py-2 px-4 border-b text-center">
                           {index + 1}
                         </td>
-                        <td className="py-2 px-4 border-b text-center">
-                          {task._id}
-                        </td>
+                        
                         <td className="py-2 px-4 border-b text-center">
                           {task.taskTitle}
                         </td>
@@ -472,7 +476,7 @@ const EmployeeDashboard = () => {
                         <td className="py-2 px-4 border-b text-center">
                         <button
                               className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                              // onClick={() => handleReportClick(task)}
+                              onClick={() => handleOnFeedback(task._id)}
                             >
                               View
                             </button>
