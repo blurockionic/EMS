@@ -421,11 +421,12 @@ const EmployeeDashboard = () => {
                     <th className="py-2 px-4 border-b">S.No</th>
                     <th className="py-2 px-4 border-b">Task ID</th>
                     <th className="py-2 px-4 border-b">Task Name</th>
-                    <th className="py-2 px-4 border-b">Employee Name</th>
+                    <th className="py-2 px-4 border-b">Manager Name</th>
                     <th className="py-2 px-4 border-b">Status</th>
                     <th className="py-2 px-4 border-b">
                       Request for Completion
                     </th>
+                    <th className="py-2 px-4 border-b">Feedback</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -467,6 +468,14 @@ const EmployeeDashboard = () => {
                               Request
                             </button>
                           )}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                        <button
+                              className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                              // onClick={() => handleReportClick(task)}
+                            >
+                              View
+                            </button>
                         </td>
                       </tr>
                     ))}
