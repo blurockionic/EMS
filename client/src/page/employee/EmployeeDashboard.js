@@ -4,8 +4,11 @@ import { server } from "../../App";
 import { FaWindowClose } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import QRCode from "react-qr-code";
 =======
+=======
+>>>>>>> 858e9fb90cc3b7700c8bc85f4090aee1d912e4c0
 import { QRCode } from "react-qrcode";
 import { FaUserLarge } from "react-icons/fa6";
 
@@ -273,6 +276,7 @@ const EmployeeDashboard = () => {
           Attendance
         </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
         {/* <div
           className={`cursor-pointer uppercase  py-2 px-4  ${
             activeTab === "Report History"
@@ -297,11 +301,14 @@ const EmployeeDashboard = () => {
         </div>
 =======
 >>>>>>> origin/main
+=======
+>>>>>>> 858e9fb90cc3b7700c8bc85f4090aee1d912e4c0
       </div>
 
       {/* Personal Information  */}
       <div className="mt-4">
         {activeTab === "Personal Information" && (
+<<<<<<< HEAD
 <<<<<<< HEAD
           <div>
             <div className="bg-slate-200  flex flex-row rounded shadow-md w-full pb-6 justify-between px-12">
@@ -560,6 +567,175 @@ const EmployeeDashboard = () => {
               </div>
             )}
 
+=======
+          <div className="mt-4">
+            {activeTab === "Personal Information" && (
+              <div className="bg-slate-50 flex flex-row rounded shadow-md w-full pb-6 justify-between px-12">
+                {/* Left Section */}
+                <div className="mt-10">
+                  <div className="w-[7rem] h-[7rem] flex items-center justify-center ml-24 rounded-full bg-slate-300 shadow-lg">
+                    <FaUserLarge className="text-7xl text-slate-400" />
+                  </div>
+
+                  <div className="mt-8">
+                    <div className="text-black text-sm uppercase text-center">
+                      Location
+                    </div>
+                    <div className="text-slate-600 text-lg font-semibold text-justify capitalize">
+                      {myInfo.address}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Center Section */}
+                <div className="flex flex-col">
+                  <div className="mt-4">
+                    <h2 className="text-black text-sm ">Name</h2>
+                    <div className="text-xl text-slate-800  ">
+                      {myInfo.employeeName}
+                    </div>
+                  </div>
+
+                  <div className="mt-8">
+                    <h3 className="text-black text-sm  "> Gender</h3>
+                    <div className="text-xl text-slate-800 capitalize">
+                      {myInfo.gender}
+                    </div>
+                  </div>
+
+                  <div className="mt-8">
+                    <h3 className="text-black text-sm  ">Date of Birth</h3>
+                    <div className="text-xl text-slate-800 ">
+                      {myInfo.dateOfBirth}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Section */}
+                <div className="flex flex-col">
+                  <div className="mt-4">
+                    <p className="text-black text-sm uppercase ">Email </p>
+                    <div className="text-xl text-slate-800 ">
+                      {myInfo.employeeEmail}
+                    </div>
+                  </div>
+
+                  <div className="mt-8">
+                    <p className="text-black text-sm uppercase">Phone</p>
+                    <div className="text-xl text-slate-800 ">
+                      {myInfo.employeePhoneNumber}
+                    </div>
+                  </div>
+
+                  <div className="mt-8">
+                    <p className="text-black text-sm uppercase ">Address</p>
+                    <p className="text-xl text-slate-800 ">{myInfo.address}</p>
+                  </div>
+                </div>
+
+                {/* QR Code and Button */}
+                <div className="flex flex-col">
+                  <div className="mt-4">
+                    <h3 className="text-black text-sm uppercase text-center">
+                      {" "}
+                      Designation
+                    </h3>
+                    <div className="font-bold capitalize text-center">
+                      {myInfo.designation}
+                    </div>
+                  </div>
+
+                  <div className="w-40 mx-auto mt-4">
+                    <QRCode value={myInfo._id} />
+                  </div>
+
+                  <button
+                    disabled
+                    onClick={downloadProfileCard}
+                    className=" text-white px-4 py-2 mt-4 rounded-md focus:outline-none"
+                  >
+                    Download Profile Card
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "Task" && (
+              <div>
+                <h2 className="text-lg font-bold mb-2">Task Details</h2>
+                <div className="container mx-auto">
+                  <table className="min-w-full bg-white border border-gray-300">
+                    <thead>
+                      <tr>
+                        <th className="py-2 px-4 border-b">S.No</th>
+                        <th className="py-2 px-4 border-b">Task ID</th>
+                        <th className="py-2 px-4 border-b">Task Name</th>
+                        <th className="py-2 px-4 border-b">Employee Name</th>
+                        <th className="py-2 px-4 border-b">Employee Name</th>
+                        <th className="py-2 px-4 border-b">Status</th>
+                        {/* Add more columns as needed */}
+                        <th className="py-2 px-4 border-b">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allTask
+                        .filter((task) => task.employeeName === profile.name)
+                        .map((task, index) => (
+                          <tr key={task._id}>
+                            <td className="py-2 px-4 border-b text-center">
+                              {index + 1}
+                            </td>
+                            <td className="py-2 px-4 border-b text-center">
+                              {task._id}
+                            </td>
+                            <td className="py-2 px-4 border-b text-center">
+                              {task.taskTitle}
+                            </td>
+                            <td className="py-2 px-4 border-b text-center">
+                              {task.managerName}
+                            </td>
+                            <td className="py-2 px-4 border-b text-center">
+                              {task.isTaskCompleted
+                                ? "Completed"
+                                : "In progress"}
+                            </td>
+                            {/* Add more cells based on your task object */}
+                            <td className="py-2 px-4 border-b flex items-center">
+                              {task.isTaskCompleted ? (
+                                <button
+                                  disabled
+                                  className="mx-auto bg-blue-500 hover:bg-blue-700 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                                  onClick={() => handleReportClick(task)}
+                                >
+                                  Report
+                                </button>
+                              ) : (
+                                <button
+                                  className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                  onClick={() => handleReportClick(task)}
+                                >
+                                  Report
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "Attendance" && (
+              <div>
+                <h2 className="text-lg font-bold mb-2 text-center">
+                  This Feature Coming Soon
+                </h2>
+                <p className="text-center">Not Available</p>
+              </div>
+            )}
+
+>>>>>>> 858e9fb90cc3b7700c8bc85f4090aee1d912e4c0
             {/* {activeTab === "Report History" && (
             <div>
               <h2 className="text-lg font-bold mb-2">Content for Tab 2</h2>
@@ -650,6 +826,7 @@ const EmployeeDashboard = () => {
             <p className="text-center">Not Available</p>
           </div>
         )}
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         {/* Leave details  */}
@@ -777,6 +954,8 @@ const EmployeeDashboard = () => {
         )} */}
 =======
 >>>>>>> origin/main
+=======
+>>>>>>> 858e9fb90cc3b7700c8bc85f4090aee1d912e4c0
       </div>
 
       {/* Modal */}
