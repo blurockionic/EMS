@@ -3,11 +3,18 @@ import React, { useEffect, useRef, useState } from "react";
 import { server } from "../../App";
 import { FaWindowClose } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+<<<<<<< HEAD
 import QRCode from "react-qr-code";
+=======
+import { QRCode } from "react-qrcode";
+import { FaUserLarge } from "react-icons/fa6";
+
+>>>>>>> origin/main
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     reportTitle: "",
+    gitLink: "",
     reportDescription: "",
     isTaskCompleted: false,
   });
@@ -127,6 +134,8 @@ const EmployeeDashboard = () => {
   const [myInfo] = myInformation;
 
   // console.log(myInfo)
+  // Set id in local storage
+  localStorage.setItem("id", profile.employeeId);
 
   // handle for report button clicked
   const handleReportClick = (task) => {
@@ -160,7 +169,7 @@ const EmployeeDashboard = () => {
     e.preventDefault();
 
     // Optionally, reset the form after submission
-    const { reportTitle, reportDescription, isTaskCompleted } = formData;
+    const { reportTitle, reportDescription, gitLink } = formData;
 
     // console.log(reportTitle, reportDescription, isTaskCompleted);
 
@@ -170,7 +179,9 @@ const EmployeeDashboard = () => {
         {
           reportTitle,
           reportDescription,
-          isTaskCompleted,
+          isTaskCompleted: false,
+          gitLink,
+          isRequested: true,
         },
         {
           headers: {
@@ -179,8 +190,6 @@ const EmployeeDashboard = () => {
           withCredentials: true,
         }
       );
-
-      console.log(responce);
 
       const { success, message } = responce.data;
 
@@ -201,6 +210,33 @@ const EmployeeDashboard = () => {
       alert(error.response.data.message);
     }
   };
+
+  //download profile card
+  const profileCardRef = useRef(null);
+
+  const downloadProfileCard = () => {
+    const profileCard = profileCardRef.current;
+
+    if (profileCard) {
+      const htmlContent = profileCard.innerHTML;
+      const blob = new Blob([htmlContent], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "profile_card.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  };
+
+
+  //handle on feedback
+  const handleOnFeedback = (taskId)=>{
+     localStorage.setItem("taskId",taskId)
+     navigate('../taskreportfeedback')
+  }
 
   return (
     <div className="w-full mx-auto mt-2 p-4 bg-white rounded shadow-md">
@@ -236,6 +272,7 @@ const EmployeeDashboard = () => {
         >
           Attendance
         </div>
+<<<<<<< HEAD
         {/* <div
           className={`cursor-pointer uppercase  py-2 px-4  ${
             activeTab === "Report History"
@@ -258,10 +295,14 @@ const EmployeeDashboard = () => {
         >
           Leave Details
         </div>
+=======
+>>>>>>> origin/main
       </div>
 
+      {/* Personal Information  */}
       <div className="mt-4">
         {activeTab === "Personal Information" && (
+<<<<<<< HEAD
           <div>
             <div className="bg-slate-200  flex flex-row rounded shadow-md w-full pb-6 justify-between px-12">
               <div className="mt-4 ">
@@ -331,9 +372,167 @@ const EmployeeDashboard = () => {
                     Address
                   </p>
                   <p className="text-xl font-semibold">{myInfo.address}</p>
+=======
+          <div className="mt-4">
+            {activeTab === "Personal Information" && (
+              <div className="bg-slate-50 flex flex-row rounded shadow-md w-full pb-6 justify-between px-12">
+                {/* Left Section */}
+                <div className="mt-10">
+                  <div className="w-[7rem] h-[7rem] flex items-center justify-center ml-24 rounded-full bg-slate-300 shadow-lg">
+                    <FaUserLarge className="text-7xl text-slate-400" />
+                  </div>
+
+                  <div className="mt-8">
+                    <div className="text-black text-sm uppercase text-center">
+                      Location
+                    </div>
+                    <div className="text-slate-600 text-lg font-semibold text-justify capitalize">
+                      {myInfo.address}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Center Section */}
+                <div className="flex flex-col">
+                  <div className="mt-4">
+                    <h2 className="text-black text-sm ">Name</h2>
+                    <div className="text-xl text-slate-800  ">
+                      {myInfo.employeeName}
+                    </div>
+                  </div>
+
+                  <div className="mt-8">
+                    <h3 className="text-black text-sm  "> Gender</h3>
+                    <div className="text-xl text-slate-800 capitalize">
+                      {myInfo.gender}
+                    </div>
+                  </div>
+
+                  <div className="mt-8">
+                    <h3 className="text-black text-sm  ">Date of Birth</h3>
+                    <div className="text-xl text-slate-800 ">
+                      {myInfo.dateOfBirth}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Section */}
+                <div className="flex flex-col">
+                  <div className="mt-4">
+                    <p className="text-black text-sm uppercase ">Email </p>
+                    <div className="text-xl text-slate-800 ">
+                      {myInfo.employeeEmail}
+                    </div>
+                  </div>
+
+                  <div className="mt-8">
+                    <p className="text-black text-sm uppercase">Phone</p>
+                    <div className="text-xl text-slate-800 ">
+                      {myInfo.employeePhoneNumber}
+                    </div>
+                  </div>
+
+                  <div className="mt-8">
+                    <p className="text-black text-sm uppercase ">Address</p>
+                    <p className="text-xl text-slate-800 ">{myInfo.address}</p>
+                  </div>
+                </div>
+
+                {/* QR Code and Button */}
+                <div className="flex flex-col">
+                  <div className="mt-4">
+                    <h3 className="text-black text-sm uppercase text-center">
+                      {" "}
+                      Designation
+                    </h3>
+                    <div className="font-bold capitalize text-center">
+                      {myInfo.designation}
+                    </div>
+                  </div>
+
+                  <div className="w-40 mx-auto mt-4">
+                    <QRCode value={myInfo._id} />
+                  </div>
+
+                  <button
+                    disabled
+                    onClick={downloadProfileCard}
+                    className=" text-white px-4 py-2 mt-4 rounded-md focus:outline-none"
+                  >
+                    Download Profile Card
+                  </button>
                 </div>
               </div>
+            )}
 
+            {activeTab === "Task" && (
+              <div>
+                <h2 className="text-lg font-bold mb-2">Task Details</h2>
+                <div className="container mx-auto">
+                  <table className="min-w-full bg-white border border-gray-300">
+                    <thead>
+                      <tr>
+                        <th className="py-2 px-4 border-b">S.No</th>
+                        <th className="py-2 px-4 border-b">Task ID</th>
+                        <th className="py-2 px-4 border-b">Task Name</th>
+                        <th className="py-2 px-4 border-b">Employee Name</th>
+                        <th className="py-2 px-4 border-b">Employee Name</th>
+                        <th className="py-2 px-4 border-b">Status</th>
+                        {/* Add more columns as needed */}
+                        <th className="py-2 px-4 border-b">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allTask
+                        .filter((task) => task.employeeName === profile.name)
+                        .map((task, index) => (
+                          <tr key={task._id}>
+                            <td className="py-2 px-4 border-b text-center">
+                              {index + 1}
+                            </td>
+                            <td className="py-2 px-4 border-b text-center">
+                              {task._id}
+                            </td>
+                            <td className="py-2 px-4 border-b text-center">
+                              {task.taskTitle}
+                            </td>
+                            <td className="py-2 px-4 border-b text-center">
+                              {task.managerName}
+                            </td>
+                            <td className="py-2 px-4 border-b text-center">
+                              {task.isTaskCompleted
+                                ? "Completed"
+                                : "In progress"}
+                            </td>
+                            {/* Add more cells based on your task object */}
+                            <td className="py-2 px-4 border-b flex items-center">
+                              {task.isTaskCompleted ? (
+                                <button
+                                  disabled
+                                  className="mx-auto bg-blue-500 hover:bg-blue-700 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                                  onClick={() => handleReportClick(task)}
+                                >
+                                  Report
+                                </button>
+                              ) : (
+                                <button
+                                  className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                  onClick={() => handleReportClick(task)}
+                                >
+                                  Report
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+>>>>>>> origin/main
+                </div>
+              </div>
+            )}
+
+<<<<<<< HEAD
               <div className="flex flex-col">
                 <div className="mt-4">
                   <h3 className="text-black text-2xl capitalize font-semibold">
@@ -350,11 +549,27 @@ const EmployeeDashboard = () => {
                 </div>
                 {/* Add a button to trigger the download */}
                 <button>Download QR Code</button>
+=======
+            {activeTab === "Attendance" && (
+              <div>
+                <h2 className="text-lg font-bold mb-2 text-center">
+                  This Feature Coming Soon
+                </h2>
+                <p className="text-center">Not Available</p>
+>>>>>>> origin/main
               </div>
+            )}
+
+            {/* {activeTab === "Report History" && (
+            <div>
+              <h2 className="text-lg font-bold mb-2">Content for Tab 2</h2>
+              <p>This is the content for Tab 4.</p>
             </div>
+          )} */}
           </div>
         )}
 
+        {/* task  */}
         {activeTab === "Task" && (
           <div>
             <h2 className="text-lg font-bold mb-2">Task Details</h2>
@@ -363,11 +578,13 @@ const EmployeeDashboard = () => {
                 <thead>
                   <tr>
                     <th className="py-2 px-4 border-b">S.No</th>
-                    <th className="py-2 px-4 border-b">Task ID</th>
                     <th className="py-2 px-4 border-b">Task Name</th>
-                    <th className="py-2 px-4 border-b">Employee Name</th>
-                    {/* Add more columns as needed */}
-                    <th className="py-2 px-4 border-b">Actions</th>
+                    <th className="py-2 px-4 border-b">Manager Name</th>
+                    <th className="py-2 px-4 border-b">Status</th>
+                    <th className="py-2 px-4 border-b">
+                      Request for Completion
+                    </th>
+                    <th className="py-2 px-4 border-b">Feedback</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -378,27 +595,43 @@ const EmployeeDashboard = () => {
                         <td className="py-2 px-4 border-b text-center">
                           {index + 1}
                         </td>
-                        <td className="py-2 px-4 border-b text-center">
-                          {task._id}
-                        </td>
+                        
                         <td className="py-2 px-4 border-b text-center">
                           {task.taskTitle}
                         </td>
                         <td className="py-2 px-4 border-b text-center">
                           {task.managerName}
                         </td>
-                        {/* Add more cells based on your task object */}
+                        <td className="py-2 px-4 border-b text-center">
+                          {task.isTaskCompleted ? "Completed" : "In Progress"}
+                        </td>
                         <td className="py-2 px-4 border-b flex items-center">
                           {task.isTaskCompleted ? (
-                            "Completed"
+                            "completed"
+                          ) : task.isRequested ? (
+                            <button
+                              disabled
+                              className="mx-auto bg-red-300 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                              onClick={() => handleReportClick(task)}
+                            >
+                              Requested
+                            </button>
                           ) : (
                             <button
                               className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                               onClick={() => handleReportClick(task)}
                             >
-                              Report
+                              Request
                             </button>
                           )}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                        <button
+                              className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                              onClick={() => handleOnFeedback(task._id)}
+                            >
+                              View
+                            </button>
                         </td>
                       </tr>
                     ))}
@@ -408,6 +641,7 @@ const EmployeeDashboard = () => {
           </div>
         )}
 
+        {/* Attendance  */}
         {activeTab === "Attendance" && (
           <div>
             <h2 className="text-lg font-bold mb-2 text-center">
@@ -416,6 +650,7 @@ const EmployeeDashboard = () => {
             <p className="text-center">Not Available</p>
           </div>
         )}
+<<<<<<< HEAD
 
         {/* Leave details  */}
 
@@ -540,6 +775,8 @@ const EmployeeDashboard = () => {
             <p>This is the content for Tab 4.</p>
           </div>
         )} */}
+=======
+>>>>>>> origin/main
       </div>
 
       {/* Modal */}
@@ -547,7 +784,7 @@ const EmployeeDashboard = () => {
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
           <div className="bg-white p-8 rounded shadow-md">
             <div className="flex justify-between">
-              <h2 className="text-lg font-bold mb-4">Report Task</h2>
+              <h2 className="text-lg font-bold mb-4">Request</h2>
               {/* Add more content for your report modal */}
               <button
                 className="   font-bold text-red-600 text-2xl rounded-xl"
@@ -564,6 +801,7 @@ const EmployeeDashboard = () => {
               onSubmit={handleSubmit}
               className="w-96 mx-auto bg-white p-8 rounded shadow-md mt-4"
             >
+              {/* report title  */}
               <div className="mb-4">
                 <label
                   htmlFor="reportTitle"
@@ -582,6 +820,26 @@ const EmployeeDashboard = () => {
                 />
               </div>
 
+              {/* git link  */}
+              <div className="mb-4">
+                <label
+                  htmlFor="reportTitle"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
+                  Git Link
+                </label>
+                <input
+                  type="text"
+                  id="gitLink"
+                  name="gitLink"
+                  value={formData.gitLink}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              {/* report description  */}
               <div className="mb-4">
                 <label
                   htmlFor="reportDescription"
@@ -600,7 +858,7 @@ const EmployeeDashboard = () => {
                 ></textarea>
               </div>
 
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label htmlFor="isTaskCompleted" className="flex items-center">
                   <input
                     type="checkbox"
@@ -612,7 +870,7 @@ const EmployeeDashboard = () => {
                   />
                   <span className="text-sm">Is Task Completed?</span>
                 </label>
-              </div>
+              </div> */}
 
               <div className="flex items-center justify-end">
                 <button

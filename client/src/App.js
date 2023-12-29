@@ -20,6 +20,10 @@ import AllTask from "./page/manager/task/AllTask";
 import EmployeeDashboard from "./page/employee/EmployeeDashboard";
 import ReportHistory from "./page/employee/ReportHistory";
 import ManagerProject from "./page/manager/project/ManagerProject";
+import ManagerReport from "./page/manager/report/ManagerReport";
+import AdminReport from "./page/admin/report/AdminReport";
+import ManagerProjectDetails from "./page/manager/project/ManagerProjectDetails";
+import TaskReportFeedback from "./page/employee/TaskReportFeedback";
 
 export const server = "http://localhost:4000/api/v1"
 
@@ -37,6 +41,8 @@ function App() {
           <Route path="employee" element={<Employee/>}/>
           <Route path="newProject" element={<NewProject/>}/>
           <Route path="allProject" element={<AllProject/>}/>
+          <Route path="adminreport" element={<AdminReport/>}/>
+
           {/* //common  */}
           <Route path="newEmployee" element={<NewEmployee/>}/>
 
@@ -48,6 +54,8 @@ function App() {
           <Route path="task" element={<NewTask/>}/>
           <Route path="alltask" element={<AllTask/>}/>
           <Route path="managerproject" element={<ManagerProject/>}/>
+          <Route path="managerreport" element={<ManagerReport/>}/>
+          <Route path="projectdetails" element={<ManagerProjectDetails/>}/>
 
 
 
@@ -55,6 +63,7 @@ function App() {
           {/* employee  */}
           <Route path="employeedashboard" element={<EmployeeDashboard/>}/>
           <Route path="reporthistory" element={<ReportHistory/>}/>
+          <Route path="taskreportfeedback" element={<TaskReportFeedback/>}/>
 
 
 

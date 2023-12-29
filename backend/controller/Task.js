@@ -273,13 +273,7 @@ export const specificProjectTask = async (req, res) => {
     }
 
     //check user
-    const { designationType } = req.user;
-    if (designationType != "Manager") {
-      return res.status(400).json({
-        success: false,
-        message: "Only manager can see!",
-      });
-    }
+    
 
     //all task filtered by id
     const specificProjectTask = await Task.find({ taskOf: id });

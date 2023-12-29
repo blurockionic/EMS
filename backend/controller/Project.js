@@ -51,6 +51,7 @@ export const newProject = async (req, res) => {
         priority,
         description,
         managerId: foundMnager._id,
+        adminId: req.user._id,
         websiteUrl,
         isCompleted,
         isScrap,
@@ -81,11 +82,10 @@ export const newProject = async (req, res) => {
 // get all project
 export const allProject = async (req, res) => {
   try {
-    const { designationType } = req.user;
+   
 
-    // if (designationType === "admin") {
       // get all project from the collection
-      const allProject = await Project.find({});
+      const allProject = await Project.find({})
 
       if (!allProject) {
         return res.status(400).json({
@@ -219,6 +219,46 @@ export const deleteProject = async (req, res) => {
     return res.status(500).json({
       success: false,
       return: "Please check the selected project",
+    });
+  }
+};
+
+
+//get all task of specific project // tested 
+export const specificProject = async (req, res) => {
+  // fetch project id from params
+  const { id } = req.params;
+  try {
+    // validation
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid request",
+      });
+    }
+
+    //check user
+    
+
+    //all task filtered by id
+    const specificProject = await Project.findById(id);
+
+    if (!specificProject) {
+      return res.status(400).json({
+        success: false,
+        message: "No task Available!",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      specificProject,
+      message: "All task fetched successfully!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error,
     });
   }
 };

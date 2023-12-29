@@ -40,6 +40,13 @@ const taskSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isRequested:{
+      type: Boolean,
+      default: false
+    },
+    gitLink:{
+      type: String 
+    },
     taskAssignDate:{
       type:String,
       required: true
@@ -48,6 +55,7 @@ const taskSchema = new mongoose.Schema(
       type: String,
       required: true
     }
+
   },
   {
     timestamps: true,

@@ -29,20 +29,20 @@ const SideNavbar = () => {
 
   // handle for logout
 
-  const handleOnLogout = async () => {
-    const response = await axios.get(`${server}/users/logout`, {
-      withCredentials: true,
-    });
+  // const handleOnLogout = async () => {
+  //   const response = await axios.get(`${server}/users/logout`, {
+  //     withCredentials: true,
+  //   });
 
-    const { success, message } = response.data;
+  //   const { success, message } = response.data;
 
-    if (success) {
-      alert(message);
-      navigate("../login");
-    }
-  };
+  //   if (success) {
+  //     alert(message);
+  //     navigate("../login");
+  //   }
+  // };
   return (
-    <aside className="bg-gray-800 text-white h-[630px]  flex flex-col">
+    <aside className="bg-slate-800 text-white h-[630px]  flex flex-col">
       <nav className="flex-1">
         <div className="flex h-full w-64 mt-3 ">
           <ul className="flex-row justify-center w-full ">
@@ -162,8 +162,7 @@ const SideNavbar = () => {
             )}
 
             {/* // it visible when user type is admin  */}
-            {profile.designationType === "admin"
-            ? (
+            {profile.designationType === "admin" ? (
               <li
                 className={`flex items-center text-start text-black mb-2 cursor-pointer
               
@@ -207,6 +206,27 @@ const SideNavbar = () => {
               </li>
             ) : null}
 
+            {profile.designationType === "admin" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link to={"./adminreport"} className="uppercase  font-bold">
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "adminreport"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Report
+                  </button>
+                </Link>
+              </li>
+            )}
+
             {/* manager  */}
             {profile.designationType === "manager" && (
               <li
@@ -229,13 +249,13 @@ const SideNavbar = () => {
               </li>
             )}
 
-            {profile.designationType === "manager" && (
+            {/* {profile.designationType === "manager" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               
                 `}
               >
-                {/* New Employees */}
+                {/* New Employees 
                 <Link to={"./task"} className="uppercase  font-bold">
                   <button
                     className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
@@ -248,15 +268,15 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-            )}
+            {/* )} */} 
 
-            {profile.designationType === "manager" && (
+            {/* {profile.designationType === "manager" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               
                 `}
               >
-                {/* New Employees */}
+                {/* New Employees 
                 <Link to={"./alltask"} className="uppercase  font-bold">
                   <button
                     className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
@@ -265,13 +285,31 @@ const SideNavbar = () => {
                         : "bg-white"
                     }`}
                   >
-                    All Task
+                     Task 
+                  </button>
+                </Link>
+              </li>
+            )} */}
+            {profile.designationType === "manager" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link to={"./managerreport"} className="uppercase  font-bold">
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "managerreport"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                     Project Report
                   </button>
                 </Link>
               </li>
             )}
-
-           
 
             {/* manager end  */}
 
@@ -321,14 +359,14 @@ const SideNavbar = () => {
           </ul>
         </div>
       </nav>
-      <div className="p-4">
+      {/* <div className="p-4">
         <button
           className="bg-white text-gray-800 px-4 py-2 rounded-md w-full"
           onClick={handleOnLogout}
         >
           Logout
         </button>
-      </div>
+      </div> */}
     </aside>
   );
 };

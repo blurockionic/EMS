@@ -255,7 +255,7 @@ const NewProject = () => {
               value={formData.websiteUrl}
               onChange={handleChange}
               className="border border-black rounded-lg p-2 w-full"
-              required
+              // required
             />
           </div>
 

@@ -15,6 +15,16 @@ const reportTaskSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    //isRequested for the report request for completion to the manager
+    isRequested:{
+      type: Boolean,
+      default: false
+    },
+    //git link for references
+    gitLink:{ 
+      type: String,
+      required: true
+    },
     projetName:{
       type:String,
     },

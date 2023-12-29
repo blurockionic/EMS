@@ -7,7 +7,11 @@ export const reportTask = async (req, res) => {
   const { id } = req.params;
 
   //fetch from req body
-  const { reportTitle, reportDescription, isTaskCompleted } = req.body;
+  const { reportTitle, reportDescription, isTaskCompleted, isRequested, gitLink } = req.body;
+
+  console.log(req.body)
+
+  
 
   try {
     //validation
@@ -37,20 +41,18 @@ export const reportTask = async (req, res) => {
         message: "Task not found!",
       });
     }
-    // //check taskTitle 
-    // if(!isTaskExist.taskTitle){
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "task title is required!"
-    //   })
-    // }
 
+    
     // if task is completed then  update the status
-    if(isTaskCompleted ===  true){
-      isTaskExist.isTaskCompleted = isTaskCompleted
+    if(isRequested ===  true){
+      isTaskExist.gitLink = gitLink
+      isTaskExist.isRequested = isRequested
       const updateTask = await isTaskExist.save()
       console.log(updateTask)
     }
+    
+   
+
 
     
 
@@ -59,6 +61,8 @@ export const reportTask = async (req, res) => {
       reportTitle,
       reportDescription,
       isTaskCompleted,
+      isRequested: isTaskExist.isRequested,
+      gitLink: isTaskExist.gitLink,
       projectName: isTaskExist.projectName, 
       employeeName: isTaskExist.employeeName,
       taskTitle: isTaskExist.taskTitle,
@@ -110,6 +114,43 @@ export const allReport = async (req, res) => {
     return res.status(200).json({
       success: true,
       allReport,
+      message: "All report fetched successfully!",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "Please check the above code!",
+    });
+  }
+};
+
+// get all task report on specific project  //tested  
+export const allTaskReport = async (req, res) => {
+  // fetch employeeId
+  const { id } = req.params;
+  
+  console.log(id)
+
+  try {
+    // validation
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Id is invalid or null",
+      }); 
+    }
+
+    const allTaskReport = await ReportTask.find({ projectId: id })
+    if (!allTaskReport) {
+      return res.status(400).json({
+        success: false,
+        message: "No report found!",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      allTaskReport,
       message: "All report fetched successfully!",
     });
   } catch (error) {
