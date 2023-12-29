@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import Header from "../../component/admin/admin-header/Header";
 import SideNavbar from "../../component/admin/admin-sidenavbar/SideNavbar";

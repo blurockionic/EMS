@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Titlebar from "../../../component/utilities-components/Titlebar";
-import SearchBar from "../../../component/utilities-components/SearchBar";
+// import SearchBar from "../../../component/utilities-components/SearchBar";
 import axios from "axios";
 import { server } from "../../../App";
 import EmployeeTable from "../../../component/utilities-components/EmployeeTable";

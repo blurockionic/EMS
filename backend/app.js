@@ -11,6 +11,7 @@ import projectRoutes from "./routes/ProjectRoutes.js"
 import taskRoutes from "./routes/TaskRoutes.js"
 import reportProjectRoutes from "./routes/ReportProjectRoutes.js"
 import reportTaskRoutes  from "./routes/ReportTaskRoutes.js"
+import  applyLeavesRoutes  from "./routes/LeaveDetailsRoutes.js";
 
 export const app = express()
 
@@ -48,6 +49,10 @@ app.use("/api/v1/reportProject", reportProjectRoutes)
 
 //route for report task
 app.use("/api/v1/taskreport", reportTaskRoutes)
+
+// route for leave apply 
+
+app.use("/api/v1/leave",applyLeavesRoutes )
 
 
 

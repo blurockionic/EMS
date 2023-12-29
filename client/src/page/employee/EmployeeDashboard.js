@@ -1,9 +1,9 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { server } from "../../App";
 import { FaWindowClose } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
+import QRCode from "react-qr-code";
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -20,6 +20,25 @@ const EmployeeDashboard = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+
+  // const [fromDate, setFromDate ] = useState();
+  // const [toDate, setToDate] = useState();
+  // const [leaveType, setLeaveType] = useState();
+  // const [reason, setReason] = useState();
+  const [LeaveFormData, setLeaveFormData] = useState({
+    LeaveType: " ",
+    FromDate: " ",
+    ToDate: " ",
+    Reason: " ",
+  });
+
+  let name, value;
+  // function for all data handle
+  const handleFormData = (e) => {
+    name = e.target.name;
+    value = e.target.value;
+    setLeaveFormData({ ...LeaveFormData, [name]: value });
+  };
 
   //all profile
   useEffect(() => {
@@ -42,6 +61,17 @@ const EmployeeDashboard = () => {
     setShowModal(false);
   };
 
+  const handelchangeData = async (e) => {
+    e.preventDefault();
+    console.log(LeaveFormData);
+
+    const response = await axios.post(
+      `${server}/leave/newapply`,
+      { LeaveFormData },
+      { headers: { "Content-Type": "application/json" }, withCredentials: true }
+    );
+    console.log(response)
+  };
   // handle for tab
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -83,6 +113,8 @@ const EmployeeDashboard = () => {
 
     getMyTask();
   }, []);
+
+  // all leaves
 
   // const [profile, setProfile] =  useState({})
 
@@ -214,35 +246,110 @@ const EmployeeDashboard = () => {
         >
           Report History
         </div> */}
+
+        {/* Leave tab  */}
+        <div
+          className={`cursor-pointer uppercase  py-2 px-4  ${
+            activeTab === "Leaves"
+              ? "border-b-4 border-blue-500 text-blue-500 font-bold"
+              : "bg-white"
+          }`}
+          onClick={() => handleTabClick("Leaves")}
+        >
+          Leave Details
+        </div>
       </div>
 
       <div className="mt-4">
         {activeTab === "Personal Information" && (
           <div>
-            <div className="bg-gray-200 p-4 rounded shadow-md w-full mx-auto my-4">
-              <div className="text-center mb-4">
-                <h2 className="text-lg font-bold capitalize">
-                  {myInfo.employeeName}
-                </h2>
-                <p className="text-gray-600 capitalize">{myInfo.designation}</p>
-                <p className="text-gray-600 capitalize">
-                  Date of Birth: {myInfo.dateOfBirth}
-                </p>
+            <div className="bg-slate-200  flex flex-row rounded shadow-md w-full pb-6 justify-between px-12">
+              <div className="mt-4 ">
+                <div className="w-[7rem] h-[7rem] rounded-full bg-slate-600 "></div>
+
+                <div className="mt-8">
+                  <div className="text-black text-2xl capitalize font-semibold">
+                    Location
+                  </div>
+                  <div className="text-xl font-semibold text-justify capitalize">
+                    {myInfo.address}
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <p className="text-sm font-semibold mb-1">
+              <div className="  flex flex-col">
+                <div className="mt-4">
+                  <h2 className="text-black text-2xl capitalize font-semibold">
+                    Name
+                  </h2>
+                  <div className="text-xl font-bold text-justify capitalize">
+                    {myInfo.employeeName}
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <h3 className="text-black text-2xl capitalize font-semibold">
+                    {" "}
+                    Gender
+                  </h3>
+                  <div className=" font-bold text-justify capitalize">
+                    {myInfo.gender}
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <h3 className="text-black text-2xl capitalize font-semibold">
+                    DOB
+                  </h3>
+                  <div className="font-bold text-justify">
+                    {myInfo.dateOfBirth}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col">
+                {/* <h3 className="text-2xl font-semibold mt-4">
                   Contact Information
-                </p>
-                <ul className="list-disc list-inside">
-                  <li>Email: {myInfo.employeeEmail}</li>
-                  <li>Phone: {myInfo.employeePhoneNumber}</li>
-                </ul>
+                </h3> */}
+                <div className="mt-4">
+                  <p className="text-black text-2xl capitalize font-semibold">
+                    Email{" "}
+                  </p>
+                  <div className="text-xl font-semibold ">
+                    {myInfo.employeeEmail}
+                  </div>
+                </div>
+                <div className="mt-8">
+                  <p className="font-semibold text-lg">Phone</p>
+                  <div className="text-xl font-semibold ">
+                    +91 {myInfo.employeePhoneNumber}
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <p className="text-black text-2xl capitalize font-semibold">
+                    Address
+                  </p>
+                  <p className="text-xl font-semibold">{myInfo.address}</p>
+                </div>
               </div>
 
-              <div className="mt-4">
-                <p className="text-sm font-semibold mb-1">Address</p>
-                <p className="text-gray-600">{myInfo.address}</p>
+              <div className="flex flex-col">
+                <div className="mt-4">
+                  <h3 className="text-black text-2xl capitalize font-semibold">
+                    {" "}
+                    Designation
+                  </h3>
+                  <div className=" font-bold text-justify capitalize">
+                    {myInfo.designation}
+                  </div>
+                </div>
+
+                <div className="">
+                  <QRCode className="w-40" value={myInfo._id} />
+                </div>
+                {/* Add a button to trigger the download */}
+                <button>Download QR Code</button>
               </div>
             </div>
           </div>
@@ -307,6 +414,123 @@ const EmployeeDashboard = () => {
               This Feature Coming Soon
             </h2>
             <p className="text-center">Not Available</p>
+          </div>
+        )}
+
+        {/* Leave details  */}
+
+        {activeTab === "Leaves" && (
+          <div>
+            <div className="flex flex-row justify-between mx-auto bg-white  ">
+              {/* right side div */}
+              <div className=" mx-auto">
+                {/* Sick leave */}
+                <div className="flex flex-col items-center bg-red-600 w-[10rem] mt-6 text-2xl rounded-lg  shadow-lg shadow-slate-500">
+                  <h3 className="flex  font-extrabold text-white ">
+                    Sick Leave
+                  </h3>
+                  <div className="mt-2 py-4 text-white">
+                    <span className="font-extrabold text-4xl text-white">
+                      15
+                    </span>
+                    /15
+                  </div>
+                </div>
+                {/* Casual Leave  */}
+
+                <div className="flex flex-col items-center bg-green-600 w-[10rem] mt-6 font-extrabold text-white text-2xl rounded-lg  shadow-lg shadow-slate-500">
+                  <h3 className="flex">Casual Leave</h3>
+                  <div className="mt-2 py-4 text-white">
+                    <span className="font-extrabold text-4xl text-white">
+                      15
+                    </span>
+                    /15
+                  </div>
+                </div>
+
+                {/* Paid Leave */}
+                <div className="flex flex-col items-center bg-blue-600 w-[10rem] mt-6 font-extrabold text-white text-2xl rounded-lg  shadow-lg shadow-slate-500">
+                  <h3 className="flex">Paid Leave</h3>
+                  <div className="mt-2 py-4 text-white">
+                    <span className="font-extrabold text-4xl text-white">
+                      20
+                    </span>
+                    /20{" "}
+                  </div>
+                </div>
+              </div>
+
+              {/* left side div  */}
+              <div className="items-cente w-[70%] rounded-lg bg-slate-10 mr-12 shadow-2xl shadow-slate-400">
+                <h2 className=" font-bold  text-lg w-full bg-slate-900 rounded-lg p-1 flex text-white justify-center">
+                  Apply for Leave
+                </h2>
+                <form>
+                  <div className="flex flex-row justify-between">
+                    <div className="flex-col ml-10">
+                      <div className="mt-5">
+                        <span className="font-extrabold text-xl">
+                          Leave Type{" "}
+                        </span>
+                        <select
+                          name="LeaveType"
+                          id=""
+                          className="text-lg w-[12rem]  "
+                          onChange={handleFormData}
+                        >
+                          <option selected disabled hidden>
+                            Choose Here
+                          </option>
+
+                          <option value="Sick">Sick Leave</option>
+                          <option value="Casual"> Casual Leave</option>
+                          <option value="Paid">paid leave</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex-col mr-10 ">
+                      {/*starting leave date */}
+                      <div className="font-bold w-[15rem] mt-4">From Date</div>
+                      <input
+                        type="date"
+                        name="FromDate"
+                        value={LeaveFormData.FromDate}
+                        required
+                        onChange={handleFormData}
+                      />
+
+                      {/*Ending leave date */}
+                      <div className="font-bold  mt-4">To Date</div>
+                      <input
+                        type="date"
+                        name="ToDate"
+                        value={LeaveFormData.ToDate}
+                        required
+                        onChange={handleFormData}
+                      />
+                    </div>
+                  </div>
+                  <div className="font-bold ml-8  text-xl ">Reason</div>
+                  <textarea
+                    name="Reason"
+                    id=""
+                    className="w-[90%] ml-8 bg-[#bae6fd] overscroll-none"
+                    value={LeaveFormData.Reason}
+                    onChange={handleFormData}
+                    placeholder="Enter Your leave reason ....."
+                  ></textarea>
+
+                  <div className="flex flex-row justify-center  ">
+                    <button
+                      className=" bg-sky-700 p-2 text-white font-bold text-2xl mt-2 mb-2 rounded-lg"
+                      onClick={handelchangeData}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
         )}
 
