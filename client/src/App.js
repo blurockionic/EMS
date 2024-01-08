@@ -25,7 +25,7 @@ import AdminReport from "./page/admin/report/AdminReport";
 import ManagerProjectDetails from "./page/manager/project/ManagerProjectDetails";
 import TaskReportFeedback from "./page/employee/TaskReportFeedback";
 
-export const server = "http://localhost:4000/api/v1"
+export const server = "http://192.168.1.7:4000/api/v1"
 
 function App() {
   return (

@@ -30,7 +30,6 @@ export const sendCookie = (
     //   secure: true,
     };
 
-    //   console.log("hello")
 
     res
       .cookie("token", token, options)
