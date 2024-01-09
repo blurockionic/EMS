@@ -10,18 +10,15 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your login logic here
-
+  
     try {
-      if (!email) {
-        alert("Please Enter Email");
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
       }
-      if (!password) {
-        alert("Please Enter Password");
-      }
-
-      //LOGIN
-      const { data } = await axios.post(
+  
+      // LOGIN
+      const response = await axios.post(
         `${server}/users/login`,
         {
           email,
@@ -31,21 +28,41 @@ const Login = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
+          withCredentials: true
         }
       );
-
+  
+      const { data } = response;
       const { success, message } = data;
-
+  
       if (success) {
         alert(message);
-        //navigate to dashboard
+        // Navigate to the dashboard
         navigate("../dashboard");
+      } else {
+        // Handle unsuccessful login
+        alert(message);
       }
     } catch (error) {
-      alert(error.response.data.message)
+      console.error("An error occurred during login:", error);
+  
+      // Handle specific error cases if needed
+      if (error.response) {
+        // The request was made, but the server responded with a status code outside the 2xx range
+        console.error("Server responded with:", error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("No response received from the server");
+      } else {
+        // Something happened in setting up the request that triggered an error
+        console.error("Error setting up the request:", error.message);
+      }
+  
+      // Handle general error or show a user-friendly message
+      alert("An error occurred during login. Please try again.");
     }
   };
+  
   return (
     <div className="grid grid-cols-12 h-screen">
       <div className="col-span-4 bg-slate-900 p-4 flex items-center">
