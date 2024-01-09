@@ -300,6 +300,7 @@ const EmployeeDashboard = () => {
         </div>
         <div
           className={`cursor-pointer uppercase  py-2 px-4  ${
+<<<<<<< Updated upstream
             activeTab === "LeaveDetails"
               ? "border-b-4 border-blue-500 text-blue-500 font-bold"
               : "bg-white"
@@ -307,6 +308,15 @@ const EmployeeDashboard = () => {
           onClick={() => handleTabClick("LeaveDetails")}
         >
           Leave Details
+=======
+            activeTab === "Training"
+              ? "border-b-4 border-blue-500 text-blue-500 font-bold"
+              : "bg-white"
+          }`}
+          onClick={() => handleTabClick("Training")}
+        >
+          Training
+>>>>>>> Stashed changes
         </div>
       </div>
 
