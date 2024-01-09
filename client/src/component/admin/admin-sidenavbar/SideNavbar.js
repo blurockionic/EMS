@@ -92,7 +92,7 @@ const SideNavbar = () => {
                 </Link>
               </li>
             )}
-
+         
             {/* manager dashboard */}
             {profile.designationType === "human resources" && (
               <li
@@ -356,6 +356,33 @@ const SideNavbar = () => {
                 </Link>
               </li>
             )}
+
+
+               {/* EmployeeLeave Details */}
+               {profile.designationType === "manager" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link
+                  to={"./empleave"}
+                  className="uppercase  font-bold"
+                >
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "empleave"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Leave
+                  </button>
+                </Link>
+              </li>
+            )}
+
           </ul>
         </div>
       </nav>

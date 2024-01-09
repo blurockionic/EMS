@@ -342,33 +342,32 @@ const ManagerProject = () => {
                       )}
                     </td>
                     <td className="border px-4 py-2">
-                    {project.isCompleted ? (
-                         <button
-                         disabled
-                         className="mx-auto bg-red-300 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
-                         onClick={() => handleAssignTask(project)}
-                       >
-                         Assign Task
-                       </button>
+                      {project.isCompleted ? (
+                        <button
+                          disabled
+                          className="mx-auto bg-red-300 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                          onClick={() => handleAssignTask(project)}
+                        >
+                          Assign Task
+                        </button>
                       ) : (
                         <button
-                        className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => handleAssignTask(project)}
-                      >
-                        Assign Task
-                      </button>
+                          className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                          onClick={() => handleAssignTask(project)}
+                        >
+                          Assign Task
+                        </button>
                       )}
-                     
                     </td>
                     <td className="border px-4 py-2">
                       {project.isCompleted ? (
-                         <button
-                         disabled
-                         className="mx-auto bg-red-300  cursor-not-allowed text-white font-bold py-2 px-4 rounded"
-                         onClick={() => handleReportClick(project)}
-                       >
-                         Report
-                       </button>
+                        <button
+                          disabled
+                          className="mx-auto bg-red-300  cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                          onClick={() => handleReportClick(project)}
+                        >
+                          Report
+                        </button>
                       ) : (
                         <button
                           className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
