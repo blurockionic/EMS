@@ -8,6 +8,13 @@ import { FaUserLarge } from "react-icons/fa6";
 import EmpLeaveHistory from "./EmpLeaveHistory";
 // import LeaveHistroy from "./LeaveHistroy";
 
+function trainingcard() {
+  
+}
+
+const traincardstyle = () =>{
+
+}
 const EmployeeDashboard = () => {
   const [leaveViewModal, setLeaveViewModal] = useState(false);
 
@@ -491,11 +498,40 @@ const EmployeeDashboard = () => {
           </div>
         )}
 
+        
+
             {activeTab === "Training" && (
-              <div className="h-screen bg-gray-200 w-full flex justify-center items-center">
-                <button className="w-[10rem] h-[4rem] rounded-lg bg-[#6c7ebd] hover:bg-[#4A63BC]">
+              <div className="h-[80vh] bg-gray-200 w-full flex justify-center items-center">
+                <button id="trainbtn" className="w-[10rem] h-[4rem] rounded-lg bg-[#6c7ebd] hover:bg-[#4A63BC] hover:scale-110 transform transition duration-500" onClick={trainingcard()}>
                   + ADD
                 </button>
+                
+                <div className="w-[569px] h-[538px]">
+        <div className="relative w-[569px] h-[538px] bg-[#d9d9d9] rounded-[10px] shadow-[0px_4px_4px_#00000040,0px_4px_4px_#00000040,0px_4px_4px_6px_#00000040]">
+          <input className="w-[455px] top-[70px] left-[57px] bg-white absolute h-[40px]" />
+          <input className="w-[188px] top-[205px] left-[317px] bg-white absolute h-[40px]" />
+          <input className="w-[189px] top-[205px] left-[57px] bg-white absolute h-[40px]" />
+          <input className="w-[455px] top-[351px] left-[57px] absolute h-[40px]"  />
+          <button className="absolute w-[185px] h-[46px] top-[455px] left-[184px] bg-white rounded-[24px] hover:bg-slate-300 hover:scale-110 transform transition duration-500">
+            <p className="absolute w-[122px] h-[44px] top-[10px] left-[33px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] text-center tracking-[0] leading-[normal]">
+              ADD
+            </p>
+          </button>
+          <div className="w-[245px] h-[34px] top-[36px] absolute left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
+            Training Name:
+          </div>
+          <div className="absolute w-[245px] h-[34px] top-[317px] left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
+            Certificate ID:
+          </div>
+          <div className="w-[235px] h-[27px] top-[178px] whitespace-nowrap absolute left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
+            Training Started:
+          </div>
+          <div className="absolute w-[235px] h-[27px] top-[178px] left-[316px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal] whitespace-nowrap">
+            Training Started:
+          </div>
+        </div>
+    </div>
+
               </div>
             )}
 
