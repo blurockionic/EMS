@@ -14,6 +14,7 @@ import reportTaskRoutes  from "./routes/ReportTaskRoutes.js"
 import  applyLeavesRoutes  from "./routes/LeaveDetailsRoutes.js";
 
 import taskReportFeedbackRoutes from "./routes/TaskReportFeedback.js"
+import teamRoute from "./routes/TeamRoutes.js"
 
 export const app = express();
 
@@ -32,7 +33,7 @@ app.use(cookieParser());
 
 // Allow requests only from http://192.168.1.8:3000
 const corsOptions = {
-  origin: "http://192.168.1.7:3000",
+  origin: "http://localhost:3000",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
 };
@@ -67,7 +68,8 @@ app.use("/api/v1/leave",applyLeavesRoutes )
 
 //route for task report feedback
 app.use("/api/v1/taskReportFeedback", taskReportFeedbackRoutes)
-
+//  route for create new Team 
+app.use("/api/v1/team", teamRoute)
 
 //default route
 app.get("/", (req, res) => {

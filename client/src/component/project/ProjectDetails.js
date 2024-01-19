@@ -19,6 +19,7 @@ const ProjectDetails = ({ projectId }) => {
   const [taskTitle, setTaskTitle] = useState("");
   const [taskReportDesc, setTaskReportDesc] = useState("");
   const [reportTitle, setReportTitle] = useState("");
+  
 
   useEffect(() => {
     //fetch specific project details
@@ -127,6 +128,11 @@ const ProjectDetails = ({ projectId }) => {
       taskReportDesc,
       reportTitle,
     };
+    
+
+
+
+
 
     try {
       const responce = await axios.post(
@@ -371,6 +377,14 @@ const ProjectDetails = ({ projectId }) => {
           </div>
         </div>
       )}
+
+
+
+
+
+
+
+     
     </>
   );
 };

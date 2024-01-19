@@ -14,6 +14,7 @@ const ManagerProject = () => {
     managerId: "",
     adminId: "",
   };
+
   const [formData, setFormData] = useState(initialFormData);
 
   const [formTaskData, setFormTaskData] = useState({
@@ -26,6 +27,7 @@ const ManagerProject = () => {
     isTaskCompleted: false,
   });
 
+ 
   const [employeeData, setEmployeeData] = useState([]);
   // const [allProject, setAllProject] = useState([]);
 
@@ -38,7 +40,7 @@ const ManagerProject = () => {
 
   const [selectedProject, setSelectedProject] = useState({});
 
-  //fetch all the details of employee
+  //fetch all the details of project
   useEffect(() => {
     const data = async () => {
       try {
@@ -74,7 +76,7 @@ const ManagerProject = () => {
     }
   };
 
-  //all profile
+  //profile data
   useEffect(() => {
     const myProfile = async () => {
       try {
@@ -186,7 +188,7 @@ const ManagerProject = () => {
     // navigate("../task");
   };
 
-  //employee
+  // all employees data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -194,6 +196,8 @@ const ManagerProject = () => {
           withCredentials: true,
         });
         setEmployeeData(allEmployee.data.data);
+
+        // console.log( "emp list h ",employeeData)
       } catch (error) {
         console.error("Error fetching employee data:", error.message);
       }
@@ -282,6 +286,19 @@ const ManagerProject = () => {
 
   console.log(allProject);
 
+
+
+  const empData = employeeData.filter(
+    (singleUser) => singleUser.designationType === "employee"
+  );
+  // console.log(empData);
+  const tempData = [...empData]
+  console.log('temp data',tempData)
+
+
+
+
+
   return (
     <>
       <div className="flex justify-between">
@@ -291,7 +308,7 @@ const ManagerProject = () => {
         <div>
           {/* handle search  */}
           <div className="w-96 flex items-center border border-green-300 rounded-md p-1 mx-1">
-            <span className="text-xl mx-1">&#128269;</span>
+            <span className="text-xl mx-1"></span>
             <input
               type="text"
               onChange={(e) => handleSearch(e)}
@@ -315,6 +332,8 @@ const ManagerProject = () => {
                 <th className="border px-4 py-2">Assign Task</th>
                 <th className="border px-4 py-2">Action</th>
                 <th className="border px-4 py-2">Details</th>
+                {/* <th className="border px-4 py-2">Team</th> */}
+
                 {/* Add more columns as needed */}
               </tr>
             </thead>
@@ -385,6 +404,8 @@ const ManagerProject = () => {
                         View
                       </button>
                     </td>
+
+                  
 
                     {/* Add more cells as needed */}
                   </tr>
@@ -623,6 +644,8 @@ const ManagerProject = () => {
           </div>
         </div>
       )}
+
+
     </>
   );
 };

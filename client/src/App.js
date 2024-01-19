@@ -25,8 +25,10 @@ import AdminReport from "./page/admin/report/AdminReport";
 import ManagerProjectDetails from "./page/manager/project/ManagerProjectDetails";
 import TaskReportFeedback from "./page/employee/TaskReportFeedback";
 import EmpLeave from "./page/manager/empleaves/EmpLeave";
+import Team from "./page/admin/team/Team";
 
-export const server = "http://192.168.1.7:4000/api/v1"
+
+export const server = "http://localhost:4000/api/v1"
 
 function App() {
   return (
@@ -43,6 +45,7 @@ function App() {
           <Route path="newProject" element={<NewProject/>}/>
           <Route path="allProject" element={<AllProject/>}/>
           <Route path="adminreport" element={<AdminReport/>}/>
+          <Route path="newTeam" element={<Team/>}/>
 
           {/* //common  */}
           <Route path="newEmployee" element={<NewEmployee/>}/>
