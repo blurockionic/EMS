@@ -70,6 +70,8 @@ const AllProject = () => {
               <tr>
                 <th className="border px-4 py-2">S.No</th>
                 <th className="border px-4 py-2">Project Name</th>
+                <th className="border px-4 py-2">Team ID (change required)</th>
+
                 <th className="border px-4 py-2">Description</th>
                 <th className="border px-4 py-2">Start Date</th>
                 <th className="border px-4 py-2">Submission Date</th>
@@ -82,9 +84,11 @@ const AllProject = () => {
                 <tr key={project._id} className="text-center">
                   <td className="border px-4 py-2">{index + 1}</td>
                   <td className="border px-4 py-2">{project.projectName}</td>
+                  <td className="border px-4 py-2">{project.teamId}</td>
                   <td className="border px-4 py-2">{project.description}</td>
                   <td className="border px-4 py-2">{project.projectStartDate}</td>
                   <td className="border px-4 py-2">{project.projectEndDate}</td>
+
                   <td className="border px-4 py-2">{project.isCompleted ? (<span className='text-green-800'>Completed</span>) : (<span className='text-red-800'>Not Completed</span>)}</td>
                   
                   {/* Add more cells as needed */}

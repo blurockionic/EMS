@@ -16,7 +16,6 @@ const teamSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "employee_details",
-
     },
   ],
   selectedManager: {

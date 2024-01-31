@@ -13,12 +13,12 @@ const Team = () => {
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedManager, setSelectedManager] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [loadingTwo, setLoadingTwo] = useState(false);
   const [allMembers, setAllMember] = useState([]);
   const [allManager, setAllManager] = useState([]);
 
-  const [teamDescription, setTeamDescription] = useState("");
-  const [teamName, setTeamName] = useState();
+  const [teamDescription, setTeamDescription] = useState();
+  let [teamName, setTeamName] = useState();
   const [adminProfile, setAdminProfile] = useState("");
 
   const [allTeam, setAllTeam] = useState([]);
@@ -26,8 +26,9 @@ const Team = () => {
   const [filteredTeam, setFilteredTeam] = useState([]);
   const [flterDeleteTeam, setFilterDeleteTeam] = useState([]);
 
-  
-  const [selectedUpdatedMembers, setSelectedUpdatedMembers] = useState();
+
+
+  // const [selectedUpdatedMembers, setSelectedUpdatedMembers] = useState();
 
   // Update team Model open and close useState
   const [showUpdateTeamModel, setShowUpdateTeamModel] = useState(false);
@@ -36,21 +37,18 @@ const Team = () => {
   const [showSureDeleteModel, setShowSureDeleteModel] = useState(false);
 
 
-  
+
   // update btn click handler
   const handleUpdatebtn = (id) => {
     setShowUpdateTeamModel(true);
     setFilteredTeam(allTeam.filter((team) => team._id === id));
-    console.log(" filter Team ",filteredTeam)
-    
   };
 
   const handleDeletebtn = (id) => {
     setShowSureDeleteModel(true);
 
     setFilterDeleteTeam(allTeam.filter((team) => team._id === id));
-    // console.log(id);
-    // console.log("id of delete team ",flterDeleteTeam);
+    
   };
 
   // deleting the team by admin
@@ -97,15 +95,28 @@ const Team = () => {
     myProfile();
   }, []);
 
-
   // all new create team post req
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    console.log();
+    if(selectedManager === undefined){
+      selectedManager = null 
+    }
+
+    if(selectedManager === undefined){
+      selectedProject = null 
+    }
+
+    console.log( teamName,
+      teamDescription,
+      adminProfile,
+      selectedManager,
+      selectedProject,
+      selectedMembers,);
 
     try {
       // Send the form data to the backend API
+      
       const response = await axios.post(
         `${server}/team/CreateNewTeam`,
         {
@@ -124,6 +135,7 @@ const Team = () => {
 
       // Handle the response as needed
       console.log("Server response:", response.data);
+      setLoadingTwo(true)
 
       // Clear the form after successful submission
     } catch (error) {
@@ -131,39 +143,54 @@ const Team = () => {
       // Handle error if necessary
     }
   };
+ 
 
-   // all Update team put req
-   const handleUpdateSubmit = async (e,id) => {
+  // all Update team put req
+  const handleUpdateSubmit = async (e, id) => {
     e.preventDefault();
+    
+    if(teamName === undefined || teamName === null){
+      teamName = filteredTeam[0].teamName 
+    }
+    
+   
 
-    console.log();
+    try {
+      // Send the form data to the backend API
 
-    // try {
-    //   // Send the form data to the backend API
-    //   const response = await axios.post(
-    //     `${server}/team/updateTeam${id}`,
-    //     {
-    //       teamName,
-    //       teamDescription,
-    //       adminProfile,
-    //       selectedManager,
-    //       selectedProject,
-    //       selectedMembers,
-    //     },
-    //     {
-    //       headers: { "Content-Type": "application/json" },
-    //       withCredentials: true,
-    //     }
-    //   );
+    
+      const response = await axios.put(
+        `${server}/team/updateTeam/${id}`,
+        {
+          teamName,
+          teamDescription,
+          adminProfile,
+          selectedManager,
+          selectedProject,
+          selectedMembers,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
 
-    //   // Handle the response as needed
-    //   console.log("Server response:", response.data);
+      // Handle the response as needed
+      console.log("Server response:", response.data);
 
-    //   // Clear the form after successful submission
-    // } catch (error) {
-    //   console.error("Error sending form data:", error);
-    //   // Handle error if necessary
-    // }
+      const {success, message} = response.data
+
+      if(success){
+        alert(message)
+        setLoading(true)
+      }
+
+      // Clear the form after successful submission
+    } catch (error) {
+      console.error("Error sending form data:", error);
+      // Handle error if necessary
+    }
+    setShowUpdateTeamModel(false)
   };
 
   const customStyles = {
@@ -249,8 +276,7 @@ const Team = () => {
 
         // console.log("all teams data is here",allTeamsData.data.allTeamsData);
         setAllTeam(allTeamsData.data.allTeamsData);
-        setTeamName(filteredTeam[0].teamName)
-        
+        setTeamName(filteredTeam[0].teamName);
       } catch (error) {
         console.error("Error fetching data:", error.message);
       }
@@ -258,7 +284,7 @@ const Team = () => {
 
     TData();
   }, [loading]);
- 
+  // console.log("all team data",allTeam);
 
   // handling the Tab
   const handleTabClick = (tab) => {
@@ -268,14 +294,13 @@ const Team = () => {
   // selected members handle
   const handleUpdatedMembersChange = (selectedUpdatedMember) => {
     console.log(selectedUpdatedMember);
-    console.log(allMembers);
-
    
-      setSelectedUpdatedMembers(selectedUpdatedMember);
-    
+    // console.log(allMembers);
+
+    setSelectedMembers(selectedUpdatedMember);
   };
 
- 
+
 
   // console.log("all team data with selected members ", allTeam);
   // console.log("filter datav", filteredTeam[0].selectedMembers)
@@ -342,14 +367,14 @@ const Team = () => {
                           {index + 1}
                         </td>
                         <td className="py-2 border-b border-r-2 text-center">
-                          {emp.teamName}
+                          {emp?.teamName}
                         </td>
                         <td className="py-2  border-b border-r-2 text-center">
-                          {emp.selectedManager.employeeName}
+                          {emp.selectedManager?.employeeName === "" ? "empty" : emp.selectedManager?.employeeName}
                         </td>
 
                         <td className="py-2 border-b border-r-2 text-center">
-                          {emp.selectedProject.projectName}
+                          {emp.selectedProject?.projectName}
                         </td>
 
                         <td className="py-2 border-b mx-auto flex justify-center">
@@ -520,76 +545,97 @@ const Team = () => {
               </div>
               <div>
                 <div>
-                  <div className="">
-                    {" "}
-                    <span> Curret Team Name </span> {""}{" "}
-                    {filteredTeam[0].teamName}
-                  </div>
-                  <div>
-                    <span>Team Name </span>
+                {/* team Name  */}
+                  <div className="m-8">
+                    <span className="font-bold text-xl ">Team Name :  </span>
                     <input
-                      className="bg-sky-100  bottom-2 "
+                      className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
                       type="text"
                       placeholder="Enter New Name"
-                      value={teamName}
+                      defaultValue={filteredTeam[0].teamName}
+                      value={teamName === " " ?filteredTeam[0].teamName: teamName }
                       onChange={(e) => setTeamName(e.target.value)}
                     />
                   </div>
                 </div>
-
                 <div>
-                  <div className="">
-                    {" "}
-                    <span> Curret Team </span>
-                    {filteredTeam[0].selectedManager.employeeName}
+                {/* team Description */}
+                  <div className="mr-8 ml-8">
+                    <span className="font-bold text-xl ">Team Description :  </span>
+                    <input
+                      className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
+                      type="text"
+                      placeholder="Enter New Description"
+                      defaultValue={filteredTeam[0].teamDescription}
+                      value={teamDescription === "" ? filteredTeam[0].teamDescription : teamDescription}
+                      onChange={(e) => setTeamDescription(e.target.value)}
+                    />
                   </div>
-
-                  <select
-                    value={selectedManager}
-                    onChange={(e) => setSelectedManager(e.target.value)}
-                    className="p-4  font-semibold border-2 border-blue-500 rounded-md "
-                  >
-                    <option className="font-semibold w-[15rem]   " value="">
-                      Change Manager
-                    </option>
-                    {allManager.map((manager) => (
-                      <option key={manager._id} value={manager._id}>
-                        {manager.employeeName}
-                      </option>
-                    ))}
-                  </select>
-
-                  <div className="">
-                    <span> Curret Project </span>
-                    {filteredTeam[0].selectedProject.projectName}
-                  </div>
-                  <select
-                    value={selectedProject}
-                    onChange={(e) => setSelectedProject(e.target.value)}
-                    className="p-4  font-semibold border-2 border-blue-500 rounded-md"
-                  >
-                    <option className="font-semibold w-[15rem]  " value="">
-                      Change Project
-                    </option>
-                    {projects.map((project) => (
-                      <option key={project.id} value={project._id}>
-                        {project.projectName}
-                      </option>
-                    ))}
-                  </select>
                 </div>
 
-                <div className="flex flex-col">
+                <div className="flex flex-row ml-9 mr-9 justify-between">
+                  {/* current team Manager */}
+                  <div className="flex flex-col">
+                    <div className="font-bold text-xl">
+                      {" "}
+                      <span> Curret Team Manager :  </span>
+                     
+                        {filteredTeam[0].selectedManager?.employeeName === "" ? "Empty" :filteredTeam[0].selectedManager?.employeeName }
+                    
+                    </div>
+
+                    <select
+                      value={selectedManager}
+                      onChange={(e) => setSelectedManager(e.target.value)}
+                      className="p-4  font-semibold border-2 border-blue-500 rounded-md "
+                    >
+                      <option className="font-semibold w-[15rem]   " value="">
+                        Change Manager
+                      </option>
+                      {allManager.map((manager) => (
+                        <option key={manager._id} value={manager._id}>
+                          {manager.employeeName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+
+                  {/* Current project */}
+                  <div className="flex flex-col ">
+                    {" "}
+                    <div className="font-bold text-xl">
+                      <span> Curret Project : </span>
+                      {filteredTeam[0].selectedProject?.projectName === "" ? "No Selected Project" : filteredTeam[0].selectedProject?.projectName }
+                    </div>
+                    <select
+                      value={selectedProject}
+                      onChange={(e) => setSelectedProject(e.target.value)}
+                      className="p-4  font-semibold border-2 border-blue-500 rounded-md"
+                    >
+                      <option className="font-semibold w-[15rem]  " value="">
+                        Change Project
+                      </option>
+                      {projects.map((project) => (
+                        <option key={project.id} value={project._id}>
+                          {project.projectName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                 {/* Team Members */}
+                <div className="flex flex-col m-9">
                   <div>
                     <div>
-                      <div className=" w-[15rem]  bg-slate-900 mt-2 p-2 text-white rounded-md">
+                      <div className=" w-[15rem]  bg-slate-900  p-2 text-white rounded-md">
                         Add Team Member <span>(optional)</span>
                       </div>
 
                       <div className="mt-4  flex flex-row justify-between">
                         <div className="w-full mx-auto">
                           <Select
-                            value={selectedUpdatedMembers}
+                            value={selectedMembers}
                             defaultValue={filteredTeam[0].selectedMembers}
                             onChange={handleUpdatedMembersChange}
                             isMulti
@@ -600,22 +646,21 @@ const Team = () => {
                           />
                         </div>
                       </div>
-
-
                     </div>
-
                   </div>
                 </div>
 
                 <div>
-                <div className="bg-blue-500 font-semibold text-xl py-2 mt-[12rem] rounded-lg justify-center mx-auto w-[12rem] flex flex-row">
-                    <button onClick={(e) => handleUpdateSubmit(e,filteredTeam[0]._id)}>
+                  <div className="bg-blue-500 font-semibold text-xl py-2 mt-[12rem] rounded-lg justify-center mx-auto w-[12rem] flex flex-row">
+                    <button
+                      onClick={(e) =>
+                        handleUpdateSubmit(e, filteredTeam[0]._id)
+                      }
+                    >
                       Update Team
                     </button>
                   </div>
-
                 </div>
-
               </div>
             </div>
           </div>

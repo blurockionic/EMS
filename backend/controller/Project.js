@@ -1,16 +1,19 @@
 import { Project } from "../model/project.js";
 import { Employee } from "../model/employee.js";
+import { Teams } from "../model/team_model.js";
 
 // create new project
 export const newProject = async (req, res) => {
   //fetch all the data from request body
+
+  console.log(req.body)
   const {
     projectName,
     projectStartDate,
     projectEndDate,
     priority,
     description,
-    managerId,
+    teamId,
     websiteUrl,
     isCompleted,
     isScrap,
@@ -22,7 +25,7 @@ export const newProject = async (req, res) => {
       !projectStartDate ||
       !priority ||
       !description ||
-      !managerId
+      !teamId
     ) {
       return res.status(400).jsom({
         success: false,
@@ -31,14 +34,16 @@ export const newProject = async (req, res) => {
     }
 
     // check manager id
-    const foundMnager = await Employee.findById(managerId);
+    const foundTeam = await Teams.findById(teamId);
 
-    if (!foundMnager) {
+    if (!foundTeam) {
       return res.status(400).json({
         success: false,
-        message: "Manager not found!",
+        message: "Team not found!",
       });
     }
+
+    foundTeam.selectedProject = projectName
 
     // check designation
     const { designationType } = req.user;
@@ -50,7 +55,7 @@ export const newProject = async (req, res) => {
         projectEndDate,
         priority,
         description,
-        managerId: foundMnager._id,
+        teamId,
         adminId: req.user._id,
         websiteUrl,
         isCompleted,

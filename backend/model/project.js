@@ -27,9 +27,9 @@ const projectSchema = new mongoose.Schema(
       ref:"users",
       required: true
     },
-    managerId: {
+    teamId: {
       type:mongoose.Schema.Types.ObjectId,
-        ref:"employee_details",
+        ref:"Teams_Detail",
         required:true
     },
     websiteUrl: {

@@ -5,6 +5,7 @@ import { Teams } from "../model/team_model.js";
 // controller for creating New Team 
 export const teamDetail = async (req, res) => {
   try {
+    // console.log(req.body);
     const { teamName, teamDescription,selectedMembers, adminProfile, selectedManager, selectedProject } = req.body;
 
     // console.log("Data aa raha h ",req.body);
@@ -16,18 +17,26 @@ export const teamDetail = async (req, res) => {
         message: "Team Name is  mandatory for Creating team ",
       });
     }
-    const out = await Teams.create({
+
+   
+
+
+
+
+
+
+    const createdTeam = await Teams.create({
       teamName,
       teamDescription,
       adminProfile,
       selectedMembers,
-      selectedManager,
-      selectedProject
+      selectedManager : selectedManager === "" ? null: selectedManager,
+      selectedProject : selectedProject === "" ? null: selectedProject
     });
 
     return res.status(200).json({
       success: true,
-      out,
+      createdTeam,
       message: "team created successfully",
     });
 
@@ -75,25 +84,33 @@ export const allTeams = async (req, res) => {
 // update the all team in Db 
 export const updateTeam = async (req,res) => {
   const {id} = req.params
+  console.log("all data of",req.body);
   const {teamName, teamDescription, selectedManager, selectedProject, selectedMembers} =  req.body
-
+  
   try {
-    if(!id ) {
+    if(!id) {
       return res.status(404).json({
         success:false,
         message:"Invalid Team id "
       })
     }
-
+    if(!teamName) {
+      return res.status(404).json({
+        success:false,
+        message:"Invalid TeamName "
+      })
+    }
+    
     const updateTeam  = await Teams.findById(id) 
     if (!updateTeam){
       return res.status(404).json({success:false,message:"team not exist in DataBase"})
     }
+    
     updateTeam.teamName = teamName
     updateTeam.teamDescription = teamDescription
-    updateTeam.selectedManager = selectedManager
+    updateTeam.selectedManager = selectedManager === "" ? null :selectedManager
     updateTeam.selectedMembers = selectedMembers
-    updateTeam.selectedProject = selectedProject
+    updateTeam.selectedProject = selectedProject === "" ? null : selectedProject
     await updateTeam.save()   
 
 
