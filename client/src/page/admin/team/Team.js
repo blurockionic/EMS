@@ -12,18 +12,21 @@ const Team = () => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedManager, setSelectedManager] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [allMembers, setAllMember] = useState([]);
   const [allManager, setAllManager] = useState([]);
 
   const [teamDescription, setTeamDescription] = useState("");
-  const [teamName, setTeamName] = useState("");
+  const [teamName, setTeamName] = useState();
   const [adminProfile, setAdminProfile] = useState("");
 
   const [allTeam, setAllTeam] = useState([]);
-  const [filteredTeam, setFilteredTeam] = useState([]);
 
-  const [changedName, setChangedName] = useState(filteredTeam.teamName);
+  const [filteredTeam, setFilteredTeam] = useState([]);
+  const [flterDeleteTeam, setFilterDeleteTeam] = useState([]);
+
+  
   const [selectedUpdatedMembers, setSelectedUpdatedMembers] = useState();
 
   // Update team Model open and close useState
@@ -32,30 +35,50 @@ const Team = () => {
   // sure delete team f
   const [showSureDeleteModel, setShowSureDeleteModel] = useState(false);
 
+
+  
   // update btn click handler
-  const handleUdatebtn = (id) => {
+  const handleUpdatebtn = (id) => {
     setShowUpdateTeamModel(true);
     setFilteredTeam(allTeam.filter((team) => team._id === id));
-    // console.log(" filter Team ",filteredTeam)
+    console.log(" filter Team ",filteredTeam)
+    
   };
 
-  // Delete Team btm Handler
-  const handleSureDeleteTeamHandler = (id) => {
-    try {
-      toast.success("deleted successfully");
-    } catch (error) {}
-    setShowSureDeleteModel(false);
-  };
-
-  const handleDeletebtn = () => {
+  const handleDeletebtn = (id) => {
     setShowSureDeleteModel(true);
+
+    setFilterDeleteTeam(allTeam.filter((team) => team._id === id));
+    // console.log(id);
+    // console.log("id of delete team ",flterDeleteTeam);
   };
+
+  // deleting the team by admin
+  const handleDeleteTeam = async (id) => {
+    // toast(id)
+
+    try {
+      const response = await axios.delete(`${server}/team/deleteTeam/${id}`, {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      });
+      if (response.data.success === true) {
+        toast.success("delete successful");
+        setLoading(true);
+      }
+      setShowSureDeleteModel(false);
+    } catch (error) {
+      console.error("Error deleting team:", error);
+    }
+  };
+
   // handle closing updateModel
   const handleCloseModal = () => {
     setShowUpdateTeamModel(false);
     setShowSureDeleteModel(false);
   };
 
+  // handle memeber change
   const handleMembersChange = (selectedOptions) => {
     setSelectedMembers(selectedOptions);
   };
@@ -73,6 +96,8 @@ const Team = () => {
     //invoke
     myProfile();
   }, []);
+
+
   // all new create team post req
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -105,6 +130,40 @@ const Team = () => {
       console.error("Error sending form data:", error);
       // Handle error if necessary
     }
+  };
+
+   // all Update team put req
+   const handleUpdateSubmit = async (e,id) => {
+    e.preventDefault();
+
+    console.log();
+
+    // try {
+    //   // Send the form data to the backend API
+    //   const response = await axios.post(
+    //     `${server}/team/updateTeam${id}`,
+    //     {
+    //       teamName,
+    //       teamDescription,
+    //       adminProfile,
+    //       selectedManager,
+    //       selectedProject,
+    //       selectedMembers,
+    //     },
+    //     {
+    //       headers: { "Content-Type": "application/json" },
+    //       withCredentials: true,
+    //     }
+    //   );
+
+    //   // Handle the response as needed
+    //   console.log("Server response:", response.data);
+
+    //   // Clear the form after successful submission
+    // } catch (error) {
+    //   console.error("Error sending form data:", error);
+    //   // Handle error if necessary
+    // }
   };
 
   const customStyles = {
@@ -180,6 +239,7 @@ const Team = () => {
     data();
   }, []);
 
+  // geting all Teams Data useEffect
   useEffect(() => {
     const TData = async () => {
       try {
@@ -189,20 +249,33 @@ const Team = () => {
 
         // console.log("all teams data is here",allTeamsData.data.allTeamsData);
         setAllTeam(allTeamsData.data.allTeamsData);
+        setTeamName(filteredTeam[0].teamName)
+        
       } catch (error) {
         console.error("Error fetching data:", error.message);
       }
     };
 
     TData();
-  }, []);
+  }, [loading]);
+ 
+
+  // handling the Tab
   const handleTabClick = (tab) => {
     setActiveTeamTab(tab);
   };
 
+  // selected members handle
   const handleUpdatedMembersChange = (selectedUpdatedMember) => {
-    setSelectedUpdatedMembers(selectedUpdatedMember);
+    console.log(selectedUpdatedMember);
+    console.log(allMembers);
+
+   
+      setSelectedUpdatedMembers(selectedUpdatedMember);
+    
   };
+
+ 
 
   // console.log("all team data with selected members ", allTeam);
   // console.log("filter datav", filteredTeam[0].selectedMembers)
@@ -294,7 +367,7 @@ const Team = () => {
 
                         <td
                           className=" cursor-pointer py-2 border-b text-center hover:font-extrabold bg-slate-500 hover:bg-sky-800 text-xl "
-                          onClick={() => handleUdatebtn(emp._id)}
+                          onClick={() => handleUpdatebtn(emp._id)}
                         >
                           Click
                         </td>
@@ -355,7 +428,7 @@ const Team = () => {
                         onChange={(e) => setSelectedManager(e.target.value)}
                         className="p-4  font-semibold border-2 border-blue-500 rounded-md "
                       >
-                        <option className="font-semibold w-[15rem]   " value="">
+                        <option className="font-semibold w-[15rem]" value="">
                           Select Manager
                         </option>
                         {allManager.map((manager) => (
@@ -458,8 +531,8 @@ const Team = () => {
                       className="bg-sky-100  bottom-2 "
                       type="text"
                       placeholder="Enter New Name"
-                      value={changedName}
-                      onChange={(e) => setChangedName(e.target.value)}
+                      value={teamName}
+                      onChange={(e) => setTeamName(e.target.value)}
                     />
                   </div>
                 </div>
@@ -487,7 +560,6 @@ const Team = () => {
                   </select>
 
                   <div className="">
-                    {" "}
                     <span> Curret Project </span>
                     {filteredTeam[0].selectedProject.projectName}
                   </div>
@@ -518,6 +590,7 @@ const Team = () => {
                         <div className="w-full mx-auto">
                           <Select
                             value={selectedUpdatedMembers}
+                            defaultValue={filteredTeam[0].selectedMembers}
                             onChange={handleUpdatedMembersChange}
                             isMulti
                             options={allMembers}
@@ -527,9 +600,22 @@ const Team = () => {
                           />
                         </div>
                       </div>
+
+
                     </div>
+
                   </div>
                 </div>
+
+                <div>
+                <div className="bg-blue-500 font-semibold text-xl py-2 mt-[12rem] rounded-lg justify-center mx-auto w-[12rem] flex flex-row">
+                    <button onClick={(e) => handleUpdateSubmit(e,filteredTeam[0]._id)}>
+                      Update Team
+                    </button>
+                  </div>
+
+                </div>
+
               </div>
             </div>
           </div>
@@ -548,12 +634,15 @@ const Team = () => {
             </div>
             <div className="relative bg-white rounded-lg p-2 w-[20rem] h-[20rem]  mx-auto">
               <div className="flex flex-col p-10  text-center justify-between">
-                <div className=" mt-4 text-2xl font-extrabold"> Are  your sure want to delete team ?
+                <div className=" mt-4 text-2xl font-extrabold">
+                  {" "}
+                  Are your sure want to delete team ?{" "}
+                  {flterDeleteTeam[0].teamName}
                 </div>
                 <div className=" mt-4  flex flex-row mx-auto  gap-12 justify-between">
                   <button
                     className="bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={handleSureDeleteTeamHandler}
+                    onClick={(e) => handleDeleteTeam(flterDeleteTeam[0]._id)}
                   >
                     Yes
                   </button>
@@ -566,7 +655,6 @@ const Team = () => {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       )}

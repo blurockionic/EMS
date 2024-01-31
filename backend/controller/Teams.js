@@ -71,3 +71,65 @@ export const allTeams = async (req, res) => {
   }
 };
 
+
+// update the all team in Db 
+export const updateTeam = async (req,res) => {
+  const {id} = req.params
+  const {teamName, teamDescription, selectedManager, selectedProject, selectedMembers} =  req.body
+
+  try {
+    if(!id ) {
+      return res.status(404).json({
+        success:false,
+        message:"Invalid Team id "
+      })
+    }
+
+    const updateTeam  = await Teams.findById(id) 
+    if (!updateTeam){
+      return res.status(404).json({success:false,message:"team not exist in DataBase"})
+    }
+    updateTeam.teamName = teamName
+    updateTeam.teamDescription = teamDescription
+    updateTeam.selectedManager = selectedManager
+    updateTeam.selectedMembers = selectedMembers
+    updateTeam.selectedProject = selectedProject
+    await updateTeam.save()   
+
+
+return res.status(200).json({
+  success:true,
+  message:"Team details updated Successfully "
+})
+  }catch(error){
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error! Updation of team not possible",
+    });
+
+  }
+}
+
+// delete Team the all team in Db 
+export const deleteTeam = async (req,res) => {
+  
+   const {id} = req.params
+  try {
+    // const id = req.body;
+     
+
+     const deleteTeamData = await Teams.deleteOne({_id :id })
+      return res.status(200).json({
+        success:true,
+        message:"Team delete successful",
+        deleteTeamData
+      })
+
+  }catch(error){
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error! Updation of team not possible",
+    });
+
+  }
+}

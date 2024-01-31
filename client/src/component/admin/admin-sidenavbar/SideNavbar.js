@@ -209,8 +209,10 @@ const SideNavbar = () => {
 
 
             {/* teams for admin       profile.designationType === "manager" || */}
-            {
-            profile.designationType === "admin" ? (
+           
+          
+             {
+             profile.designationType === "admin" ? (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               

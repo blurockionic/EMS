@@ -45,6 +45,7 @@ function App() {
           <Route path="newProject" element={<NewProject/>}/>
           <Route path="allProject" element={<AllProject/>}/>
           <Route path="adminreport" element={<AdminReport/>}/>
+        {/* Team for all  */}
           <Route path="newTeam" element={<Team/>}/>
 
           {/* //common  */}
