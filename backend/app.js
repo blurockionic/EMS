@@ -14,6 +14,7 @@ import reportTaskRoutes  from "./routes/ReportTaskRoutes.js"
 import  applyLeavesRoutes  from "./routes/LeaveDetailsRoutes.js";
 
 import taskReportFeedbackRoutes from "./routes/TaskReportFeedback.js"
+import trainingRoutes from "./routes/TrainingRoutes.js";
 
 export const app = express();
 
@@ -68,8 +69,12 @@ app.use("/api/v1/leave",applyLeavesRoutes )
 //route for task report feedback
 app.use("/api/v1/taskReportFeedback", taskReportFeedbackRoutes)
 
+app.use("/api/v1/training", trainingRoutes);
+
 
 //default route
 app.get("/", (req, res) => {
   res.send("nice working");
 });
+
+
