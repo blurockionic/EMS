@@ -26,8 +26,6 @@ const Team = () => {
   const [filteredTeam, setFilteredTeam] = useState([]);
   const [flterDeleteTeam, setFilterDeleteTeam] = useState([]);
 
-
-
   // const [selectedUpdatedMembers, setSelectedUpdatedMembers] = useState();
 
   // Update team Model open and close useState
@@ -36,7 +34,25 @@ const Team = () => {
   // sure delete team f
   const [showSureDeleteModel, setShowSureDeleteModel] = useState(false);
 
+  // geting all Teams Data useEffect
+  useEffect(() => {
+    const TData = async () => {
+      try {
+        const allTeamsData = await axios.get(`${server}/team/allTeams`, {
+          withCredentials: true,
+        });
 
+        // console.log("all teams data is here",allTeamsData.data.allTeamsData);
+        setAllTeam(allTeamsData.data.allTeamsData);
+        setTeamName(filteredTeam[0].teamName);
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      }
+    };
+
+    TData();
+  }, [loading, loadingTwo]);
+  // console.log("all team data",allTeam);
 
   // update btn click handler
   const handleUpdatebtn = (id) => {
@@ -48,7 +64,6 @@ const Team = () => {
     setShowSureDeleteModel(true);
 
     setFilterDeleteTeam(allTeam.filter((team) => team._id === id));
-    
   };
 
   // deleting the team by admin
@@ -98,25 +113,30 @@ const Team = () => {
   // all new create team post req
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
-    if(selectedManager === undefined){
-      selectedManager = null 
+    if (!teamName) {
+      alert("Team name is Required")
     }
 
-    if(selectedManager === undefined){
-      selectedProject = null 
+    if (selectedManager === undefined) {
+      selectedManager = null;
     }
 
-    console.log( teamName,
+    if (selectedManager === undefined) {
+      selectedProject = null;
+    }
+
+    console.log(
+      teamName,
       teamDescription,
       adminProfile,
       selectedManager,
       selectedProject,
-      selectedMembers,);
+      selectedMembers
+    );
 
     try {
       // Send the form data to the backend API
-      
+
       const response = await axios.post(
         `${server}/team/CreateNewTeam`,
         {
@@ -135,7 +155,18 @@ const Team = () => {
 
       // Handle the response as needed
       console.log("Server response:", response.data);
-      setLoadingTwo(true)
+
+      const { success } = response.data;
+
+      if (success) {
+        // alert(message)
+        toast.success("Team Create Successfully");
+        setTeamName("");
+        setTeamDescription("");
+        setSelectedManager("");
+        setSelectedMembers([]);
+        setSelectedProject("");
+      }
 
       // Clear the form after successful submission
     } catch (error) {
@@ -143,22 +174,18 @@ const Team = () => {
       // Handle error if necessary
     }
   };
- 
 
   // all Update team put req
   const handleUpdateSubmit = async (e, id) => {
     e.preventDefault();
-    
-    if(teamName === undefined || teamName === null){
-      teamName = filteredTeam[0].teamName 
+
+    if (teamName === undefined || teamName === null) {
+      teamName = filteredTeam[0].teamName;
     }
-    
-   
 
     try {
       // Send the form data to the backend API
 
-    
       const response = await axios.put(
         `${server}/team/updateTeam/${id}`,
         {
@@ -178,11 +205,11 @@ const Team = () => {
       // Handle the response as needed
       console.log("Server response:", response.data);
 
-      const {success, message} = response.data
+      const { success, message } = response.data;
 
-      if(success){
-        alert(message)
-        setLoading(true)
+      if (success) {
+        alert(message);
+        setLoadingTwo(true);
       }
 
       // Clear the form after successful submission
@@ -190,7 +217,7 @@ const Team = () => {
       console.error("Error sending form data:", error);
       // Handle error if necessary
     }
-    setShowUpdateTeamModel(false)
+    setShowUpdateTeamModel(false);
   };
 
   const customStyles = {
@@ -266,26 +293,6 @@ const Team = () => {
     data();
   }, []);
 
-  // geting all Teams Data useEffect
-  useEffect(() => {
-    const TData = async () => {
-      try {
-        const allTeamsData = await axios.get(`${server}/team/allTeams`, {
-          withCredentials: true,
-        });
-
-        // console.log("all teams data is here",allTeamsData.data.allTeamsData);
-        setAllTeam(allTeamsData.data.allTeamsData);
-        setTeamName(filteredTeam[0].teamName);
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
-      }
-    };
-
-    TData();
-  }, [loading]);
-  // console.log("all team data",allTeam);
-
   // handling the Tab
   const handleTabClick = (tab) => {
     setActiveTeamTab(tab);
@@ -294,13 +301,11 @@ const Team = () => {
   // selected members handle
   const handleUpdatedMembersChange = (selectedUpdatedMember) => {
     console.log(selectedUpdatedMember);
-   
+
     // console.log(allMembers);
 
     setSelectedMembers(selectedUpdatedMember);
   };
-
-
 
   // console.log("all team data with selected members ", allTeam);
   // console.log("filter datav", filteredTeam[0].selectedMembers)
@@ -370,7 +375,9 @@ const Team = () => {
                           {emp?.teamName}
                         </td>
                         <td className="py-2  border-b border-r-2 text-center">
-                          {emp.selectedManager?.employeeName === "" ? "empty" : emp.selectedManager?.employeeName}
+                          {emp.selectedManager?.employeeName === ""
+                            ? "empty"
+                            : emp.selectedManager?.employeeName}
                         </td>
 
                         <td className="py-2 border-b border-r-2 text-center">
@@ -428,6 +435,7 @@ const Team = () => {
                             rounded-md p-2"
                         type="text"
                         value={teamName}
+                        required
                         name="teamName"
                         placeholder=" Enter team Name"
                         onChange={(e) => setTeamName(e.target.value)}
@@ -515,6 +523,7 @@ const Team = () => {
               </div>
             </div>
           )}
+          <ToastContainer />
         </div>
       )}
 
@@ -545,29 +554,37 @@ const Team = () => {
               </div>
               <div>
                 <div>
-                {/* team Name  */}
+                  {/* team Name  */}
                   <div className="m-8">
-                    <span className="font-bold text-xl ">Team Name :  </span>
+                    <span className="font-bold text-xl ">Team Name : </span>
                     <input
                       className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
                       type="text"
                       placeholder="Enter New Name"
                       defaultValue={filteredTeam[0].teamName}
-                      value={teamName === " " ?filteredTeam[0].teamName: teamName }
+                      value={
+                        teamName === " " ? filteredTeam[0].teamName : teamName
+                      }
                       onChange={(e) => setTeamName(e.target.value)}
                     />
                   </div>
                 </div>
                 <div>
-                {/* team Description */}
+                  {/* team Description */}
                   <div className="mr-8 ml-8">
-                    <span className="font-bold text-xl ">Team Description :  </span>
+                    <span className="font-bold text-xl ">
+                      Team Description :{" "}
+                    </span>
                     <input
                       className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
                       type="text"
                       placeholder="Enter New Description"
                       defaultValue={filteredTeam[0].teamDescription}
-                      value={teamDescription === "" ? filteredTeam[0].teamDescription : teamDescription}
+                      value={
+                        teamDescription === ""
+                          ? filteredTeam[0].teamDescription
+                          : teamDescription
+                      }
                       onChange={(e) => setTeamDescription(e.target.value)}
                     />
                   </div>
@@ -578,10 +595,10 @@ const Team = () => {
                   <div className="flex flex-col">
                     <div className="font-bold text-xl">
                       {" "}
-                      <span> Curret Team Manager :  </span>
-                     
-                        {filteredTeam[0].selectedManager?.employeeName === "" ? "Empty" :filteredTeam[0].selectedManager?.employeeName }
-                    
+                      <span> Curret Team Manager : </span>
+                      {filteredTeam[0].selectedManager?.employeeName === ""
+                        ? "Empty"
+                        : filteredTeam[0].selectedManager?.employeeName}
                     </div>
 
                     <select
@@ -600,13 +617,14 @@ const Team = () => {
                     </select>
                   </div>
 
-
                   {/* Current project */}
                   <div className="flex flex-col ">
                     {" "}
                     <div className="font-bold text-xl">
                       <span> Curret Project : </span>
-                      {filteredTeam[0].selectedProject?.projectName === "" ? "No Selected Project" : filteredTeam[0].selectedProject?.projectName }
+                      {filteredTeam[0].selectedProject?.projectName === ""
+                        ? "No Selected Project"
+                        : filteredTeam[0].selectedProject?.projectName}
                     </div>
                     <select
                       value={selectedProject}
@@ -624,7 +642,7 @@ const Team = () => {
                     </select>
                   </div>
                 </div>
-                 {/* Team Members */}
+                {/* Team Members */}
                 <div className="flex flex-col m-9">
                   <div>
                     <div>

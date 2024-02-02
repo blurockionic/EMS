@@ -253,9 +253,9 @@ const NewProject = () => {
               value={formData.teamId}
                onChange={handleOnTeamId}
                
-                className="p-2 w-[12rem] font-semibold border border-black rounded-md"
+                className="p-2 w-[12rem]  border border-black rounded-md"
               >
-                <option className="font-semibold w-[15rem]  " value=""> Select Team
+                <option className=" w-[15rem]  " value=""> Select Team
               
                 </option>
                 {allTeam.map((team) => (
