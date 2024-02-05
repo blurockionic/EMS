@@ -26,65 +26,6 @@ const NewProject = () => {
     isCompleted: false,
     isScrap: false,
   });
-
-  
-  useEffect(() => {
-    const TeamData = async () => {
-      try {
-        const allTeamsData = await axios.get(`${server}/team/allTeams`, {
-          withCredentials: true,
-        });
-        
-        // console.log("all teams data is here",allTeamsData.data.allTeamsData);
-        setAllTeam(allTeamsData.data.allTeamsData.filter((team) =>  team.selectedProject === null));
-
-       
-      
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
-      }
-    };
-    
-    TeamData();
-  }, []);
-  
-  const options = [];
-  //fetch all the details of employee
-  useEffect(() => {
-    const data = async () => {
-      try {
-        const allEmployee = await axios.get(`${server}/employee/all`, {
-          withCredentials: true,
-        });
-        // Handle the data from the API response
-        setEmployeeData(allEmployee.data.data);
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
-        // Handle the error
-      }
-    };
-
-    //invocke
-    data();
-  }, []);
-
-  //load
-  // for (let i = 0; i < employeeData.length; i++) {
-  //   if (employeeData[i].designationType === "manager") {
-  //     const value = employeeData[i]._id;
-  //     const label = employeeData[i].employeeName;
-  //     options.push({ value, label });
-  //   }
-  // }
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission logic here
@@ -126,6 +67,65 @@ const NewProject = () => {
       navigate("../allProject");
     }
   };
+  // all the teams data 
+  useEffect(() => {
+    const TeamData = async () => {
+      try {
+        const allTeamsData = await axios.get(`${server}/team/allTeams`, {
+          withCredentials: true,
+        });
+        
+        // console.log("all teams data is here",allTeamsData.data.allTeamsData);
+        setAllTeam(allTeamsData.data.allTeamsData.filter((team) =>  team.selectedProject === null));
+
+       
+      
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      }
+    };
+    
+    TeamData();
+  }, [handleSubmit]);
+  
+  const options = [];
+  //fetch all the details of employee
+  useEffect(() => {
+    const data = async () => {
+      try {
+        const allEmployee = await axios.get(`${server}/employee/all`, {
+          withCredentials: true,
+        });
+        // Handle the data from the API response
+        setEmployeeData(allEmployee.data.data);
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+        // Handle the error
+      }
+    };
+
+    //invocke
+    data();
+  }, []);
+
+  //load
+  // for (let i = 0; i < employeeData.length; i++) {
+  //   if (employeeData[i].designationType === "manager") {
+  //     const value = employeeData[i]._id;
+  //     const label = employeeData[i].employeeName;
+  //     options.push({ value, label });
+  //   }
+  // }
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+
  
   // console.log(filterTeam);
 
