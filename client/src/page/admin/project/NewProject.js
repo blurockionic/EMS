@@ -6,9 +6,14 @@ import { server } from "../../../App";
 import { useNavigate } from "react-router-dom";
 
 const NewProject = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [employeeData, setEmployeeData] = useState([]);
-  const [managerId, setManagerId] = useState("");
+
+  
+  const [teamId, setTeamId] = useState("");
+  const [allTeam, setAllTeam] = useState([])
+  const [filterTeam, setFilterTeam] = useState([])
+
 
   const [formData, setFormData] = useState({
     projectName: "",
@@ -17,12 +22,33 @@ const NewProject = () => {
     priority: "",
     description: "",
     websiteUrl: "",
+    teamId : "",
     isCompleted: false,
     isScrap: false,
   });
 
-  const options = [];
+  
+  useEffect(() => {
+    const TeamData = async () => {
+      try {
+        const allTeamsData = await axios.get(`${server}/team/allTeams`, {
+          withCredentials: true,
+        });
+        
+        // console.log("all teams data is here",allTeamsData.data.allTeamsData);
+        setAllTeam(allTeamsData.data.allTeamsData.filter((team) =>  team.selectedProject === null));
 
+       
+      
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      }
+    };
+    
+    TeamData();
+  }, []);
+  
+  const options = [];
   //fetch all the details of employee
   useEffect(() => {
     const data = async () => {
@@ -43,13 +69,13 @@ const NewProject = () => {
   }, []);
 
   //load
-  for (let i = 0; i < employeeData.length; i++) {
-    if (employeeData[i].designationType === "manager") {
-      const value = employeeData[i]._id;
-      const label = employeeData[i].employeeName;
-      options.push({ value, label });
-    }
-  }
+  // for (let i = 0; i < employeeData.length; i++) {
+  //   if (employeeData[i].designationType === "manager") {
+  //     const value = employeeData[i]._id;
+  //     const label = employeeData[i].employeeName;
+  //     options.push({ value, label });
+  //   }
+  // }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -59,7 +85,7 @@ const NewProject = () => {
     }));
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission logic here
     console.log("Form submitted:", formData);
@@ -68,6 +94,7 @@ const NewProject = () => {
       projectStartDate,
       projectEndDate,
       priority,
+      teamId,
       description,
       websiteUrl,
     } = formData;
@@ -81,31 +108,39 @@ const NewProject = () => {
         projectEndDate,
         priority,
         description,
-        managerId,
+        teamId,
         websiteUrl,
       },
       {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true
+        withCredentials: true,
       }
     );
 
-      console.log(response)
-      const {success, message} = response.data 
-      if(success){
-        alert(message)
-        navigate("../allProject")
-      }
+    console.log(response);
+    const { success, message } = response.data;
+    if (success) {
+      alert(message);
+      navigate("../allProject");
+    }
   };
+ 
+  // console.log(filterTeam);
 
   //set item name handle
-  const handleSelectChange = (selectedOption) => {
-    // console.log("selected Option", selectedOption);
-    // console.log(selectedOption.value);
-    setManagerId(selectedOption.value);
-  };
+ 
+  const handleOnTeamId = (e) => {
+    
+    const { name, value, type, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+    // console.log(formData.teamId)
+  }
+
   return (
     <>
       {/* form for new project  */}
@@ -114,7 +149,9 @@ const NewProject = () => {
           onSubmit={handleSubmit}
           className=" mx-auto bg-white p-8 rounded shadow-md"
         >
-          <h2 className="text-2xl flex justify-center font-bold mb-6">Project Information</h2>
+          <h2 className="text-2xl flex justify-center font-bold mb-6">
+            Project Information
+          </h2>
 
           {/* Add more input fields as needed */}
 
@@ -137,50 +174,47 @@ const NewProject = () => {
             />
           </div>
 
-            {/* stating and submition date */}
+          {/* stating and submition date */}
           <div className=" flex flex-row flex-wrap gap-5 justify-between">
-          <div className="mb-4">
-            <label
-              className=" text-gray-700 text-sm font-bold mb-2"
-              htmlFor="projectStartDate"
-            >
-              Start Date
-            </label>
-            <input
-              type="date"
-              id="projectStartDate"
-              name="projectStartDate"
-              value={formData.projectStartDate}
-              onChange={handleChange}
-              className="border border-black rounded-lg p-2 w-full"
-              required
-            />
-          </div>
+            <div className="mb-4">
+              <label
+                className=" text-gray-700 text-sm font-bold mb-2"
+                htmlFor="projectStartDate"
+              >
+                Start Date
+              </label>
+              <input
+                type="date"
+                id="projectStartDate"
+                name="projectStartDate"
+                value={formData.projectStartDate}
+                onChange={handleChange}
+                className="border border-black rounded-lg p-2 w-full"
+                required
+              />
+            </div>
 
-          <div className="mb-4">
-            <label
-              className="  text-gray-700 text-sm font-bold mb-2"
-              htmlFor="projectStartDate"
-            >
-              Submission Date
-            </label>
-            <input
-              type="date"
-              id="projectEndDate"
-              name="projectEndDate"
-              value={formData.projectEndDate}
-              onChange={handleChange}
-              className="border border-black rounded-lg p-2 w-full"
-              required
-            />
-          </div>
-
-
+            <div className="mb-4">
+              <label
+                className="  text-gray-700 text-sm font-bold mb-2"
+                htmlFor="projectStartDate"
+              >
+                Submission Date
+              </label>
+              <input
+                type="date"
+                id="projectEndDate"
+                name="projectEndDate"
+                value={formData.projectEndDate}
+                onChange={handleChange}
+                className="border border-black rounded-lg p-2 w-full"
+                required
+              />
+            </div>
           </div>
 
           {/* priority and manager name  */}
           <div className=" flex flex-row flex-wrap gap-5 justify-between">
-
             <div className="mb-4">
               <label
                 className=" text-gray-700 text-sm font-bold mb-2"
@@ -205,22 +239,34 @@ const NewProject = () => {
               </select>
             </div>
 
-            <div className="mb-4">
-            <label
-              className=" text-gray-700 text-sm font-bold mb-2"
-              htmlFor="projectStartDate"
-            >
-              Mnagaer Name
-            </label>
-            <Select
-              onChange={handleSelectChange}
-              options={options}
-              className=" border border-black rounded-lg w-64 py-1 px-2"
-            />
-            </div>
+            <div className="mb-4 flex flex-col ">
+              <label
+                className=" text-gray-700 text-sm font-bold mb-1"
+              
+              >
+                Team Name
+              </label>
 
+              <select
+              id="teamId"
+              name="teamId"
+              value={formData.teamId}
+               onChange={handleOnTeamId}
+               
+                className="p-2 w-[12rem]  border border-black rounded-md"
+              >
+                <option className=" w-[15rem]  " value=""> Select Team
+              
+                </option>
+                {allTeam.map((team) => (
+                  <option key={team._id} value={team._id}>
+                    {team.teamName}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        
+
           {/* Description */}
           <div className="mb-4">
             <label

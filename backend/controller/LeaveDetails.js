@@ -3,7 +3,7 @@ import { LeaveDetailSchema } from "../model/leaveDetails.js";
 // /employess apply for leave first time
 export const applyLeave = async (req, res) => {
   try {
-    const { LeaveType, ToDate, FromDate, Reason,totalDaysofLeave } = req.body;
+    const { LeaveType, ToDate, FromDate, Reason, totalDaysofLeave } = req.body;
     console.log(req.body);
     // data validation
     if (!LeaveType || !ToDate || !FromDate || !Reason || !totalDaysofLeave) {

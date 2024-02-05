@@ -93,7 +93,7 @@ const SideNavbar = () => {
               </li>
             )}
          
-            {/* manager dashboard */}
+            {/* HR dashboard */}
             {profile.designationType === "human resources" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
@@ -206,6 +206,38 @@ const SideNavbar = () => {
               </li>
             ) : null}
 
+
+
+            {/* teams for admin       profile.designationType === "manager" || */}
+           
+          
+             {
+             profile.designationType === "admin" ? (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link to={"./newTeam"} className="uppercase  font-bold">
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "newTeam"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Team
+                  </button>
+                </Link>
+              </li>
+            ) : null}
+
+
+
+
+
+
             {profile.designationType === "admin" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
@@ -235,7 +267,7 @@ const SideNavbar = () => {
                 `}
               >
                 {/* New Employees */}
-                <Link to={"./managerproject"} className="uppercase  font-bold">
+                <Link to={"./"} className="uppercase  font-bold">
                   <button
                     className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                       path === "managerproject"
@@ -358,7 +390,7 @@ const SideNavbar = () => {
             )}
 
 
-               {/* EmployeeLeave Details */}
+               {/* Employees Leave Details */}
                {profile.designationType === "manager" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
@@ -382,6 +414,34 @@ const SideNavbar = () => {
                 </Link>
               </li>
             )}
+
+
+
+
+             {/* Team Details */}
+             {/* {profile.designationType === "manager" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+             
+                <Link
+                  to={"./empleave"}
+                  className="uppercase  font-bold"
+                >
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "empleave"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                    Team
+                  </button>
+                </Link>
+              </li>
+            )} */}
 
           </ul>
         </div>
