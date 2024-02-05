@@ -51,7 +51,7 @@ const Team = () => {
     };
 
     TData();
-  }, [loading, loadingTwo]);
+  }, [loading, loadingTwo,]);
   // console.log("all team data",allTeam);
 
   // update btn click handler

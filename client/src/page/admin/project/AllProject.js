@@ -47,7 +47,7 @@ const AllProject = () => {
     <>
        <div className="flex justify-between">
         <div>
-          <Titlebar title={"Employee Details"} />
+          <Titlebar title={"Project Details"} />
         </div>
         <div>
           {/* handle search  */}

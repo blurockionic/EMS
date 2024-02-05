@@ -42,9 +42,17 @@ export const newProject = async (req, res) => {
         message: "Team not found!",
       });
     }
+    // console.log("team data aa raha",foundTeam);
+    if(foundTeam.selectedProject){
+      return res.status(400).json({
+        success:false,
+        message:"multiple proeject cannot be assign to a single team"
 
-    foundTeam.selectedProject = projectName
-
+      })
+    }
+    
+  
+  
     // check designation
     const { designationType } = req.user;
     if (designationType === "admin") {
@@ -61,6 +69,11 @@ export const newProject = async (req, res) => {
         isCompleted,
         isScrap,
       });
+
+      foundTeam.selectedProject = project._id
+      await foundTeam.save()
+
+
 
       // return result
 
