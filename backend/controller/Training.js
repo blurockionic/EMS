@@ -41,7 +41,28 @@ export const addTraining = async (req, res) => {
     }
 }
 
-export const showtraining = () => {
-    
+export const showtraining = async (req, res) => {
+    try {
+        const showTrain = await Training.find({})
+
+        if(!showTrain){
+            res.status(500).json({
+                success:false,
+                message:"No training added yet"
+            })
+        }
+
+        res.status(200).json({
+            success:true,
+            showTrain,
+            message:"trainings added"
+        })
+    }
+    catch (e) {
+        return res.status(500).json({
+            success:false,
+            message:e
+        })
+    }
 }
 

@@ -16,6 +16,7 @@ const EmployeeDashboard = () => {
   const [certificateID, setCertificateID] = useState("");
   const [trainStart, setTrainStart] = useState("");
   const [trainEnd, setTrainEnd] = useState("");
+  const [allTrain, setAllTrain] = useState([]);
 
   
 
@@ -314,6 +315,27 @@ const EmployeeDashboard = () => {
     navigate("../taskreportfeedback");
   };
 
+  useEffect (() => {
+    const showTrain = async () => {
+
+      try {
+        const response = await axios.get(`${server}/training/showtraining`,{
+          withCredentials: true,
+        })
+
+        const {message, showTrain, success} = response.data;
+
+          setAllTrain(showTrain)
+
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    showTrain();
+  }, [])
+
+  console.log(allTrain)
+
   return (
     <div className="w-full mx-auto mt-2 p-4 bg-white rounded shadow-md">
       <div className="flex">
@@ -544,13 +566,40 @@ const EmployeeDashboard = () => {
         
 
             {activeTab === "Training" && (
+              <>
               <div className="h-[80vh] bg-gray-200 w-full flex justify-center items-center ">
                 <div className="">
                   <button id="trainbtn" className="w-[10rem] h-[4rem] rounded-lg bg-[#6c7ebd] hover:bg-[#4A63BC] hover:scale-110 transform transition duration-500 z-1" onClick={trainingcard}>
                   + ADD
                   </button>
                 </div>
+                
               </div>
+              <div>
+  <table>
+    <thead>
+      <tr>
+        <th>Sr.no</th>
+        <th>Training Name</th>
+        <th>Certificate ID</th>
+        <th>Training Start</th>
+        <th>Training End</th>
+      </tr>
+    </thead>
+    <tbody>
+      {allTrain.map((Training, index) => (
+        <tr key={Training._id}>
+          <td>{index + 1}</td>
+          <td>{Training.trainingName}</td>
+          <td>{Training.certificateID}</td>
+          <td>{Training.createdAt}</td>
+          <td>{Training.updatedAt}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+            </>
             )}
 
         {/* task  */}
