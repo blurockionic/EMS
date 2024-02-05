@@ -1,10 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { server } from "../../../App";
 
 const SideNavbar = () => {
-  const navigate = useNavigate();
   const [profile, setProfile] = useState({});
   const location = useLocation();
   const [path, setPath] = useState(location?.pathname);
@@ -92,7 +91,7 @@ const SideNavbar = () => {
                 </Link>
               </li>
             )}
-         
+
             {/* HR dashboard */}
             {profile.designationType === "human resources" && (
               <li
@@ -206,13 +205,9 @@ const SideNavbar = () => {
               </li>
             ) : null}
 
-
-
             {/* teams for admin       profile.designationType === "manager" || */}
-           
-          
-             {
-             profile.designationType === "admin" ? (
+
+            {profile.designationType === "admin" ? (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               
@@ -233,11 +228,7 @@ const SideNavbar = () => {
               </li>
             ) : null}
 
-
-
-
-
-
+            {/* Admin Report */}
             {profile.designationType === "admin" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
@@ -254,6 +245,27 @@ const SideNavbar = () => {
                     }`}
                   >
                     Report
+                  </button>
+                </Link>
+              </li>
+            )}
+            {/* Admin Report */}
+            {profile.designationType === "admin" && (
+              <li
+                className={`flex items-center text-start text-black mb-2   cursor-pointer
+              
+                `}
+              >
+                {/* New Employees */}
+                <Link to={"./AppVersion"} className="uppercase  font-bold">
+                  <button
+                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                      path === "AppVersion"
+                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
+                        : "bg-white"
+                    }`}
+                  >
+                  Version
                   </button>
                 </Link>
               </li>
@@ -300,7 +312,7 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-            {/* )} */} 
+            {/* )} */}
 
             {/* {profile.designationType === "manager" && (
               <li
@@ -337,7 +349,7 @@ const SideNavbar = () => {
                         : "bg-white"
                     }`}
                   >
-                     Project Report
+                    Project Report
                   </button>
                 </Link>
               </li>
@@ -389,19 +401,15 @@ const SideNavbar = () => {
               </li>
             )}
 
-
-               {/* Employees Leave Details */}
-               {profile.designationType === "manager" && (
+            {/* Employees Leave Details */}
+            {profile.designationType === "manager" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               
                 `}
               >
                 {/* New Employees */}
-                <Link
-                  to={"./empleave"}
-                  className="uppercase  font-bold"
-                >
+                <Link to={"./empleave"} className="uppercase  font-bold">
                   <button
                     className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                       path === "empleave"
@@ -415,11 +423,8 @@ const SideNavbar = () => {
               </li>
             )}
 
-
-
-
-             {/* Team Details */}
-             {/* {profile.designationType === "manager" && (
+            {/* Team Details */}
+            {/* {profile.designationType === "manager" && (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               
@@ -442,7 +447,6 @@ const SideNavbar = () => {
                 </Link>
               </li>
             )} */}
-
           </ul>
         </div>
       </nav>
