@@ -1,0 +1,25 @@
+@startuml Crm 
+   class myClass{
+     int count 
+     string name
+
+     getId()
+   }
+
+   class secondClass{
+    string name
+    string email
+
+    signin()
+   }
+
+   class thirdClass{
+    string email
+   }
+
+   myClass <- secondClass
+
+   note left: this is second class
+
+   myClass <... thirdClass
+@enduml
