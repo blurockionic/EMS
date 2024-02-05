@@ -29,6 +29,7 @@ import Team from "./page/admin/team/Team";
 import AppVersion from "./page/admin/AppVersion/AppVersion";
 
 
+
 export const server = "http://localhost:4000/api/v1"
 
 function App() {

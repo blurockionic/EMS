@@ -8,8 +8,59 @@ import { FaUserLarge } from "react-icons/fa6";
 import EmpLeaveHistory from "./EmpLeaveHistory";
 // import LeaveHistroy from "./LeaveHistroy";
 
+
 const EmployeeDashboard = () => {
   const [leaveViewModal, setLeaveViewModal] = useState(false);
+  const [showtrainmodel, setshowtrainmodel] = useState(false);
+  const [trainingName, setTrainingName] = useState("");
+  const [certificateID, setCertificateID] = useState("");
+  const [trainStart, setTrainStart] = useState("");
+  const [trainEnd, setTrainEnd] = useState("");
+  const [allTrain, setAllTrain] = useState([]);
+
+  
+
+
+  const trainingcard = () => {
+    setshowtrainmodel((prev) => !prev);
+  }
+
+  const addbutton = async () => {
+    try {
+      const response = await axios.post(
+        `${server}/training/newTraining`,
+        {
+          trainingName,
+          certificateID,
+          trainStart,
+          trainEnd,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log(response);
+
+      const {message,success} = response.data
+      console.log(message);
+      console.log(success);
+
+      if(success){
+        alert(message);
+      }
+      
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  
+  // const traincardstyle = () =>{
+  
+  // }
 
   const handleCloseModal = () => {
     setLeaveViewModal(false);
@@ -264,6 +315,27 @@ const EmployeeDashboard = () => {
     navigate("../taskreportfeedback");
   };
 
+  useEffect (() => {
+    const showTrain = async () => {
+
+      try {
+        const response = await axios.get(`${server}/training/showtraining`,{
+          withCredentials: true,
+        })
+
+        const {message, showTrain, success} = response.data;
+
+          setAllTrain(showTrain)
+
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    showTrain();
+  }, [])
+
+  console.log(allTrain)
+
   return (
     <div className="w-full mx-auto mt-2 p-4 bg-white rounded shadow-md">
       <div className="flex">
@@ -300,13 +372,14 @@ const EmployeeDashboard = () => {
         </div>
         <div
           className={`cursor-pointer uppercase  py-2 px-4  ${
-            activeTab === "LeaveDetails"
+
+            activeTab === "Training"
               ? "border-b-4 border-blue-500 text-blue-500 font-bold"
               : "bg-white"
           }`}
-          onClick={() => handleTabClick("LeaveDetails")}
+          onClick={() => handleTabClick("Training")}
         >
-          Leave Details
+          Training
         </div>
       </div>
 
@@ -486,8 +559,48 @@ const EmployeeDashboard = () => {
               <p>This is the content for Tab 4.</p>
             </div>
           )} */}
+          
           </div>
         )}
+
+        
+
+            {activeTab === "Training" && (
+              <>
+              <div className="h-[80vh] bg-gray-200 w-full flex justify-center items-center ">
+                <div className="">
+                  <button id="trainbtn" className="w-[10rem] h-[4rem] rounded-lg bg-[#6c7ebd] hover:bg-[#4A63BC] hover:scale-110 transform transition duration-500 z-1" onClick={trainingcard}>
+                  + ADD
+                  </button>
+                </div>
+                
+              </div>
+              <div>
+  <table>
+    <thead>
+      <tr>
+        <th>Sr.no</th>
+        <th>Training Name</th>
+        <th>Certificate ID</th>
+        <th>Training Start</th>
+        <th>Training End</th>
+      </tr>
+    </thead>
+    <tbody>
+      {allTrain.map((Training, index) => (
+        <tr key={Training._id}>
+          <td>{index + 1}</td>
+          <td>{Training.trainingName}</td>
+          <td>{Training.certificateID}</td>
+          <td>{Training.createdAt}</td>
+          <td>{Training.updatedAt}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+            </>
+            )}
 
         {/* task  */}
         {activeTab === "Task" && (
@@ -831,8 +944,37 @@ const EmployeeDashboard = () => {
           </div>
         </div>
       )}
+      {/* train model */}
+      {showtrainmodel && (
+          <div className="w-[569px] h-[538px] z-10 absolute">
+            <div className=" w-[569px] h-[538px] bg-[#d9d9d9] rounded-[10px] shadow-[0px_4px_4px_#00000040,0px_4px_4px_#00000040,0px_4px_4px_6px_#00000040]">
+                <button className="w-[3rem] h-[3rem] top-[2rem] right-[530px] rounded-[50%] text-red-700 text-2xl" onClick={trainingcard}>X</button>
+                <input type="text" className="w-[455px] top-[70px] left-[57px] bg-white absolute h-[40px]" onChange={(e) => setTrainingName(e.target.value)} value={trainingName}/>
+                <input type="date" className="w-[188px] top-[205px] left-[317px] bg-white absolute h-[40px]" onChange={(e) => setTrainEnd(e.target.value)} value={trainEnd}/>
+                <input type="date" className="w-[189px] top-[205px] left-[57px] bg-white absolute h-[40px]" onChange={(e) => setTrainStart(e.target.value)} value={trainStart}/>
+                <input type="text" className="w-[455px] top-[351px] left-[57px] absolute h-[40px]" onChange={(e) => setCertificateID(e.target.value)} value={certificateID} />
+                <button className="absolute w-[185px] h-[46px] top-[455px] left-[184px] bg-white rounded-[24px] hover:bg-slate-300 hover:scale-110 transform transition duration-500" onClick={addbutton}>
+                  <p className="absolute w-[122px] h-[44px] top-[10px] left-[33px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] text-center tracking-[0] leading-[normal]">
+                    ADD
+                  </p>
+                </button>
+                <div className="w-[245px] h-[34px] top-[36px] absolute left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]"> 
+                  Training Name:
+                </div>
+                <div className="absolute w-[245px] h-[34px] top-[317px] left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
+                  Certificate ID:
+                </div>
+                <div className="w-[235px] h-[27px] top-[178px] whitespace-nowrap absolute left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
+                  Training Started:
+                </div>
+                <div className="absolute w-[235px] h-[27px] top-[178px] left-[316px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal] whitespace-nowrap">
+                  Training Ended:
+                </div>
+            </div>
+        </div>
+      )}
     </div>
   );
-};
+};/*  */
 
 export default EmployeeDashboard;
