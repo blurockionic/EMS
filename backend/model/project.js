@@ -77,8 +77,10 @@ projectSchema.post("save", async function(doc) {
       // to: doc.email 
       // hare we give the emails of all the members of team and all the mananger hare is code 
       to:` arunupadhayay2000@gmail.com`,
-      subject: "new project is created ",
-      html : `<h2> new Project ${doc.projectName} </h2>`
+     
+      // to: allEmails.join(', '), // Combine emails into a comma-separated string
+      subject: "New project is created",
+      html: `<h2>New Project ${doc.projectName}</h2>`
 
     })
 
