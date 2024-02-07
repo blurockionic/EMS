@@ -5,7 +5,7 @@ import { FaWindowClose } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { QRCode } from "react-qrcode";
 import { FaUserLarge } from "react-icons/fa6";
-import EmpLeaveHistory from "./EmpLeaveHistory";
+import EmpLeaveHistory from "../../component/utilities-components/EmpLeaveHistory";
 // import LeaveHistroy from "./LeaveHistroy";
 
 

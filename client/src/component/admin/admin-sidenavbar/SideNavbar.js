@@ -132,20 +132,20 @@ const SideNavbar = () => {
                         : "bg-white"
                     }`}
                   >
-                    Employee
+                    Employees 
                   </button>
                 </Link>
               </li>
             ) : null}
 
             {/* // it visible when user type is admin  */}
-            {profile.designationType === "admin" && (
+            {/* {profile.designationType === "admin" && (
               <li
                 className={`flex items-center text-start text-black mb-2 cursor-pointer
                 
                   `}
               >
-                {/* New Project  */}
+           
                 <Link to={"./newProject"} className="uppercase  font-bold">
                   <button
                     className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5 z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
@@ -158,7 +158,7 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-            )}
+            )} */}
 
             {/* // it visible when user type is admin  */}
             {profile.designationType === "admin" ? (
@@ -176,21 +176,21 @@ const SideNavbar = () => {
                         : "bg-white"
                     }`}
                   >
-                    All Project
+                  Project 
                   </button>
                 </Link>
               </li>
             ) : null}
 
             {/* //new employee for humanresources */}
-            {profile.designationType === "human resources" ||
+            {/* {profile.designationType === "human resources" ||
             profile.designationType === "admin" ? (
               <li
                 className={`flex items-center text-start text-black mb-2   cursor-pointer
               
                 `}
               >
-                {/* New Employees */}
+               
                 <Link to={"./newEmployee"} className="uppercase  font-bold">
                   <button
                     className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
@@ -203,7 +203,7 @@ const SideNavbar = () => {
                   </button>
                 </Link>
               </li>
-            ) : null}
+            ) : null} */}
 
             {/* teams for admin       profile.designationType === "manager" || */}
 
@@ -279,7 +279,7 @@ const SideNavbar = () => {
                 `}
               >
                 {/* New Employees */}
-                <Link to={"./"} className="uppercase  font-bold">
+                <Link to={"./managerproject"} className="uppercase  font-bold">
                   <button
                     className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
                       path === "managerproject"

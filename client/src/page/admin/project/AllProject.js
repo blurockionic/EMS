@@ -1,11 +1,28 @@
-import React, { useEffect, useState } from 'react'
-import Titlebar from '../../../component/utilities-components/Titlebar';
-import axios from 'axios';
-import { server } from '../../../App';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { server } from "../../../App";
+import NewProject from "./NewProject";
 
 const AllProject = () => {
-  const [allProject, setAllProject] = useState([])
-  const [allProjectForSearch, setAllProjectForSearch] = useState([])
+  const [allProject, setAllProject] = useState([]);
+  const [allProjectForSearch, setAllProjectForSearch] = useState([]);
+  const [profile, setProfile] = useState({});
+  const [activeTab, setActiveTabTab] = useState("All Project");
+
+  //get profile
+  useEffect(() => {
+    const myProfile = async () => {
+      const response = await axios.get(`${server}/users/me`, {
+        withCredentials: true,
+      });
+
+      setProfile(response.data.user);
+      // console.log(response);
+    };
+
+    //invoke
+    myProfile();
+  }, []);
 
   //fetch all the details of employee
   useEffect(() => {
@@ -28,6 +45,10 @@ const AllProject = () => {
     data();
   }, []);
 
+  const handleTabClick = (tab) => {
+    setActiveTabTab(tab);
+  };
+
   // handle search
   const handleSearch = (e) => {
     const searchTerm = e.target.value.trim().toLowerCase(); // Get the trimmed lowercase search term
@@ -42,68 +63,238 @@ const AllProject = () => {
       setAllProject(tempVar); // Update the array state with the filtered results
     }
   };
-  console.log(allProject)
+  console.log(allProject);
   return (
     <>
-       <div className="flex justify-between">
+      {profile.designationType === "admin" ? (
         <div>
-          <Titlebar title={"Project Details"} />
-        </div>
-        <div>
-          {/* handle search  */}
-          <div className="w-96 flex items-center border border-green-300 rounded-md p-1 mx-1">
-            <span className="text-xl mx-1">&#128269;</span>
-            <input
-              type="text"
-              onChange={(e) => handleSearch(e)}
-              placeholder="Search employee name..."
-              className="w-96 p-2 rounded-lg outline-none"
-            />
+          {/* Project Tabs */}
+          <div className=" flex flex-row shadow-lg">
+            <div
+              className={`cursor-pointer uppercase py-2 px-4 mr-4 ${
+                activeTab === "All Project"
+                  ? "border-b-4 border-blue-500 text-blue-500 font-bold"
+                  : "bg-white"
+              }`}
+              onClick={() => handleTabClick("All Project")}
+            >
+              All Project
+            </div>
+            <div
+              className={`cursor-pointer uppercase py-2 px-4 mr-4 ${
+                activeTab === "New Project"
+                  ? "border-b-4 border-blue-500 text-blue-500 font-bold"
+                  : "bg-white"
+              }`}
+              onClick={() => handleTabClick("New Project")}
+            >
+              New Project
+            </div>
           </div>
-          {/* end handle search  */}
-        </div>
-      </div>
-      {allProject.length > 0 ? (
-        <div className="overflow-x-auto mt-5">
-          <table className="min-w-full table-auto">
-            <thead className="bg-slate-400">
-              <tr>
-                <th className="border px-4 py-2">S.No</th>
-                <th className="border px-4 py-2">Project Name</th>
-                <th className="border px-4 py-2">Team ID (change required)</th>
+          {/* All Employees Details Table   */}
+          {activeTab === "All Project" && (
+            <div className="mt-4">
+              {activeTab === "All Project" && (
+                <div className="mt-5">
+                  <div className="mb-2">
+                    {/* handle search  */}
+                    <div className="w-96 flex items-center border border-green-300 rounded-md p-1 mx-1">
+                      <span className="text-xl mx-1">&#128269;</span>
+                      <input
+                        type="text"
+                        onChange={(e) => handleSearch(e)}
+                        placeholder="Search project name..."
+                        className="w-96 p-2 rounded-lg outline-none"
+                      />
+                    </div>
+                    {/* end handle search  */}
+                  </div>
 
-                <th className="border px-4 py-2">Description</th>
-                <th className="border px-4 py-2">Start Date</th>
-                <th className="border px-4 py-2">Submission Date</th>
-                <th className="border px-4 py-2">Status</th>
-                {/* Add more columns as needed */}
-              </tr>
-            </thead>
-            <tbody>
-              {allProject.map((project, index) => (
-                <tr key={project._id} className="text-center">
-                  <td className="border px-4 py-2">{index + 1}</td>
-                  <td className="border px-4 py-2">{project.projectName}</td>
-                  <td className="border px-4 py-2">{project.teamId}</td>
-                  <td className="border px-4 py-2">{project.description}</td>
-                  <td className="border px-4 py-2">{project.projectStartDate}</td>
-                  <td className="border px-4 py-2">{project.projectEndDate}</td>
+                  {allProject.length > 0 ? (
+                    <div className="overflow-x-auto mt-5">
+                      <table className="min-w-full table-auto">
+                        <thead className="bg-slate-400">
+                          <tr>
+                            <th className="border px-4 py-2">S.No</th>
+                            <th className="border px-4 py-2">Project Name</th>
+                            <th className="border px-4 py-2">
+                              Team ID (change required)
+                            </th>
 
-                  <td className="border px-4 py-2">{project.isCompleted ? (<span className='text-green-800'>Completed</span>) : (<span className='text-red-800'>Not Completed</span>)}</td>
-                  
-                  {/* Add more cells as needed */}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                            <th className="border px-4 py-2">Description</th>
+                            <th className="border px-4 py-2">Start Date</th>
+                            <th className="border px-4 py-2">
+                              Submission Date
+                            </th>
+                            <th className="border px-4 py-2">Status</th>
+                            {/* Add more columns as needed */}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allProject.map((project, index) => (
+                            <tr key={project._id} className="text-center">
+                              <td className="border px-4 py-2">{index + 1}</td>
+                              <td className="border px-4 py-2">
+                                {project.projectName}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {project.teamId}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {project.description}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {project.projectStartDate}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {project.projectEndDate}
+                              </td>
+
+                              <td className="border px-4 py-2">
+                                {project.isCompleted ? (
+                                  <span className="text-green-800">
+                                    Completed
+                                  </span>
+                                ) : (
+                                  <span className="text-red-800">
+                                    Not Completed
+                                  </span>
+                                )}
+                              </td>
+
+                              {/* Add more cells as needed */}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="text-center mt-5 p-4 bg-slate-200">
+                      <h1 className="uppercase font-bold">
+                        Sorry! Data not available!
+                      </h1>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+          {/* Create new Employees Details  */}
+          {activeTab === "New Project" && (
+            <div className="mt-4">
+              {activeTab === "New Project" && <div className="mt-5"></div>}
+
+              <NewProject />
+            </div>
+          )}
         </div>
       ) : (
-        <div className="text-center mt-5 p-4 bg-slate-200">
-          <h1 className="uppercase font-bold">Sorry! Data not available!</h1>
+        <div>
+          {/* Project Tabs */}
+          <div className=" flex flex-row shadow-lg">
+            <div
+              className={`cursor-pointer uppercase py-2 px-4 mr-4 ${
+                activeTab === "All Project"
+                  ? "border-b-4 border-blue-500 text-blue-500 font-bold"
+                  : "bg-white"
+              }`}
+              onClick={() => handleTabClick("All Project")}
+            >
+              All Project
+            </div>
+          </div>
+          {/* All Employees Details Table   */}
+          {activeTab === "All Project" && (
+            <div className="mt-4">
+              {activeTab === "All Project" && (
+                <div className="mt-5">
+                  <div className="mb-2">
+                    {/* handle search  */}
+                    <div className="w-96 flex items-center border border-green-300 rounded-md p-1 mx-1">
+                      <span className="text-xl mx-1">&#128269;</span>
+                      <input
+                        type="text"
+                        onChange={(e) => handleSearch(e)}
+                        placeholder="Search project name..."
+                        className="w-96 p-2 rounded-lg outline-none"
+                      />
+                    </div>
+                    {/* end handle search  */}
+                  </div>
+
+                  {allProject.length > 0 ? (
+                    <div className="overflow-x-auto mt-5">
+                      <table className="min-w-full table-auto">
+                        <thead className="bg-slate-400">
+                          <tr>
+                            <th className="border px-4 py-2">S.No</th>
+                            <th className="border px-4 py-2">Project Name</th>
+                            <th className="border px-4 py-2">
+                              Team ID (change required)
+                            </th>
+
+                            <th className="border px-4 py-2">Description</th>
+                            <th className="border px-4 py-2">Start Date</th>
+                            <th className="border px-4 py-2">
+                              Submission Date
+                            </th>
+                            <th className="border px-4 py-2">Status</th>
+                            {/* Add more columns as needed */}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allProject.map((project, index) => (
+                            <tr key={project._id} className="text-center">
+                              <td className="border px-4 py-2">{index + 1}</td>
+                              <td className="border px-4 py-2">
+                                {project.projectName}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {project.teamId}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {project.description}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {project.projectStartDate}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {project.projectEndDate}
+                              </td>
+
+                              <td className="border px-4 py-2">
+                                {project.isCompleted ? (
+                                  <span className="text-green-800">
+                                    Completed
+                                  </span>
+                                ) : (
+                                  <span className="text-red-800">
+                                    Not Completed
+                                  </span>
+                                )}
+                              </td>
+
+                              {/* Add more cells as needed */}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="text-center mt-5 p-4 bg-slate-200">
+                      <h1 className="uppercase font-bold">
+                        Sorry! Data not available!
+                      </h1>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </>
-  )
-}
+  );
+};
 
-export default AllProject
+export default AllProject;

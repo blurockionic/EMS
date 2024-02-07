@@ -51,6 +51,7 @@ const ManagerProject = () => {
         setAllProject(data.data.allProject);
 
         setAllProjectForSearch(data.data.allProject);
+      
       } catch (error) {
         console.error("Error fetching data:", error.message);
         // Handle the error
@@ -328,6 +329,8 @@ const ManagerProject = () => {
                 <th className="border px-4 py-2">Project Name</th>
                 <th className="border px-4 py-2">Start Date</th>
                 <th className="border px-4 py-2">Submission Date</th>
+                <th className="border px-4 py-2">Team Name</th>
+
                 <th className="border px-4 py-2">Status</th>
                 <th className="border px-4 py-2">Assign Task</th>
                 <th className="border px-4 py-2">Action</th>
@@ -352,6 +355,9 @@ const ManagerProject = () => {
                     </td>
                     <td className="border px-4 py-2">
                       {project.projectEndDate}
+                    </td>
+                    <td className="border px-4 py-2">
+                      {project.teamId}
                     </td>
                     <td className="border px-4 py-2">
                       {project.isCompleted ? (

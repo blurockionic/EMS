@@ -91,7 +91,7 @@ const EmpLeave = () => {
   return (
     <div>
       {leaveDetailsData.length > 0 ? (
-        <div className="overflow-x-auto  z-0 mt-5 ">
+        <div className="overflow-x-auto  z-0 ">
           <table className="min-w-full table-auto">
             <thead className="bg-slate-400">
               <tr>
@@ -141,9 +141,9 @@ const EmpLeave = () => {
                  
                   </td>
                   <td className="border px-4 py-2">{leave.reason}</td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-4 py-2 hover:font-bold hover:bg-slate-400">
                     {" "}
-                    <button onClick={() => viewLeaveDetail(leave._id)}>
+                    <button className="" onClick={() => viewLeaveDetail(leave._id)}>
                       View
                     </button>
                   </td>

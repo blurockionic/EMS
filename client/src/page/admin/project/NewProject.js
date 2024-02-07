@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import Titlebar from "../../../component/utilities-components/Titlebar";
-import Select from "react-select";
 import axios from "axios";
 import { server } from "../../../App";
 import { useNavigate } from "react-router-dom";
@@ -10,9 +8,9 @@ const NewProject = () => {
   const [employeeData, setEmployeeData] = useState([]);
 
   
-  const [teamId, setTeamId] = useState("");
+
   const [allTeam, setAllTeam] = useState([])
-  const [filterTeam, setFilterTeam] = useState([])
+ 
 
 
   const [formData, setFormData] = useState({
@@ -88,7 +86,7 @@ const NewProject = () => {
     TeamData();
   }, [handleSubmit]);
   
-  const options = [];
+ 
   //fetch all the details of employee
   useEffect(() => {
     const data = async () => {
@@ -108,14 +106,7 @@ const NewProject = () => {
     data();
   }, []);
 
-  //load
-  // for (let i = 0; i < employeeData.length; i++) {
-  //   if (employeeData[i].designationType === "manager") {
-  //     const value = employeeData[i]._id;
-  //     const label = employeeData[i].employeeName;
-  //     options.push({ value, label });
-  //   }
-  // }
+
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -144,19 +135,19 @@ const NewProject = () => {
   return (
     <>
       {/* form for new project  */}
-      <div className="container  max-w-xl mx-auto flex flex-col ">
+      <div className="container  w-[75rem] mx-auto flex flex-col ">
         <form
           onSubmit={handleSubmit}
-          className=" mx-auto bg-white p-8 rounded shadow-md"
+          className=" mx-auto w-full bg-white p-4 rounded shadow-md"
         >
-          <h2 className="text-2xl flex justify-center font-bold mb-6">
+          <h2 className="text-2xl flex justify-center font-bold">
             Project Information
           </h2>
 
           {/* Add more input fields as needed */}
 
           {/* project information */}
-          <div className="mb-4 w-[32rem]">
+          <div className="mb-4 ">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="projectName"

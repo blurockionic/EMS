@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { server } from "../../../App";
+import { server } from "../../App";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -66,7 +66,7 @@ const Header = () => {
 
       {/* show profile card  */}
       {isProfileOpen && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div className="fixed z-10 inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
           {/* Profile Card */}
           <div className="bg-white p-8 rounded-lg shadow-md">
             <div className="flex justify-end">

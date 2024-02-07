@@ -8,7 +8,7 @@ import "./App.css";
 import Login from "./page/auth/Login";
 import AdminDashboard from "./page/admin/dashboard/AdminDashboard";
 import Home from "./page/home/Home";
-import Employee from "./page/admin/employee/Employee";
+import Employee from "./page/admin/Total_employees/Employee";
 import NewProject from "./page/admin/project/NewProject";
 import AllProject from "./page/admin/project/AllProject";
 import MainDashboard from "./page/mainDashboard/MainDashboard";

@@ -1,6 +1,6 @@
 import React from "react";
 
-import Header from "../../component/admin/admin-header/Header";
+import Header from "../../component/utilities-components/Header";
 import SideNavbar from "../../component/admin/admin-sidenavbar/SideNavbar";
 import { Outlet } from "react-router-dom";
 

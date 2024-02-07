@@ -1,9 +1,9 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { server } from "../../../App";
+import { ToastContainer, toast } from "react-toastify";
 
 const NewEmployee = () => {
-  const [buttonActive, setButtonActive] = useState(false);
   const [formData, setFormData] = useState({
     employeeName: "",
     gender: "",
@@ -82,19 +82,37 @@ const NewEmployee = () => {
 
       const { success, message } = response.data;
       if (success) {
-        alert(message);
+       
+        toast.success(message)
+
+        setFormData( { employeeName: "",
+        gender: "",
+        employeeEmail: "",
+        password: "",
+        employeePhoneNumber: "",
+        dateOfBirth: "",
+        address: "",
+        postOffice: "",
+        policeStation: "",
+        city: "",
+        state: "",
+        pinNumber: "",
+        designation: "",
+        designationType: "",
+        department: "",});
       }
     } catch (error) {
-      alert(error.response.data.message)
+      alert(error.response.data.message);
+      console.log("error occured to create new Employee")
     }
   };
 
   return (
     <>
-      <div className=" w-[45rem]  container mx-auto flex flex-col ">
+      <div className=" w-[60rem]  container mx-auto flex flex-col ">
         <form
           onSubmit={handleSubmit}
-          className="w-[45rem] h-[37rem] bg-white p-2 rounded-lg shadow-md mt-2 overflow-x-hidden overflow-scroll"
+          className="w-full bg-white p-2 rounded-lg shadow-md mt-2 "
         >
           <h2 className="text-2xl flex justify-center font-bold">
             Employee Information
@@ -443,6 +461,7 @@ const NewEmployee = () => {
             >
               Submit
             </button>
+            <ToastContainer></ToastContainer>
           </div>
         </form>
       </div>
