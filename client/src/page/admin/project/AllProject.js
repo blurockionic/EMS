@@ -8,6 +8,7 @@ const AllProject = () => {
   const [allProjectForSearch, setAllProjectForSearch] = useState([]);
   const [profile, setProfile] = useState({});
   const [activeTab, setActiveTabTab] = useState("All Project");
+  const [teamInfoData, setTeamInfoData] = useState([]);
 
   //get profile
   useEffect(() => {
@@ -45,6 +46,24 @@ const AllProject = () => {
     data();
   }, []);
 
+  // fetch all the details of Teams
+  useEffect(() => {
+    const teamData = async () => {
+      try {
+        const team = await axios.get(`${server}/team/allTeams`, {
+          withCredentials: true,
+        });
+        console.log("team ka data aa raha h kya",team.data.allTeamsData);
+        setTeamInfoData(team.data.allTeamsData);
+      } catch (error) {
+        console.log("error on geting team data form dataBase");
+      }
+    };
+
+    // funnction call
+    teamData();
+  },[]);
+
   const handleTabClick = (tab) => {
     setActiveTabTab(tab);
   };
@@ -66,6 +85,7 @@ const AllProject = () => {
   console.log(allProject);
   return (
     <>
+    {/* Admon panel Design  */}
       {profile.designationType === "admin" ? (
         <div>
           {/* Project Tabs */}
@@ -118,7 +138,7 @@ const AllProject = () => {
                             <th className="border px-4 py-2">S.No</th>
                             <th className="border px-4 py-2">Project Name</th>
                             <th className="border px-4 py-2">
-                              Team ID (change required)
+                              Team Name
                             </th>
 
                             <th className="border px-4 py-2">Description</th>
@@ -138,7 +158,14 @@ const AllProject = () => {
                                 {project.projectName}
                               </td>
                               <td className="border px-4 py-2">
-                                {project.teamId}
+                                {teamInfoData
+                                  .filter((team) => team._id === project.teamId)
+                                  .map((filteredTeam) => (
+                                    <div key={filteredTeam._id}>
+                                      {/* Display relevant information from filteredTeam */}
+                                      {filteredTeam.teamName}
+                                    </div>
+                                  ))}
                               </td>
                               <td className="border px-4 py-2">
                                 {project.description}
@@ -189,6 +216,7 @@ const AllProject = () => {
           )}
         </div>
       ) : (
+        // other users design 
         <div>
           {/* Project Tabs */}
           <div className=" flex flex-row shadow-lg">
@@ -230,7 +258,7 @@ const AllProject = () => {
                             <th className="border px-4 py-2">S.No</th>
                             <th className="border px-4 py-2">Project Name</th>
                             <th className="border px-4 py-2">
-                              Team ID (change required)
+                              Team Name
                             </th>
 
                             <th className="border px-4 py-2">Description</th>
@@ -249,8 +277,16 @@ const AllProject = () => {
                               <td className="border px-4 py-2">
                                 {project.projectName}
                               </td>
+
                               <td className="border px-4 py-2">
-                                {project.teamId}
+                                {teamInfoData
+                                  .filter((team) => team._id === project.teamId)
+                                  .map((filteredTeam) => (
+                                    <div key={filteredTeam._id}>
+                                      {/* Display relevant information from filteredTeam */}
+                                      {filteredTeam.teamName}
+                                    </div>
+                                  ))}
                               </td>
                               <td className="border px-4 py-2">
                                 {project.description}

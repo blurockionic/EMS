@@ -25,6 +25,12 @@ const projectSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    managerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"employee_details",
+      required:true
+    },
+    
     adminId:{
       type:mongoose.Schema.Types.ObjectId,
       ref:"users",
@@ -59,7 +65,7 @@ const projectSchema = new mongoose.Schema(
 // code  for send mail to  the team members and manager 
 projectSchema.post("save", async function(doc) {
   try {
-    console.log("DOC", doc)
+    // console.log("DOC", doc)
 
 
     // transporter 

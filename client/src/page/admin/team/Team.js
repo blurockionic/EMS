@@ -51,7 +51,7 @@ const Team = () => {
     };
 
     TData();
-  }, [loading, loadingTwo,]);
+  }, [loading, loadingTwo]);
   // console.log("all team data",allTeam);
 
   // update btn click handler
@@ -114,14 +114,15 @@ const Team = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!teamName) {
-      alert("Team name is Required")
+      alert("Team name is Required");
     }
 
-    if (selectedManager === undefined) {
-      selectedManager = null;
+    if (selectedManager === "") {
+      alert("Please select Manager")
+      return
     }
 
-    if (selectedManager === undefined) {
+    if (selectedProject === undefined) {
       selectedProject = null;
     }
 
@@ -166,6 +167,7 @@ const Team = () => {
         setSelectedManager("");
         setSelectedMembers([]);
         setSelectedProject("");
+        setLoadingTwo(true);
       }
 
       // Clear the form after successful submission
@@ -367,45 +369,40 @@ const Team = () => {
                   </thead>
                   <tbody>
                     {allTeam.map((emp, index) => (
-                      <tr key={index}>
-                        <td className="py-2 border-b border-r-2 text-center font-bold">
+                      <tr key={index} className="border-b">
+                        <td className="py-2  border-r-2 text-center font-bold">
                           {index + 1}
                         </td>
-                        <td className="py-2 border-b border-r-2 text-center">
+                        <td className=" border-r-2 text-center">
                           {emp?.teamName}
                         </td>
-                        <td className="py-2  border-b border-r-2 text-center">
+                        <td className="py-2  border-r-2 text-center">
                           {emp.selectedManager?.employeeName === ""
                             ? "empty"
                             : emp.selectedManager?.employeeName}
                         </td>
 
-                        <td className="py-2 border-b border-r-2 text-center">
+                        <td className="py-2 border-r-2 text-center">
                           {emp.selectedProject?.projectName}
                         </td>
-
-                        <td className="py-2 border-b mx-auto flex justify-center">
+                        <td className="py-2 mx-auto flex justify-center">
                           {emp.selectedMembers.map((member, memberIndex) => (
-                            <td className=" justify-center">
-                              <div
-                                className=" px-3 rounded-sm mr-2 font-semibold  border-black   "
-                                key={memberIndex}
-                              >
+                            <td className="justify-center" key={memberIndex}>
+                              <div className="px-3 rounded-sm mr-2 font-semibold border-black">
                                 {member.employeeName}
                               </div>
                             </td>
                           ))}
                         </td>
-
                         <td
-                          className=" cursor-pointer py-2 border-b text-center hover:font-extrabold bg-slate-500 hover:bg-sky-800 text-xl "
+                          className=" cursor-pointer py-2 text-center hover:font-extrabold bg-slate-500 hover:bg-sky-800 text-xl "
                           onClick={() => handleUpdatebtn(emp._id)}
                         >
                           Click
                         </td>
 
                         <td
-                          className=" cursor-pointer py-2 border-b text-center hover:font-extrabold bg-red-600 hover:bg-red-800 text-xl "
+                          className=" cursor-pointer py-2 text-center hover:font-extrabold bg-red-600 hover:bg-red-800 text-xl "
                           onClick={() => handleDeletebtn(emp._id)}
                         >
                           Delete

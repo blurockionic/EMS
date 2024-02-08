@@ -27,7 +27,6 @@ const ManagerProject = () => {
     isTaskCompleted: false,
   });
 
- 
   const [employeeData, setEmployeeData] = useState([]);
   // const [allProject, setAllProject] = useState([]);
 
@@ -37,8 +36,25 @@ const ManagerProject = () => {
 
   const [allProject, setAllProject] = useState([]);
   const [allProjectForSearch, setAllProjectForSearch] = useState([]);
+  const [teamInfoData, setTeamInfoData] = useState([]);
 
   const [selectedProject, setSelectedProject] = useState({});
+
+  // geting all the details of team
+  useEffect(() => {
+    const teamData = async () => {
+      try {
+        const team = await axios.get(`${server}/team/allTeams`, {
+          withCredentials: true,
+        });
+        console.log("team ka data aa raha h kya", team.data.allTeamsData);
+        setTeamInfoData(team.data.allTeamsData);
+      } catch (error) {
+        console.log("error to geting all the team data from data");
+      }
+    };
+    teamData();
+  }, []);
 
   //fetch all the details of project
   useEffect(() => {
@@ -51,7 +67,6 @@ const ManagerProject = () => {
         setAllProject(data.data.allProject);
 
         setAllProjectForSearch(data.data.allProject);
-      
       } catch (error) {
         console.error("Error fetching data:", error.message);
         // Handle the error
@@ -61,6 +76,10 @@ const ManagerProject = () => {
     //invocke
     data();
   }, []);
+
+  
+  // console.log(" All project data arha h",  profile.employeeId);
+
 
   // handle search
   const handleSearch = (e) => {
@@ -93,6 +112,7 @@ const ManagerProject = () => {
 
     myProfile();
   }, []);
+  // console.log(profile.employeeId);
 
   // handle for report button
   const handleReportClick = (project) => {
@@ -287,18 +307,12 @@ const ManagerProject = () => {
 
   console.log(allProject);
 
-
-
   const empData = employeeData.filter(
     (singleUser) => singleUser.designationType === "employee"
   );
   // console.log(empData);
-  const tempData = [...empData]
-  console.log('temp data',tempData)
-
-
-
-
+  const tempData = [...empData];
+  console.log("temp data", tempData);
 
   return (
     <>
@@ -357,7 +371,13 @@ const ManagerProject = () => {
                       {project.projectEndDate}
                     </td>
                     <td className="border px-4 py-2">
-                      {project.teamId}
+                      {teamInfoData
+                        .filter((team) => team._id === project.teamId)
+                        .map((filteredTeam) => (
+                          <div key={filteredTeam._id}>
+                            {filteredTeam.teamName}
+                          </div>
+                        ))}
                     </td>
                     <td className="border px-4 py-2">
                       {project.isCompleted ? (
@@ -410,8 +430,6 @@ const ManagerProject = () => {
                         View
                       </button>
                     </td>
-
-                  
 
                     {/* Add more cells as needed */}
                   </tr>
@@ -650,8 +668,6 @@ const ManagerProject = () => {
           </div>
         </div>
       )}
-
-
     </>
   );
 };

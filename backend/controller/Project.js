@@ -6,7 +6,9 @@ import { Teams } from "../model/team_model.js";
 export const newProject = async (req, res) => {
   //fetch all the data from request body
 
-  console.log(req.body)
+  // console.log(req.body)
+  console.log("working")
+  
   const {
     projectName,
     projectStartDate,
@@ -42,7 +44,9 @@ export const newProject = async (req, res) => {
         message: "Team not found!",
       });
     }
-    // console.log("team data aa raha",foundTeam);
+    const managerId = foundTeam.selectedManager
+    console.log("team data aa raha", managerId);
+    
     if(foundTeam.selectedProject){
       return res.status(400).json({
         success:false,
@@ -63,6 +67,7 @@ export const newProject = async (req, res) => {
         projectEndDate,
         priority,
         description,
+        managerId,
         teamId,
         adminId: req.user._id,
         websiteUrl,

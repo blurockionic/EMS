@@ -27,7 +27,7 @@ const NewProject = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission logic here
-    console.log("Form submitted:", formData);
+    // console.log("Form submitted:", formData);
     const {
       projectName,
       projectStartDate,
@@ -39,6 +39,11 @@ const NewProject = () => {
     } = formData;
 
     //request to the server
+    if(!teamId) {
+      alert("team not created pls first create team")
+      navigate("../newTeam")
+      return
+    }
     const response = await axios.post(
       `${server}/project/new`,
       {

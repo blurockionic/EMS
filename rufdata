@@ -3,3 +3,13 @@
 
 
 
+<td className="border px-4 py-2">
+{teamInfoData
+  .filter((team) => team._id === project.teamId)
+  .map((filteredTeam) => (
+    <div key={filteredTeam._id}>
+      {/* Display relevant information from filteredTeam */}
+      {filteredTeam.teamName}
+    </div>
+  ))}
+</td>
