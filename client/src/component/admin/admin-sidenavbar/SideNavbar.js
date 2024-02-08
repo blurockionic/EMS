@@ -265,7 +265,7 @@ const SideNavbar = () => {
                         : "bg-white"
                     }`}
                   >
-                  Version
+                  Software Info
                   </button>
                 </Link>
               </li>
