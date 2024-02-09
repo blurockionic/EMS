@@ -1,14 +1,15 @@
 import { Project } from "../model/project.js";
 import { Employee } from "../model/employee.js";
 import { Teams } from "../model/team_model.js";
+import { User } from "../model/user.js";
 
 // create new project
 export const newProject = async (req, res) => {
   //fetch all the data from request body
 
   // console.log(req.body)
-  console.log("working")
-  
+  // console.log("working");
+
   const {
     projectName,
     projectStartDate,
@@ -44,19 +45,45 @@ export const newProject = async (req, res) => {
         message: "Team not found!",
       });
     }
-    const managerId = foundTeam.selectedManager
-    console.log("team data aa raha", managerId);
-    
-    if(foundTeam.selectedProject){
-      return res.status(400).json({
-        success:false,
-        message:"multiple proeject cannot be assign to a single team"
 
-      })
+    // find all the team emails 
+    let email = []
+
+    for(const employeeId of foundTeam.selectedMembers){
+        const foundUserDeatails = await Employee.findById(employeeId)
+        email.push(foundUserDeatails.employeeEmail)
     }
+
     
-  
-  
+
+
+    const managerId = foundTeam.selectedManager;
+
+
+    // find the manager email from db
+    const foundManagerDetails = await User.find({ employeeId: managerId });
+    let managerEmail = ""
+
+    for (const detail of foundManagerDetails) {
+      managerEmail = detail.email
+    }
+
+    //again push the email of manager
+    email.push(managerEmail)
+
+    console.log(email)
+
+    
+
+
+
+    if (foundTeam.selectedProject) {
+      return res.status(400).json({
+        success: false,
+        message: "multiple proeject cannot be assign to a single team",
+      });
+    }
+
     // check designation
     const { designationType } = req.user;
     if (designationType === "admin") {
@@ -73,12 +100,12 @@ export const newProject = async (req, res) => {
         websiteUrl,
         isCompleted,
         isScrap,
+        emails: email
       });
 
-      foundTeam.selectedProject = project._id
-      await foundTeam.save()
-
-
+      // console.log("id",project._id);
+      foundTeam.selectedProject = project._id;
+      await foundTeam.save();
 
       // return result
 
@@ -105,24 +132,21 @@ export const newProject = async (req, res) => {
 // get all project
 export const allProject = async (req, res) => {
   try {
-   
+    // get all project from the collection
+    const allProject = await Project.find({});
 
-      // get all project from the collection
-      const allProject = await Project.find({})
-
-      if (!allProject) {
-        return res.status(400).json({
-          success: false,
-          message: "Project not created yet!",
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        allProject,
-        message: "All project fetched successfully!",
+    if (!allProject) {
+      return res.status(400).json({
+        success: false,
+        message: "Project not created yet!",
       });
-    
+    }
+
+    return res.status(200).json({
+      success: true,
+      allProject,
+      message: "All project fetched successfully!",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -158,13 +182,13 @@ export const updateProject = async (req, res) => {
       });
     }
 
-    //check designation 
-    const {designationType} = req.user
-    if(designationType != "admin"){
+    //check designation
+    const { designationType } = req.user;
+    if (designationType != "admin") {
       return res.status(400).json({
         success: false,
-        message: "Only admin can update the details"
-      })
+        message: "Only admin can update the details",
+      });
     }
 
     // check project exist or not
@@ -220,15 +244,14 @@ export const deleteProject = async (req, res) => {
 
     // check designationType
 
-    const {designationType} = req.user
+    const { designationType } = req.user;
 
-    if(designationType != "admin"){
+    if (designationType != "admin") {
       return res.status(400).json({
         success: false,
-        message: "Only admin can delete the existing project!"
-      })
+        message: "Only admin can delete the existing project!",
+      });
     }
-
 
     // delete proejct
     const deletedProject = await Project.deleteOne({ _id: id });
@@ -246,8 +269,7 @@ export const deleteProject = async (req, res) => {
   }
 };
 
-
-//get all task of specific project // tested 
+//get all task of specific project // tested
 export const specificProject = async (req, res) => {
   // fetch project id from params
   const { id } = req.params;
@@ -261,7 +283,6 @@ export const specificProject = async (req, res) => {
     }
 
     //check user
-    
 
     //all task filtered by id
     const specificProject = await Project.findById(id);

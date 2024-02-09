@@ -63,7 +63,6 @@ const NewProject = () => {
       }
     );
 
-    console.log(response);
     const { success, message } = response.data;
     if (success) {
       alert(message);
@@ -90,6 +89,8 @@ const NewProject = () => {
     
     TeamData();
   }, [handleSubmit]);
+
+  
   
  
   //fetch all the details of employee

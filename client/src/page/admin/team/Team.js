@@ -42,7 +42,7 @@ const Team = () => {
           withCredentials: true,
         });
 
-        // console.log("all teams data is here",allTeamsData.data.allTeamsData);
+        console.log("all teams data is here",allTeamsData.data.allTeamsData);
         setAllTeam(allTeamsData.data.allTeamsData);
         setTeamName(filteredTeam[0].teamName);
       } catch (error) {

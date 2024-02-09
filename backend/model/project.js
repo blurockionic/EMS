@@ -30,7 +30,6 @@ const projectSchema = new mongoose.Schema(
       ref:"employee_details",
       required:true
     },
-    
     adminId:{
       type:mongoose.Schema.Types.ObjectId,
       ref:"users",
@@ -55,7 +54,21 @@ const projectSchema = new mongoose.Schema(
     completedPercent:{
       type:Number,
       default: 0
-    }
+    },
+    emails: {
+      type: [{
+        type: String,
+        trim: true,
+        lowercase: true,
+        validate: {
+          validator: function (v) {
+            // Use a regular expression for basic email validation
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+          },
+          message: props => `${props.value} is not a valid email address!`,
+        },
+      }],
+    },
   },
   {
     timestamps: true,
@@ -65,7 +78,7 @@ const projectSchema = new mongoose.Schema(
 // code  for send mail to  the team members and manager 
 projectSchema.post("save", async function(doc) {
   try {
-    // console.log("DOC", doc)
+    console.log("DOC", doc)
 
 
     // transporter 
@@ -82,7 +95,8 @@ projectSchema.post("save", async function(doc) {
       from :"Blurock Innovation | EMS",
       // to: doc.email 
       // hare we give the emails of all the members of team and all the mananger hare is code 
-      to:` arunupadhayay2000@gmail.com`,
+      // to:["arunupadhayay2000@gmail.com", "biruly2000@gmail.com"],
+      to: doc.emails,
      
       // to: allEmails.join(', '), // Combine emails into a comma-separated string
       subject: "New project is created",
