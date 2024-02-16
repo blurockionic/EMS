@@ -3,3 +3,298 @@
 
 
 
+<td className="border px-4 py-2">
+{teamInfoData
+  .filter((team) => team._id === project.teamId)
+  .map((filteredTeam) => (
+    <div key={filteredTeam._id}>
+      {/* Display relevant information from filteredTeam */}
+      {filteredTeam.teamName}
+    </div>
+  ))}
+</td>
+
+
+
+
+
+
+
+
+
+
+
+
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import { server } from "../../App";
+import { FaWindowClose } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { QRCode } from "react-qrcode";
+import { FaUserLarge } from "react-icons/fa6";
+import EmpLeaveHistory from "./EmpLeaveHistory";
+// import LeaveHistroy from "./LeaveHistroy";
+
+const EmployeeDashboard = () => {
+  const [leaveViewModal, setLeaveViewModal] = useState(false);
+
+  const handleCloseModal = () => {
+    setLeaveViewModal(false);
+  };
+
+  // handleling leave details values
+  const [LeaveFormData, setLeaveFormData] = useState({
+    ToDate: "",
+    FromDate: "",
+    LeaveType: "",
+    Reason: "",
+  });
+  // handleformData
+  const handleFormData = (e) => {
+    setLeaveFormData({ ...LeaveFormData, [e.target.name]: e.target.value });
+    console.log(LeaveFormData);
+  };
+
+  const handelchangeData = async (e) => {
+    e.preventDefault();
+    console.log(LeaveFormData);
+    const { ToDate, FromDate, Reason, LeaveType } = LeaveFormData;
+
+    const start = new Date(FromDate);
+    const end = new Date(ToDate);
+    const timeDifference = end.getTime() - start.getTime();
+    const totalDaysofLeave = Math.floor(timeDifference / (1000 * 3600 * 24));
+
+    // console.log("total leave day",totalDaysofLeave)
+
+    try {
+      const response = await axios.post(
+        `${server}/leave/newapply`,
+        {
+          ToDate,
+          FromDate,
+          Reason,
+          LeaveType,
+          totalDaysofLeave,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      const { success, message } = response.data;
+
+      if (success) {
+        alert(message);
+      }
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    reportTitle: "",
+    gitLink: "",
+    reportDescription: "",
+    isTaskCompleted: false,
+  });
+
+  const [allTask, setAllTask] = useState([]);
+  const myInformation = [];
+  const [employee, setEmployee] = useState([]);
+  const [profile, setProfile] = useState({});
+  const [activeTab, setActiveTab] = useState("Task");
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+
+  //all profile
+  useEffect(() => {
+    const myProfile = async () => {
+      try {
+        const response = await axios.get(`${server}/users/me`, {
+          withCredentials: true,
+        });
+
+        setProfile(response.data.user);
+      } catch (error) {
+        console.error("Error fetching user profile:", error.message);
+      }
+    };
+
+    myProfile();
+  }, []);
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  // handle for tab
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
+
+  //all employee
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const allEmployee = await axios.get(`${server}/employee/all`, {
+          withCredentials: true,
+        });
+        setEmployee(allEmployee.data.data);
+      } catch (error) {
+        console.error(
+          "Error fetching employee data:",
+          error.response.data.message
+        );
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  //all task
+  useEffect(() => {
+    const getMyTask = async () => {
+      try {
+        const response = await axios.get(`${server}/task/all`, {
+          withCredentials: true,
+        });
+
+        // console.log(response);
+        setAllTask(response.data.allTask);
+      } catch (error) {
+        console.error("Error fetching task:", error.responce.data.message);
+      }
+    };
+
+    getMyTask();
+  }, []);
+
+  // const [profile, setProfile] =  useState({})
+
+  for (let i = 0; i < employee.length; i++) {
+    if (employee[i]._id === profile.employeeId) {
+      myInformation.push(employee[i]);
+    }
+  }
+
+  const [myInfo] = myInformation;
+
+  // console.log(myInfo)
+  // Set id in local storage
+  localStorage.setItem("id", profile.employeeId);
+
+  // handle for report button clicked
+  const handleReportClick = (task) => {
+    //  alert(id)
+    setSelectedTask(task);
+    setShowModal(true);
+
+    // Assuming selectedTask and selectedTask.employeeId are defined
+    if (selectedTask && selectedTask.assignTo) {
+      // Set id in local storage
+      localStorage.setItem("id", selectedTask.assignTo);
+    } else {
+      // Handle the case where selectedTask or selectedTask.employeeId is not defined
+      console.error(
+        "Unable to set id in local storage. Check selectedTask and selectedTask.employeeId."
+      );
+    }
+  };
+
+  // for update the form
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  //submit the report for create the entry on db
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Optionally, reset the form after submission
+    const { reportTitle, reportDescription, gitLink } = formData;
+
+    // console.log(reportTitle, reportDescription, isTaskCompleted);
+
+    try {
+      const responce = await axios.post(
+        `${server}/taskreport/${selectedTask._id}`,
+        {
+          reportTitle,
+          reportDescription,
+          isTaskCompleted: false,
+          gitLink,
+          isRequested: true,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      const { success, message } = responce.data;
+
+      if (success) {
+        alert(message);
+      }
+
+      //reset the form
+      setFormData({
+        reportTitle: "",
+        reportDescription: "",
+        isTaskCompleted: false,
+      });
+
+      setShowModal(false);
+      navigate("../reporthistory");
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+
+  // Response of LeaveApplication revert by the manager
+  // fetching data leave status of from db
+
+  //download profile card
+  const profileCardRef = useRef(null);
+
+  const downloadProfileCard = () => {
+    const profileCard = profileCardRef.current;
+
+    if (profileCard) {
+      const htmlContent = profileCard.innerHTML;
+      const blob = new Blob([htmlContent], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "profile_card.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  };
+
+  //handle on feedback
+  const handleOnFeedback = (taskId) => {
+    localStorage.setItem("taskId", taskId);
+    navigate("../taskreportfeedback");
+  };
+
+  return (
+   
+  
+  )
+};
+
+export default EmployeeDashboard;

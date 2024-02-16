@@ -1,3 +1,4 @@
+import { Project } from "../model/project.js";
 import { Teams } from "../model/team_model.js";
 
 
@@ -77,7 +78,7 @@ export const allTeams = async (req, res) => {
 // update the all team in Db 
 export const updateTeam = async (req,res) => {
   const {id} = req.params
-  console.log("all data of",req.body);
+  // console.log("all data of",req.body);
   const {teamName, teamDescription, selectedManager, selectedProject, selectedMembers} =  req.body
   
   try {
@@ -98,14 +99,41 @@ export const updateTeam = async (req,res) => {
     if (!updateTeam){
       return res.status(404).json({success:false,message:"team not exist in DataBase"})
     }
-    
+   
+  
     updateTeam.teamName = teamName
     updateTeam.teamDescription = teamDescription
     updateTeam.selectedManager = selectedManager === "" ? null :selectedManager
     updateTeam.selectedMembers = selectedMembers
     updateTeam.selectedProject = selectedProject === "" ? null : selectedProject
-    await updateTeam.save()   
+    await updateTeam.save()  
 
+
+
+    // console.log("working",typeof(id))
+    const foundProject = await Project.findOne({ teamId: id });
+
+if (!foundProject) {
+   return res.status(400).json({
+    success:false,
+    message:"managerId not found in Project"
+   })
+} else {
+  // console.log("Found project:", foundProject);
+
+  // Assuming selectedManager is an ObjectId
+  foundProject.managerId = selectedManager;
+
+  try {
+    const updatedProject = await foundProject.save();
+    // console.log("Updated project:", updatedProject);
+  } catch (error) {
+    console.error("Error saving project:", error);
+  }
+}
+
+
+  
 
 return res.status(200).json({
   success:true,
