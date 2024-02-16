@@ -19,6 +19,7 @@
     "react-select": "^5.8.0",
     "react-toastify": "^9.1.3",
     "recharts": "^2.10.3",
+    "vanta": "^0.5.24",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

@@ -33,7 +33,7 @@ export const newProject = async (req, res) => {
       });
     }
 
-    // check manager id
+    // check team id
     const foundTeam = await Teams.findById(teamId);
 
     if (!foundTeam) {
@@ -47,12 +47,11 @@ export const newProject = async (req, res) => {
       return res.status(400).json({
         success:false,
         message:"multiple proeject cannot be assign to a single team"
-
       })
     }
     
   
-  
+    console.log(req.user)
     // check designation
     const { designationType } = req.user;
     if (designationType === "admin") {

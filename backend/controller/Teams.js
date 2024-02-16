@@ -5,11 +5,10 @@ import { Teams } from "../model/team_model.js";
 // controller for creating New Team 
 export const teamDetail = async (req, res) => {
   try {
-    // console.log(req.body);
+    
+    
     const { teamName, teamDescription,selectedMembers, adminProfile, selectedManager, selectedProject } = req.body;
 
-    // console.log("Data aa raha h ",req.body);
-    // console.log("admin ki id ", adminProfile);
    
     if (!teamName ) {
       return res.status(404).json({
@@ -17,12 +16,6 @@ export const teamDetail = async (req, res) => {
         message: "Team Name is  mandatory for Creating team ",
       });
     }
-
-   
-
-
-
-
 
 
     const createdTeam = await Teams.create({
