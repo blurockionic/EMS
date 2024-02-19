@@ -2,6 +2,15 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { server } from "../../../App";
+import { RxDashboard } from "react-icons/rx";
+import { FaUsers } from "react-icons/fa";
+import { AiOutlineFundProjectionScreen } from "react-icons/ai";
+import { BiLogoMicrosoftTeams } from "react-icons/bi";
+import { TbReportAnalytics } from "react-icons/tb";
+import { CiSquareInfo } from "react-icons/ci";
+import logo from "../../../assets/logo.svg"
+import { LuChevronFirst } from "react-icons/lu";
+import { FiMoreVertical } from "react-icons/fi";
 
 const SideNavbar = () => {
   const [profile, setProfile] = useState({});
@@ -41,26 +50,31 @@ const SideNavbar = () => {
   //   }
   // };
   return (
-    <aside className="bg-slate-800 text-white h-[630px]  flex flex-col">
-      <nav className="flex-1">
-        <div className="flex h-full w-64 mt-3 ">
-          <ul className="flex-row justify-center w-full ">
+    <aside className="bg-gray-200 text-white h-screen  flex flex-col ">
+      <nav className="flex h-full flex-col bg-white border-r shadow-sm">
+        <div className="p-4 pb-2 flex justify-between items-center ">
+          {/* brand  */}
+          <img src={logo} alt="logo" className="w-32"/>
+          {/* collapsable button  */}
+          <button className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-700"><LuChevronFirst/></button>
+        </div>
+        {/* navbar list  */}
+        <ul className="flex-1 px-3 justify-center w-full mt-5">
             {/* admin dashboard  */}
             {profile.designationType === "admin" && (
               <li
-                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer 
-            
-              `}
+                className={`relative flex items-center  px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 {/* Dashboard button  */}
-                <Link to={"./home"} className="uppercase  font-bold">
+                <Link to={"./home"}>
                   <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                    className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
                       path === "home"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
+                        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                        : "hover:bg-indigo-50 text-gray-600"
                     }`}
                   >
+                  <span className="my-1 mr-1"><RxDashboard/></span>
                     Dashboard
                   </button>
                 </Link>
@@ -70,22 +84,20 @@ const SideNavbar = () => {
             {/* manager dashboard */}
             {profile.designationType === "manager" && (
               <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
+              className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 {/* New Employees */}
                 <Link
                   to={"./managerdashboard"}
-                  className="uppercase  font-bold"
                 >
                   <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
-                      path === "managerdashboard"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
+                     className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
+                      path === "home"
+                        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                        : "hover:bg-indigo-50 text-gray-600"
                     }`}
                   >
+                    <span className="my-1 mr-1"><RxDashboard/></span>
                     Dashboard
                   </button>
                 </Link>
@@ -95,19 +107,18 @@ const SideNavbar = () => {
             {/* HR dashboard */}
             {profile.designationType === "human resources" && (
               <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
+              className={`relative flex items-center px-3  font-medium rounded-md cursor-pointer transition-colors`}
               >
                 {/* New Employees */}
                 <Link to={"./hrdashboard"} className="uppercase  font-bold">
                   <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
-                      path === "hrdashboard"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
+                     className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
+                      path === "home"
+                        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                        : "hover:bg-indigo-50 text-gray-600"
                     }`}
                   >
+                    <span className="my-1 mr-1"><RxDashboard/></span>
                     Dashboard
                   </button>
                 </Link>
@@ -119,109 +130,65 @@ const SideNavbar = () => {
             profile.designationType === "human resources" ||
             profile.designationType === "manager" ? (
               <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-            
-              `}
+              className={`relative flex items-center px-3 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 {/* New Employees */}
-                <Link to={"./employee"} className="uppercase  font-bold">
+                <Link to={"./employee"} >
                   <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                    className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
                       path === "employee"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
+                        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                        : "hover:bg-indigo-50 text-gray-600"
                     }`}
                   >
+                    <span className="my-1 mr-1"><FaUsers/></span>
                     Employees 
                   </button>
                 </Link>
               </li>
             ) : null}
 
-            {/* // it visible when user type is admin  */}
-            {/* {profile.designationType === "admin" && (
-              <li
-                className={`flex items-center text-start text-black mb-2 cursor-pointer
-                
-                  `}
-              >
-           
-                <Link to={"./newProject"} className="uppercase  font-bold">
-                  <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5 z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
-                      path === "newProject"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
-                    }`}
-                  >
-                    New Project
-                  </button>
-                </Link>
-              </li>
-            )} */}
+         
 
-            {/* // it visible when user type is admin  */}
+            {/* // it visible when user type is admin  allProject */}
             {profile.designationType === "admin" ? (
               <li
-                className={`flex items-center text-start text-black mb-2 cursor-pointer
-              
-                `}
+              className={`relative flex items-center px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 {/* All Project */}
                 <Link to={"./allProject"} className="uppercase  font-bold">
                   <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5 z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
-                      path === "allProject"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
-                    }`}
+                   className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
+                    path === "allProject"
+                      ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                      : "hover:bg-indigo-50 text-gray-600"
+                  }`}
                   >
+                    <span className="my-1 mr-1"><AiOutlineFundProjectionScreen/></span>
                   Project 
                   </button>
                 </Link>
               </li>
             ) : null}
 
-            {/* //new employee for humanresources */}
-            {/* {profile.designationType === "human resources" ||
-            profile.designationType === "admin" ? (
-              <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
-              >
-               
-                <Link to={"./newEmployee"} className="uppercase  font-bold">
-                  <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
-                      path === "newEmployee"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
-                    }`}
-                  >
-                    New Employee
-                  </button>
-                </Link>
-              </li>
-            ) : null} */}
+           
 
             {/* teams for admin       profile.designationType === "manager" || */}
 
             {profile.designationType === "admin" ? (
               <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
+              className={`relative flex items-center px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 {/* New Employees */}
                 <Link to={"./newTeam"} className="uppercase  font-bold">
                   <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                     className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
                       path === "newTeam"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
+                        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                        : "hover:bg-indigo-50 text-gray-600"
                     }`}
                   >
+                    <span className="my-1 mr-1"><BiLogoMicrosoftTeams/></span>
                     Team
                   </button>
                 </Link>
@@ -231,19 +198,18 @@ const SideNavbar = () => {
             {/* Admin Report */}
             {profile.designationType === "admin" && (
               <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
+              className={`relative flex items-center px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 {/* New Employees */}
                 <Link to={"./adminreport"} className="uppercase  font-bold">
                   <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                    className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
                       path === "adminreport"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
+                        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                        : "hover:bg-indigo-50 text-gray-600"
                     }`}
                   >
+                    <span className="my-1 mr-1"><TbReportAnalytics/></span>
                     Report
                   </button>
                 </Link>
@@ -252,20 +218,19 @@ const SideNavbar = () => {
             {/* Admin Report */}
             {profile.designationType === "admin" && (
               <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
+              className={`relative flex items-center px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 {/* New Employees */}
                 <Link to={"./AppVersion"} className="uppercase  font-bold">
                   <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                    className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
                       path === "AppVersion"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
+                        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                        : "hover:bg-indigo-50 text-gray-600"
                     }`}
                   >
-                  Software Info
+                    <span className="my-1 mr-1"><CiSquareInfo/></span>
+                   Info
                   </button>
                 </Link>
               </li>
@@ -448,16 +413,19 @@ const SideNavbar = () => {
               </li>
             )} */}
           </ul>
-        </div>
+          {/* profile section  */}
+          <div className="border-t flex p-3 ">
+            <img src="https://ui-avatars.com/api/?background=0D8ABC&color=fff" alt="profile" className="w-10 h-10 rounded-md"/>
+            <div className="flex justify-between items-center w-52 ml-3">
+              <div className="leading-4">
+                <h4 className="font-semibold text-gray-700">John Deo</h4>
+                <span className="text-sm text-gray-600">johndeo@gmail.com</span>
+              </div>
+              <FiMoreVertical className="text-gray-900" size={20}/>
+            </div>
+          </div>
       </nav>
-      {/* <div className="p-4">
-        <button
-          className="bg-white text-gray-800 px-4 py-2 rounded-md w-full"
-          onClick={handleOnLogout}
-        >
-          Logout
-        </button>
-      </div> */}
+      
     </aside>
   );
 };

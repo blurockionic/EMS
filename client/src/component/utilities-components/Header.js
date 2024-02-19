@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { server } from "../../App";
 import { useNavigate } from "react-router-dom";
+import brandlogo from "../../assets/brandlogo.png"
 
 const Header = () => {
   const navigate = useNavigate();
@@ -50,13 +51,13 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-slate-800 text-white p-4 flex justify-between items-center ">
+      <header className="bg-gray-200 p-3 flex justify-between items-center z-50 shadow-sm ">
         <div>
-          <h1 className="text-2xl font-semibold mx-20">Blurock</h1>
+          <img src={brandlogo} alt="branlogo" className="w-[110px] h-auto object-cover"/>
         </div>
         <div>
           <h1
-            className="text-lg font-semibold mx-20 cursor-pointer"
+            className="text-lg font-semibold mx-20 cursor-pointer bg-slate-50 px-4 py-1 rounded-lg text-slate-900 shadow-sm"
             onClick={handleOnOpenProfile}
           >
             Profile
