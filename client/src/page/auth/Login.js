@@ -129,7 +129,7 @@ const Login = () => {
           </div>
           <div className="flex items-center justify-between">
             <button
-              className="w-64 bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900    mx-auto font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="w-64 bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 hover:from-indigo-400 mx-auto font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
               Sign In

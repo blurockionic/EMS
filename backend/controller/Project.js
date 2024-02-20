@@ -8,7 +8,7 @@ export const newProject = async (req, res) => {
   //fetch all the data from request body
 
   // console.log(req.body)
-  // console.log("working");
+  console.log("create project  working");
 
   const {
     projectName,
@@ -47,92 +47,82 @@ export const newProject = async (req, res) => {
     }
 
     // console.log("team data aa raha",foundTeam);
-    if(foundTeam.selectedProject){
-      return res.status(400).json({
-        success:false,
-        message:"multiple proeject cannot be assign to a single team"
-      })
-
-
-    // find all the team emails 
-    let email = []
-
-    for(const employeeId of foundTeam.selectedMembers){
-        const foundUserDeatails = await Employee.findById(employeeId)
-        email.push(foundUserDeatails.employeeEmail)
-    }
-
-    
-  
-    console.log(req.user)
-
-
-    const managerId = foundTeam.selectedManager;
-
-
-    // find the manager email from db
-    const foundManagerDetails = await User.find({ employeeId: managerId });
-    let managerEmail = ""
-
-    for (const detail of foundManagerDetails) {
-      managerEmail = detail.email
-    }
-
-    //again push the email of manager
-    email.push(managerEmail)
-
-    console.log(email)
-
-    
-
-
-
     if (foundTeam.selectedProject) {
       return res.status(400).json({
         success: false,
         message: "multiple proeject cannot be assign to a single team",
       });
-    }
+    };
+      // find all the team emails
+      let email = [];
 
-    // check designation
-    const { designationType } = req.user;
-    if (designationType === "admin") {
-      // create entry for project
-      const project = await Project.create({
-        projectName,
-        projectStartDate,
-        projectEndDate,
-        priority,
-        description,
-        managerId,
-        teamId,
-        adminId: req.user._id,
-        websiteUrl,
-        isCompleted,
-        isScrap,
-        emails: email
-      });
+      for (const employeeId of foundTeam.selectedMembers) {
+        const foundUserDeatails = await Employee.findById(employeeId);
+        email.push(foundUserDeatails.employeeEmail);
+      }
 
-      // console.log("id",project._id);
-      foundTeam.selectedProject = project._id;
-      await foundTeam.save();
+      console.log(req.user);
 
-      // return result
+      const managerId = foundTeam.selectedManager;
 
-      return res.status(200).json({
-        success: true,
-        project,
-        message: "Project Created successfully!",
-      });
-      // return res.json({message: "working"})
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: "Only admin can add the project!",
-      });
-    }
-  }
-  } catch (error) {
+      // find the manager email from db
+      const foundManagerDetails = await User.find({ employeeId: managerId });
+      let managerEmail = "";
+
+      for (const detail of foundManagerDetails) {
+        managerEmail = detail.email;
+      }
+
+      //again push the email of manager
+      email.push(managerEmail);
+
+      console.log(email);
+
+      if (foundTeam.selectedProject) {
+        return res.status(400).json({
+          success: false,
+          message: "multiple proeject cannot be assign to a single team",
+        });
+      }
+
+      // check designation
+      const { designationType } = req.user;
+      if (designationType === "admin") {
+        // create entry for project
+        const project = await Project.create({
+          projectName,
+          projectStartDate,
+          projectEndDate,
+          priority,
+          description,
+          managerId,
+          teamId,
+          adminId: req.user._id,
+          websiteUrl,
+          isCompleted,
+          isScrap,
+          emails: email,
+        });
+
+        // console.log("id",project._id);
+        foundTeam.selectedProject = project._id;
+        await foundTeam.save();
+
+        // return result
+
+        return res.status(200).json({
+          success: true,
+          project,
+          message: "Project Created successfully!",
+        });
+        // return res.json({message: "working"})
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Only admin can add the project!",
+        });
+      }
+    }catch (error) {
     return res.status(500).json({
       success: false,
       message: "Please check the above details.",
