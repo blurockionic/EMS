@@ -2,17 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { server } from "../../../App";
 import { useNavigate } from "react-router-dom";
+import Loader from "../../../utilities/Loader";
 
-const NewProject = () => {
+const NewProject = ({activeTab}) => {
   const navigate = useNavigate();
   const [employeeData, setEmployeeData] = useState([]);
-
-  
+  const [loading, setLoading] = useState(false)
 
   const [allTeam, setAllTeam] = useState([])
  
-
-
   const [formData, setFormData] = useState({
     projectName: "",
     projectStartDate: "",
@@ -24,51 +22,67 @@ const NewProject = () => {
     isCompleted: false,
     isScrap: false,
   });
-  const handleSubmit = async (e) => {
+
+
+
+
+
+
+// handle for create new project 
+  const handleSubmit = async(e) => {
     e.preventDefault();
     // Handle form submission logic here
-    // console.log("Form submitted:", formData);
-    const {
-      projectName,
-      projectStartDate,
-      projectEndDate,
-      priority,
-      teamId,
-      description,
-      websiteUrl,
-    } = formData;
-
-    //request to the server
-    if(!teamId) {
-      alert("team not created pls first create team")
-      navigate("../newTeam")
-      return
-    }
-    const response = await axios.post(
-      `${server}/project/new`,
-      {
+    try {
+      setLoading(true);
+      const {
         projectName,
         projectStartDate,
         projectEndDate,
         priority,
-        description,
         teamId,
+        description,
         websiteUrl,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
+      } = formData;
+  
+      //request to the server
+      if(!teamId) {
+        alert("team not created pls first create team")
+        navigate("../newTeam")
+        return
       }
-    );
-
-    const { success, message } = response.data;
-    if (success) {
-      alert(message);
-      navigate("../allProject");
+      const response = await axios.post(
+        `${server}/project/new`,
+        {
+          projectName,
+          projectStartDate,
+          projectEndDate,
+          priority,
+          description,
+          teamId,
+          websiteUrl,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+  
+      const { success, message } = response.data;
+      if (success) {
+        alert(message);
+        setLoading(false)
+        activeTab("All Project")
+        // navigate("../allProject");
+      }
+    } catch (error) {
+       console.log(error.response.data)
+       alert(error.response.data.message)
     }
   };
+
+
   // all the teams data 
   useEffect(() => {
     const TeamData = async () => {
@@ -88,7 +102,7 @@ const NewProject = () => {
     };
     
     TeamData();
-  }, [handleSubmit]);
+  }, []);
 
   
   
@@ -123,9 +137,6 @@ const NewProject = () => {
   };
 
 
- 
-  // console.log(filterTeam);
-
   //set item name handle
  
   const handleOnTeamId = (e) => {
@@ -141,7 +152,8 @@ const NewProject = () => {
   return (
     <>
       {/* form for new project  */}
-      <div className="container  w-[75rem] mx-auto flex flex-col ">
+      {
+        loading ? (<Loader/>) : ( <div className="container  w-[75rem] mx-auto flex flex-col ">
         <form
           onSubmit={handleSubmit}
           className=" mx-auto w-full bg-white p-4 rounded shadow-md"
@@ -252,14 +264,16 @@ const NewProject = () => {
                
                 className="p-2 w-[12rem]  border border-black rounded-md"
               >
-                <option className=" w-[15rem]  " value=""> Select Team
-              
-                </option>
-                {allTeam.map((team) => (
-                  <option key={team._id} value={team._id}>
-                    {team.teamName}
-                  </option>
-                ))}
+                <option className=" w-[15rem]  " value=""> Select Team </option>
+                {
+                  (allTeam.length) > 0 ? (allTeam.map((team) => (
+                    <option key={team._id} value={team._id}>
+                      {team.teamName}
+                    </option>
+                  ))) : (
+                    <option>No Team created yet! Please create team</option>
+                  )
+                }
               </select>
             </div>
           </div>
@@ -304,40 +318,6 @@ const NewProject = () => {
 
           {/* Add more input fields for other project information */}
 
-          {/* <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="isCompleted"
-            >
-              Is Completed
-            </label>
-            <input
-              type="checkbox"
-              id="isCompleted"
-              name="isCompleted"
-              checked={formData.isCompleted}
-              onChange={handleChange}
-              className="mr-2"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="isScrap"
-            >
-              Is Scrap
-            </label>
-            <input
-              type="checkbox"
-              id="isScrap"
-              name="isScrap"
-              checked={formData.isScrap}
-              onChange={handleChange}
-              className="mr-2"
-            />
-          </div> */}
-
           <div className="mt-6 flex justify-center">
             <button
               type="submit"
@@ -347,7 +327,9 @@ const NewProject = () => {
             </button>
           </div>
         </form>
-      </div>
+      </div>)
+      }
+        
     </>
   );
 };

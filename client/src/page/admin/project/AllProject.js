@@ -82,7 +82,9 @@ const AllProject = () => {
       setAllProject(tempVar); // Update the array state with the filtered results
     }
   };
-  console.log(allProject);
+
+  
+  // console.log(allProject);
   return (
     <>
     {/* Admon panel Design  */}
@@ -210,8 +212,7 @@ const AllProject = () => {
           {activeTab === "New Project" && (
             <div className="mt-4">
               {activeTab === "New Project" && <div className="mt-5"></div>}
-
-              <NewProject />
+              <NewProject activeTab={() => handleTabClick("All Project")}/>
             </div>
           )}
         </div>

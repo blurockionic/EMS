@@ -5,6 +5,7 @@ import Select from "react-select";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Loader from "../../../utilities/Loader";
 
 const Team = () => {
   const [projects, setProjects] = useState([]);
@@ -42,16 +43,22 @@ const Team = () => {
           withCredentials: true,
         });
 
-        console.log("all teams data is here",allTeamsData.data.allTeamsData);
-        setAllTeam(allTeamsData.data.allTeamsData);
-        setTeamName(filteredTeam[0].teamName);
+        console.log("all teams data is here", allTeamsData.data.allTeamsData);
+        const {success} = allTeamsData.data 
+        if(success){
+          setAllTeam(allTeamsData.data.allTeamsData);
+          setTeamName(filteredTeam[0].teamName);
+          setLoading(false)
+          setLoadingTwo(false)
+        }
+       
       } catch (error) {
         console.error("Error fetching data:", error.message);
       }
     };
 
     TData();
-  }, [loading, loadingTwo]);
+  }, [loading, loadingTwo, filteredTeam]);
   // console.log("all team data",allTeam);
 
   // update btn click handler
@@ -118,8 +125,8 @@ const Team = () => {
     }
 
     if (selectedManager === "") {
-      alert("Please select Manager")
-      return
+      alert("Please select Manager");
+      return;
     }
 
     if (selectedProject === undefined) {
@@ -187,7 +194,7 @@ const Team = () => {
 
     try {
       // Send the form data to the backend API
-
+      setLoading(true)
       const response = await axios.put(
         `${server}/team/updateTeam/${id}`,
         {
@@ -205,13 +212,14 @@ const Team = () => {
       );
 
       // Handle the response as needed
-      console.log("Server response:", response.data);
 
       const { success, message } = response.data;
 
       if (success) {
-        alert(message);
+        setShowUpdateTeamModel(false)
         setLoadingTwo(true);
+        setLoading(false)
+        alert(message);
       }
 
       // Clear the form after successful submission
@@ -219,7 +227,7 @@ const Team = () => {
       console.error("Error sending form data:", error);
       // Handle error if necessary
     }
-    setShowUpdateTeamModel(false);
+    
   };
 
   const customStyles = {
@@ -525,162 +533,174 @@ const Team = () => {
       )}
 
       {/* Showing update team Model  */}
-      {showUpdateTeamModel && (
-        <div className="z-10 inset-0 fixed   overflow-y-auto">
-          <div className="flex items-center justify-center  min-h-screen">
-            <div
-              className="fixed inset-0 transition-opacity"
-              onClick={handleCloseModal}
-            >
-              <div className="absolute inset-0 bg-black opacity-50"></div>
-            </div>
-
-            <div className="relative bg-white rounded-lg p-2 w-[800px]  mx-auto">
-              <div className="flex  justify-between">
-                <div>
-                  <h1 className="ml-40 uppercase font-bold text-xl">
-                    update {"   "} {filteredTeam[0].teamName}
-                  </h1>
-                </div>
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={handleCloseModal}
-                >
-                  X
-                </button>
+      {
+        
+          showUpdateTeamModel && (
+            <div className="z-10 inset-0 fixed   overflow-y-auto">
+            <div className="flex items-center justify-center  min-h-screen">
+              <div
+                className="fixed inset-0 transition-opacity"
+                onClick={handleCloseModal}
+              >
+                <div className="absolute inset-0 bg-black opacity-50"></div>
               </div>
-              <div>
-                <div>
-                  {/* team Name  */}
-                  <div className="m-8">
-                    <span className="font-bold text-xl ">Team Name : </span>
-                    <input
-                      className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
-                      type="text"
-                      placeholder="Enter New Name"
-                      defaultValue={filteredTeam[0].teamName}
-                      value={
-                        teamName === " " ? filteredTeam[0].teamName : teamName
-                      }
-                      onChange={(e) => setTeamName(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div>
-                  {/* team Description */}
-                  <div className="mr-8 ml-8">
-                    <span className="font-bold text-xl ">
-                      Team Description :{" "}
-                    </span>
-                    <input
-                      className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
-                      type="text"
-                      placeholder="Enter New Description"
-                      defaultValue={filteredTeam[0].teamDescription}
-                      value={
-                        teamDescription === ""
-                          ? filteredTeam[0].teamDescription
-                          : teamDescription
-                      }
-                      onChange={(e) => setTeamDescription(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-row ml-9 mr-9 justify-between">
-                  {/* current team Manager */}
-                  <div className="flex flex-col">
-                    <div className="font-bold text-xl">
-                      {" "}
-                      <span> Curret Team Manager : </span>
-                      {filteredTeam[0].selectedManager?.employeeName === ""
-                        ? "Empty"
-                        : filteredTeam[0].selectedManager?.employeeName}
-                    </div>
-
-                    <select
-                      value={selectedManager}
-                      onChange={(e) => setSelectedManager(e.target.value)}
-                      className="p-4  font-semibold border-2 border-blue-500 rounded-md "
-                    >
-                      <option className="font-semibold w-[15rem]   " value="">
-                        Change Manager
-                      </option>
-                      {allManager.map((manager) => (
-                        <option key={manager._id} value={manager._id}>
-                          {manager.employeeName}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Current project */}
-                  <div className="flex flex-col ">
-                    {" "}
-                    <div className="font-bold text-xl">
-                      <span> Curret Project : </span>
-                      {filteredTeam[0].selectedProject?.projectName === ""
-                        ? "No Selected Project"
-                        : filteredTeam[0].selectedProject?.projectName}
-                    </div>
-                    <select
-                      value={selectedProject}
-                      onChange={(e) => setSelectedProject(e.target.value)}
-                      className="p-4  font-semibold border-2 border-blue-500 rounded-md"
-                    >
-                      <option className="font-semibold w-[15rem]  " value="">
-                        Change Project
-                      </option>
-                      {projects.map((project) => (
-                        <option key={project.id} value={project._id}>
-                          {project.projectName}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                {/* Team Members */}
-                <div className="flex flex-col m-9">
+  
+              <div className="relative bg-white rounded-lg p-2 w-[800px]  mx-auto">
+                <div className="flex  justify-between">
                   <div>
-                    <div>
-                      <div className=" w-[15rem]  bg-slate-900  p-2 text-white rounded-md">
-                        Add Team Member <span>(optional)</span>
+                    <h1 className="ml-40 uppercase font-bold text-xl">
+                      update {"   "} {filteredTeam[0].teamName}
+                    </h1>
+                  </div>
+                  <button
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    onClick={handleCloseModal}
+                  >
+                    X
+                  </button>
+                </div>
+                <div>
+                  <div>
+                    {/* team Name  */}
+                    <div className="m-8">
+                      <span className="font-bold text-xl ">Team Name : </span>
+                      <input
+                        className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
+                        type="text"
+                        placeholder="Enter New Name"
+                        defaultValue={filteredTeam[0].teamName}
+                        value={
+                          teamName === " " ? filteredTeam[0].teamName : teamName
+                        }
+                        onChange={(e) => setTeamName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    {/* team Description */}
+                    <div className="mr-8 ml-8">
+                      <span className="font-bold text-xl ">
+                        Team Description :{" "}
+                      </span>
+                      <input
+                        className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
+                        type="text"
+                        placeholder="Enter New Description"
+                        defaultValue={filteredTeam[0].teamDescription}
+                        value={
+                          teamDescription === ""
+                            ? filteredTeam[0].teamDescription
+                            : teamDescription
+                        }
+                        onChange={(e) => setTeamDescription(e.target.value)}
+                      />
+                    </div>
+                  </div>
+  
+                  <div className="flex flex-row ml-9 mr-9 justify-between">
+                    {/* current team Manager */}
+                    <div className="flex flex-col">
+                      <div className="font-bold text-xl">
+                       
+                        <span> Team Manager : </span>
+                        {/* {filteredTeam[0].selectedManager?.employeeName === ""
+                          ? "Empty"
+                          : filteredTeam[0].selectedManager?.employeeName} */}
                       </div>
-
-                      <div className="mt-4  flex flex-row justify-between">
-                        <div className="w-full mx-auto">
-                          <Select
-                            value={selectedMembers}
-                            defaultValue={filteredTeam[0].selectedMembers}
-                            onChange={handleUpdatedMembersChange}
-                            isMulti
-                            options={allMembers}
-                            getOptionLabel={(option) => option.employeeName}
-                            getOptionValue={(option) => option._id}
-                            styles={customStyles}
-                          />
+  
+                      <select
+                        value={selectedManager}
+                        onChange={(e) => setSelectedManager(e.target.value)}
+                        className="p-4 font-semibold border-2 border-blue-500 rounded-md"
+                      >
+                        <option className="font-semibold w-[15rem]" value={null}>
+                          {filteredTeam[0].selectedManager?.employeeName === null
+                            ? "Select manager"
+                            : filteredTeam[0].selectedManager?.employeeName}
+                        </option>
+                        {allManager
+                          .filter(
+                            (team) =>
+                              team.employeeName !==
+                              filteredTeam[0].selectedManager?.employeeName
+                          )
+                          .map((manager) => (
+                            <option key={manager._id} value={manager._id}>
+                              {manager.employeeName}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+  
+                    {/* Current project */}
+                    <div className="flex flex-col ">
+                      {" "}
+                      <div className="font-bold text-xl">
+                        <span> Curret Project : </span>
+                        {filteredTeam[0].selectedProject?.projectName === ""
+                          ? "No Selected Project"
+                          : filteredTeam[0].selectedProject?.projectName}
+                      </div>
+                      <select
+                        value={selectedProject}
+                        onChange={(e) => setSelectedProject(e.target.value)}
+                        className="p-4  font-semibold border-2 border-blue-500 rounded-md"
+                      >
+                        <option className="font-semibold w-[15rem]  " value="">
+                          Change Project
+                        </option>
+                        {projects.map((project) => (
+                          <option key={project.id} value={project._id}>
+                            {project.projectName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  {/* Team Members */}
+                  <div className="flex flex-col m-9">
+                    <div>
+                      <div>
+                        <div className=" w-[15rem]  bg-slate-900  p-2 text-white rounded-md">
+                          Add Team Member <span>(optional)</span>
+                        </div>
+  
+                        <div className="mt-4  flex flex-row justify-between">
+                          <div className="w-full mx-auto">
+                            <Select
+                              value={selectedMembers}
+                              defaultValue={filteredTeam[0].selectedMembers}
+                              onChange={handleUpdatedMembersChange}
+                              isMulti
+                              options={allMembers}
+                              getOptionLabel={(option) => option.employeeName}
+                              getOptionValue={(option) => option._id}
+                              styles={customStyles}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-
-                <div>
-                  <div className="bg-blue-500 font-semibold text-xl py-2 mt-[12rem] rounded-lg justify-center mx-auto w-[12rem] flex flex-row">
-                    <button
-                      onClick={(e) =>
-                        handleUpdateSubmit(e, filteredTeam[0]._id)
-                      }
-                    >
-                      Update Team
-                    </button>
+  
+                  <div>
+                    <div className="bg-blue-500 font-semibold text-xl py-2 mt-[12rem] rounded-lg justify-center mx-auto w-[12rem] flex flex-row">
+                      <button
+                        onClick={(e) =>
+                          handleUpdateSubmit(e, filteredTeam[0]._id)
+                        }
+                      >
+                        Update Team
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+        
+      }
 
       {/* Showing Sure  team Model  */}
       {showSureDeleteModel && (

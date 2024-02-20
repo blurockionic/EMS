@@ -7,9 +7,8 @@ import { User } from "../model/user.js";
 export const newProject = async (req, res) => {
   //fetch all the data from request body
 
-  // console.log(req.body)
-  console.log("create project  working");
-
+  console.log(req.body)
+  
   const {
     projectName,
     projectStartDate,
@@ -29,62 +28,62 @@ export const newProject = async (req, res) => {
       !priority ||
       !description ||
       !teamId
-    ) {
-      return res.status(400).jsom({
-        success: false,
-        message: "Al field are required!",
-      });
-    }
-
-    // check team id
-    const foundTeam = await Teams.findById(teamId);
-
-    if (!foundTeam) {
-      return res.status(400).json({
-        success: false,
-        message: "Team not found!",
-      });
-    }
-
-    // console.log("team data aa raha",foundTeam);
-    if (foundTeam.selectedProject) {
-      return res.status(400).json({
-        success: false,
-        message: "multiple proeject cannot be assign to a single team",
-      });
-    };
+      ) {
+        return res.status(400).jsom({
+          success: false,
+          message: "Al field are required!",
+        });
+      }
+      
+      // check team id
+      const foundTeam = await Teams.findById(teamId);
+      
+      if (!foundTeam) {
+        return res.status(400).json({
+          success: false,
+          message: "Team not found!",
+        });
+      }
+      
+      // console.log("team data aa raha",foundTeam);
+      if (foundTeam.selectedProject) {
+        return res.status(400).json({
+          success: false,
+          message: "multiple proeject cannot be assign to a single team",
+        });
+      };
       // find all the team emails
       let email = [];
-
+      
       for (const employeeId of foundTeam.selectedMembers) {
         const foundUserDeatails = await Employee.findById(employeeId);
         email.push(foundUserDeatails.employeeEmail);
       }
-
+      
       console.log(req.user);
-
+      
       const managerId = foundTeam.selectedManager;
-
+      
       // find the manager email from db
       const foundManagerDetails = await User.find({ employeeId: managerId });
       let managerEmail = "";
-
+      
       for (const detail of foundManagerDetails) {
         managerEmail = detail.email;
       }
-
+      
       //again push the email of manager
       email.push(managerEmail);
-
-      console.log(email);
-
+      
+      console.log(managerId);
+      
       if (foundTeam.selectedProject) {
         return res.status(400).json({
           success: false,
           message: "multiple proeject cannot be assign to a single team",
         });
       }
-
+      
       // check designation
       const { designationType } = req.user;
       if (designationType === "admin") {
@@ -103,6 +102,9 @@ export const newProject = async (req, res) => {
           isScrap,
           emails: email,
         });
+
+
+      console.log("create project", project);
 
         // console.log("id",project._id);
         foundTeam.selectedProject = project._id;
