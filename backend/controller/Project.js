@@ -7,8 +7,9 @@ import { User } from "../model/user.js";
 export const newProject = async (req, res) => {
   //fetch all the data from request body
 
-  console.log(req.body)
-  
+  // console.log(req.body)
+  // console.log("create project  working");
+
   const {
     projectName,
     projectStartDate,
@@ -59,9 +60,9 @@ export const newProject = async (req, res) => {
         const foundUserDeatails = await Employee.findById(employeeId);
         email.push(foundUserDeatails.employeeEmail);
       }
-      
+
       console.log(req.user);
-      
+
       const managerId = foundTeam.selectedManager;
       
       // find the manager email from db
@@ -74,9 +75,9 @@ export const newProject = async (req, res) => {
       
       //again push the email of manager
       email.push(managerEmail);
-      
-      console.log(managerId);
-      
+
+      console.log(email);
+
       if (foundTeam.selectedProject) {
         return res.status(400).json({
           success: false,
