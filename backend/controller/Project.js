@@ -8,7 +8,7 @@ export const newProject = async (req, res) => {
   //fetch all the data from request body
 
   // console.log(req.body)
-  console.log("create project  working");
+  // console.log("create project  working");
 
   const {
     projectName,
@@ -61,7 +61,7 @@ export const newProject = async (req, res) => {
         email.push(foundUserDeatails.employeeEmail);
       }
 
-      console.log(req.user);
+      // console.log(req.user);
 
       const managerId = foundTeam.selectedManager;
 
@@ -76,7 +76,7 @@ export const newProject = async (req, res) => {
       //again push the email of manager
       email.push(managerEmail);
 
-      console.log(email);
+      // console.log(email);
 
       if (foundTeam.selectedProject) {
         return res.status(400).json({

@@ -42,7 +42,7 @@ const Team = () => {
           withCredentials: true,
         });
 
-        console.log("all teams data is here",allTeamsData.data.allTeamsData);
+        console.log("all teams data is here", allTeamsData.data.allTeamsData);
         setAllTeam(allTeamsData.data.allTeamsData);
         setTeamName(filteredTeam[0].teamName);
       } catch (error) {
@@ -118,8 +118,8 @@ const Team = () => {
     }
 
     if (selectedManager === "") {
-      alert("Please select Manager")
-      return
+      alert("Please select Manager");
+      return;
     }
 
     if (selectedProject === undefined) {
@@ -183,6 +183,9 @@ const Team = () => {
 
     if (teamName === undefined || teamName === null) {
       teamName = filteredTeam[0].teamName;
+    }
+    if (selectedManager === undefined || selectedManager === null) {
+      selectedManager = filteredTeam[0].selectedManager._id;
     }
 
     try {
@@ -588,23 +591,26 @@ const Team = () => {
                 </div>
 
                 <div className="flex flex-row ml-9 mr-9 justify-between">
-                  {/* current team Manager */}
+                  {/* Current team Manager */}
                   <div className="flex flex-col">
                     <div className="font-bold text-xl">
                       {" "}
-                      <span> Curret Team Manager : </span>
+                      <span> Current Team Manager: </span>
                       {filteredTeam[0].selectedManager?.employeeName === ""
                         ? "Empty"
                         : filteredTeam[0].selectedManager?.employeeName}
                     </div>
 
                     <select
+                      required
                       value={selectedManager}
                       onChange={(e) => setSelectedManager(e.target.value)}
-                      className="p-4  font-semibold border-2 border-blue-500 rounded-md "
+                      className="p-4 font-semibold border-2 border-blue-500 rounded-md"
                     >
-                      <option className="font-semibold w-[15rem]   " value="">
-                        Change Manager
+                      <option disabled value="">
+                        {filteredTeam[0].selectedManager?.employeeName === ""
+                          ? "Select a Manager"
+                          : "Change Manager"}
                       </option>
                       {allManager.map((manager) => (
                         <option key={manager._id} value={manager._id}>
