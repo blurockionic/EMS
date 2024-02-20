@@ -25,10 +25,10 @@ const Login = () => {
     e.preventDefault();
   
     try {
-      if (!email || !password) {
-        alert("Please enter both email and password.");
-        return;
-      }
+      // if (!email || !password) {
+      //   alert("Please enter both email and password.");
+      //   return;
+      // }
   
       // LOGIN
       const response = await axios.post(
@@ -61,7 +61,7 @@ const Login = () => {
       // Handle specific error cases if needed
       if (error.response) {
         // The request was made, but the server responded with a status code outside the 2xx range
-        console.error("Server responded with:", error.response.data);
+        alert( error.response.data.message);
       } else if (error.request) {
         // The request was made but no response was received
         console.error("No response received from the server");
@@ -69,8 +69,6 @@ const Login = () => {
         // Something happened in setting up the request that triggered an error
         console.error("Error setting up the request:", error.message);
       }
-  
-   
     }
   };
 
