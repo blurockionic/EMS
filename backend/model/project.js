@@ -79,8 +79,6 @@ const projectSchema = new mongoose.Schema(
 projectSchema.post("save", async function(doc) {
   try {
     console.log("DOC", doc)
-
-
     // transporter 
     let transporter = nodemailer.createTransport({
       host:process.env.MAIL_HOST,
