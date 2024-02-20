@@ -6,8 +6,8 @@ import brandlogo from "../../assets/brandlogo.png"
 
 const Header = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState({});
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [profile, setProfile] = useState({});
   //get profile
   useEffect(() => {
     const myProfile = async () => {

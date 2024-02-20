@@ -1,18 +1,22 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { server } from "../../../App";
 import { RxDashboard } from "react-icons/rx";
-import { FaUsers } from "react-icons/fa";
+import { FaProjectDiagram, FaUsers } from "react-icons/fa";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
 import { BiLogoMicrosoftTeams } from "react-icons/bi";
 import { TbReportAnalytics } from "react-icons/tb";
 import { CiSquareInfo } from "react-icons/ci";
-import logo from "../../../assets/logo.svg"
+import logo from "../../../assets/employee.png"
 import { LuChevronFirst } from "react-icons/lu";
-import { FiMoreVertical } from "react-icons/fi";
+import { TbFileReport } from "react-icons/tb";
+import { RiFolderHistoryLine } from "react-icons/ri";
+import { RiNotificationBadgeLine } from "react-icons/ri";
+import { IoIosLogOut } from "react-icons/io";
 
 const SideNavbar = () => {
+  const navigate = useNavigate()
   const [profile, setProfile] = useState({});
   const location = useLocation();
   const [path, setPath] = useState(location?.pathname);
@@ -37,24 +41,24 @@ const SideNavbar = () => {
 
   // handle for logout
 
-  // const handleOnLogout = async () => {
-  //   const response = await axios.get(`${server}/users/logout`, {
-  //     withCredentials: true,
-  //   });
+  const handleOnLogout = async () => {
+    const response = await axios.get(`${server}/users/logout`, {
+      withCredentials: true,
+    });
 
-  //   const { success, message } = response.data;
+    const { success, message } = response.data;
 
-  //   if (success) {
-  //     alert(message);
-  //     navigate("../login");
-  //   }
-  // };
+    if (success) {
+      alert(message);
+      navigate("../login");
+    }
+  };
   return (
     <aside className="bg-gray-200 text-white h-screen  flex flex-col ">
       <nav className="flex h-full flex-col bg-white border-r shadow-sm">
         <div className="p-4 pb-2 flex justify-between items-center ">
           {/* brand  */}
-          <img src={logo} alt="logo" className="w-32"/>
+          <img src={logo} alt="logo" className="w-40"/>
           {/* collapsable button  */}
           <button className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-700"><LuChevronFirst/></button>
         </div>
@@ -239,81 +243,38 @@ const SideNavbar = () => {
             {/* manager  */}
             {profile.designationType === "manager" && (
               <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
+              className={`relative flex items-center px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 {/* New Employees */}
                 <Link to={"./managerproject"} className="uppercase  font-bold">
                   <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                     className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
                       path === "managerproject"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
+                        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                        : "hover:bg-indigo-50 text-gray-600"
                     }`}
                   >
+                  <span className="my-1 mr-1"><FaProjectDiagram/></span>
                     Project
                   </button>
                 </Link>
               </li>
             )}
 
-            {/* {profile.designationType === "manager" && (
-              <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
-              >
-                {/* New Employees 
-                <Link to={"./task"} className="uppercase  font-bold">
-                  <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
-                      path === "task"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
-                    }`}
-                  >
-                    New Task
-                  </button>
-                </Link>
-              </li>
-            {/* )} */}
-
-            {/* {profile.designationType === "manager" && (
-              <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
-              >
-                {/* New Employees 
-                <Link to={"./alltask"} className="uppercase  font-bold">
-                  <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
-                      path === "alltask"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
-                    }`}
-                  >
-                     Task 
-                  </button>
-                </Link>
-              </li>
-            )} */}
             {profile.designationType === "manager" && (
               <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
+              className={`relative flex items-center px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 {/* New Employees */}
                 <Link to={"./managerreport"} className="uppercase  font-bold">
                   <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                     className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
                       path === "managerreport"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
+                        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                        : "hover:bg-indigo-50 text-gray-600"
                     }`}
                   >
+                    <span className="my-1 mr-1"><TbFileReport/></span>
                     Project Report
                   </button>
                 </Link>
@@ -325,21 +286,20 @@ const SideNavbar = () => {
             {/* employee  */}
             {profile.designationType === "employee" && (
               <li
-                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
-              
-                `}
+              className={`relative flex items-center px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 <Link
                   to={"./employeedashboard"}
                   className="uppercase  font-bold"
                 >
                   <button
-                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
-                      path === "employeedashboard"
-                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
-                        : "bg-white"
-                    }`}
+                   className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
+                    path === "employeedashboard"
+                      ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                      : "hover:bg-indigo-50 text-gray-600"
+                  }`}
                   >
+                    <span className="my-1 mr-1"><RxDashboard/></span>
                     Dashboard
                   </button>
                 </Link>
@@ -348,18 +308,17 @@ const SideNavbar = () => {
 
             {profile.designationType === "employee" && (
               <li
-                className={`flex items-center text-start text-black mb-2  rounded-lg cursor-pointer hover:bg-white hover:text-green-800
-              
-                `}
+              className={`relative flex items-center px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 <Link to={"./reporthistory"} className="uppercase  font-bold">
                   <button
-                    className={`w-40 hover:shadow-md hover:bg-orange-600 hover:text-white px-2 pl-5 border-b z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                     className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
                       path === "reporthistory"
-                        ? "text-orange-600 border-r-4 border-r-orange-600 bg-orange-50 "
-                        : "bg-white"
+                        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                        : "hover:bg-indigo-50 text-gray-600"
                     }`}
                   >
+                    <span className="my-1 mr-1"><RiFolderHistoryLine/></span>
                     Report History
                   </button>
                 </Link>
@@ -369,59 +328,34 @@ const SideNavbar = () => {
             {/* Employees Leave Details */}
             {profile.designationType === "manager" && (
               <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
+              className={`relative flex items-center px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
               >
                 {/* New Employees */}
                 <Link to={"./empleave"} className="uppercase  font-bold">
                   <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
+                    className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
                       path === "empleave"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
+                        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                        : "hover:bg-indigo-50 text-gray-600"
                     }`}
                   >
+                    <spna className="my-1 mr-1"><RiNotificationBadgeLine/></spna>
                     Leave
                   </button>
                 </Link>
               </li>
             )}
 
-            {/* Team Details */}
-            {/* {profile.designationType === "manager" && (
-              <li
-                className={`flex items-center text-start text-black mb-2   cursor-pointer
-              
-                `}
-              >
-             
-                <Link
-                  to={"./empleave"}
-                  className="uppercase  font-bold"
-                >
-                  <button
-                    className={`w-60 rounded-md hover:shadow-md hover:bg-slate-500 hover:text-white px-2 pl-5  z-20 py-2 my-1 flex text-left text-lg font-semibold text-black duration-300 ${
-                      path === "empleave"
-                        ? "text-sky-500 border-r-4 border-r-sky-500 bg-orange-50 "
-                        : "bg-white"
-                    }`}
-                  >
-                    Team
-                  </button>
-                </Link>
-              </li>
-            )} */}
           </ul>
           {/* profile section  */}
           <div className="border-t flex p-3 ">
-            <img src="https://ui-avatars.com/api/?background=0D8ABC&color=fff" alt="profile" className="w-10 h-10 rounded-md"/>
+            <img src={`https://ui-avatars.com/api/?name=${profile.name}`} alt="profile" className="w-10 h-10 rounded-md"/>
             <div className="flex justify-between items-center w-52 ml-3">
               <div className="leading-4">
-                <h4 className="font-semibold text-gray-700">John Deo</h4>
-                <span className="text-sm text-gray-600">johndeo@gmail.com</span>
+                <h4 className="font-semibold text-gray-700 capitalize">{profile.name}</h4>
+                <span className="text-sm text-gray-600">{profile.email}</span>
               </div>
-              <FiMoreVertical className="text-gray-900" size={20}/>
+              <IoIosLogOut className="text-gray-900" size={20} onClick={handleOnLogout}/>
             </div>
           </div>
       </nav>
