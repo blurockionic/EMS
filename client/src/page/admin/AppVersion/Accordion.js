@@ -13,11 +13,14 @@ const Accordion = ({ items }) => {
       return (
         <div key={index}>
           <div
-            className={`accordion-title ${isActive ? 'active' : ''} font-bold text-lg  bg-indigo-200 w-[6rem] px-4 border-b-2 cursor-pointer hover:bg-indigo-500` }
+            className={`accordion-title ${isActive ? 'active' : ''} font-bold text-lg  bg-indigo-100   text-center  py-2 border-b-2 cursor-pointer hover:bg-indigo-300 mt-2 rounded-md` }
             onClick={() => onTitleClick(index)}
-          >
+          > 
             {item.title}
+          
           </div>
+
+
           {isActive && (
             <div className=" mt-1 bg-slate-100 font-medium mb-4 ">
               {item.content}

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { QRCode } from "react-qrcode";
 import { FaUserLarge } from "react-icons/fa6";
 import EmpLeaveHistory from "./EmpLeaveHistory";
+import { ToastContainer, toast } from "react-toastify";
 
 // import LeaveHistroy from "./LeaveHistroy";
 
@@ -19,13 +20,11 @@ const EmployeeDashboard = () => {
   const [allTrain, setAllTrain] = useState([]);
   const [Loading, setLoading] = useState(false);
 
-
-
   // handle traing tab
   const trainingcard = () => {
     setshowtrainmodel((prev) => !prev);
   };
-// addig newtraning button
+  // addig newtraning button
   const addbutton = async () => {
     try {
       const response = await axios.post(
@@ -51,7 +50,8 @@ const EmployeeDashboard = () => {
       console.log(success);
 
       if (success) {
-        alert(message);
+        toast(success);
+        setshowtrainmodel(false);
       }
     } catch (e) {
       console.log(e);
@@ -73,13 +73,13 @@ const EmployeeDashboard = () => {
     LeaveType: "",
     Reason: "",
   });
-  // handleformData  
+  // handleformData
   const handleFormData = (e) => {
     setLeaveFormData({ ...LeaveFormData, [e.target.name]: e.target.value });
     console.log(LeaveFormData);
   };
-  
-  // leave post request and applinig for the new Leave 
+
+  // leave post request and applinig for the new Leave
   const handelchangeData = async (e) => {
     e.preventDefault();
     console.log(LeaveFormData);
@@ -113,7 +113,7 @@ const EmployeeDashboard = () => {
 
       if (success) {
         alert(message);
-        setLoading(true)
+        setLoading(true);
       }
     } catch (error) {
       alert(error.response.data.message);
@@ -571,96 +571,6 @@ const EmployeeDashboard = () => {
           </div>
         )}
 
-        {activeTab === "LeaveDetails" && (
-          <div className="flex flex-row justify-evenly ">
-            <div className=" ">
-              <div>
-                <div className="flex flex-col  items-center bg-red-600 w-[10rem] mt-6 text-2xl rounded-lg  shadow-lg shadow-slate-500">
-                  <h3 className="flex  font-extrabold text-white ">
-                    Sick Leave
-                  </h3>
-                  <div className="mt-2 py-1 text-white">
-                    <span className="font-extrabold text-4xl text-white">
-                      15
-                    </span>
-                    /15
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center bg-green-600 w-[10rem] mt-6 font-bold text-white text-2xl rounded-lg  shadow-lg shadow-slate-500">
-                  <h3 className="flex">Casual Leave</h3>
-                  <div className="mt-2 py-1 text-white">
-                    <span className="font-extrabold text-4xl text-white">
-                      15
-                    </span>
-                    /15
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center bg-blue-600 w-[10rem] mt-6 font-bold text-white text-2xl rounded-lg  shadow-lg shadow-slate-500">
-                  <h3 className="flex">Paid Leave</h3>
-                  <div className="mt-2 py-1 text-white">
-                    <span className="font-extrabold text-4xl text-white">
-                      20
-                    </span>
-                    /20
-                  </div>
-                </div>
-                <div className="bg-slate-800 rounded-lg  text-white">
-                  <div className="p-4 mt-2 flex justify-center text-2xl">
-                    <button onClick={() => setLeaveViewModal(true)}>
-                      Apply Leave
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <EmpLeaveHistory />
-          </div>
-        )}
-
-        {/* training tab  */}
-        {activeTab === "Training" && (
-          <>
-            <div className="h-[80vh] bg-gray-200 w-full flex justify-center items-center ">
-              <div className="">
-                <button
-                  id="trainbtn"
-                  className="w-[10rem] h-[4rem] rounded-lg bg-[#6c7ebd] hover:bg-[#4A63BC] hover:scale-110 transform transition duration-500 z-1"
-                  onClick={trainingcard}
-                >
-                  + ADD
-                </button>
-              </div>
-            </div>
-            <div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Sr.no</th>
-                    <th>Training Name</th>
-                    <th>Certificate ID</th>
-                    <th>Training Start</th>
-                    <th>Training End</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allTrain.map((Training, index) => (
-                    <tr key={Training._id}>
-                      <td>{index + 1}</td>
-                      <td>{Training.trainingName}</td>
-                      <td>{Training.certificateID}</td>
-                      <td>{Training.createdAt}</td>
-                      <td>{Training.updatedAt}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-
         {/* task  */}
         {activeTab === "Task" && (
           <div>
@@ -743,6 +653,104 @@ const EmployeeDashboard = () => {
           </div>
         )}
       </div>
+
+      {/* leave details  */}
+      {activeTab === "LeaveDetails" && (
+        <div className="flex flex-row justify-evenly ">
+          <div className=" ">
+            <div>
+              <div className="flex flex-col  items-center bg-red-600 w-[10rem] mt-6 text-2xl rounded-lg  shadow-lg shadow-slate-500">
+                <h3 className="flex  font-extrabold text-white ">Sick Leave</h3>
+                <div className="mt-2 py-1 text-white">
+                  <span className="font-extrabold text-4xl text-white">15</span>
+                  /15
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center bg-green-600 w-[10rem] mt-6 font-bold text-white text-2xl rounded-lg  shadow-lg shadow-slate-500">
+                <h3 className="flex">Casual Leave</h3>
+                <div className="mt-2 py-1 text-white">
+                  <span className="font-extrabold text-4xl text-white">15</span>
+                  /15
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center bg-blue-600 w-[10rem] mt-6 font-bold text-white text-2xl rounded-lg  shadow-lg shadow-slate-500">
+                <h3 className="flex">Paid Leave</h3>
+                <div className="mt-2 py-1 text-white">
+                  <span className="font-extrabold text-4xl text-white">20</span>
+                  /20
+                </div>
+              </div>
+              <div className="bg-slate-800 rounded-lg  text-white">
+                <div className="p-4 mt-2 flex justify-center text-2xl">
+                  <button onClick={() => setLeaveViewModal(true)}>
+                    Apply Leave
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <EmpLeaveHistory />
+        </div>
+      )}
+
+      {/* training tab  */}
+      {activeTab === "Training" && (
+        <>
+          {allTrain.length <= 0 ? (
+            <div>
+              <div className="container mx-auto">
+                <table className="min-w-full bg-white border border-gray-300">
+                  <thead className="bg-slate-300 ">
+                    <tr>
+                      <th className="py-2 px-4 border-b">S.No</th>
+                      <th className="py-2 px-4 border-b">Training Name</th>
+                      <th className="py-2 px-4 border-b">Certificate ID</th>
+                      <th className="py-2 px-4 border-b">Training Start</th>
+                      <th className="py-2 px-4 border-b">Training End</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allTrain.map((Training, index) => (
+                      <tr key={Training._id}>
+                        <td className="py-2 px-4 border-b text-center">
+                          {index + 1}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          {Training.trainingName}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          {Training.certificateID}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          {Training.createdAt}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          {Training.updatedAt}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-4 text-center">
+                <button
+                  id="trainbtn"
+                  className="w-[5.5rem] h-[2.5rem] rounded-lg bg-[#6c7ebd] hover:bg-[#4A63BC] hover:scale-110 transform transition duration-500 z-1"
+                  onClick={trainingcard}
+                >
+                  + ADD
+                </button>
+              </div>
+            </div>
+          ) : (
+           
+            <div> There is no training</div>
+          )}
+        </>
+      )}
 
       {/* Modal */}
       {showModal && (
@@ -953,59 +961,84 @@ const EmployeeDashboard = () => {
           </div>
         </div>
       )}
-      {/* train model */}
+      {/* training model */}
       {showtrainmodel && (
-        <div className="w-[569px] h-[538px] z-10 absolute">
-          <div className=" w-[569px] h-[538px] bg-[#d9d9d9] rounded-[10px] shadow-[0px_4px_4px_#00000040,0px_4px_4px_#00000040,0px_4px_4px_6px_#00000040]">
-            <button
-              className="w-[3rem] h-[3rem] top-[2rem] right-[530px] rounded-[50%] text-red-700 text-2xl"
+        <div className="fixed inset-0 z-10 mt-36 overflow-y-auto">
+          <div className="flex justify-center">
+            <div
+              className="fixed inset-0 transition-opacity"
               onClick={trainingcard}
             >
-              X
-            </button>
-            <input
-              type="text"
-              className="w-[455px] top-[70px] left-[57px] bg-white absolute h-[40px]"
-              onChange={(e) => setTrainingName(e.target.value)}
-              value={trainingName}
-            />
-            <input
-              type="date"
-              className="w-[188px] top-[205px] left-[317px] bg-white absolute h-[40px]"
-              onChange={(e) => setTrainEnd(e.target.value)}
-              value={trainEnd}
-            />
-            <input
-              type="date"
-              className="w-[189px] top-[205px] left-[57px] bg-white absolute h-[40px]"
-              onChange={(e) => setTrainStart(e.target.value)}
-              value={trainStart}
-            />
-            <input
-              type="text"
-              className="w-[455px] top-[351px] left-[57px] absolute h-[40px]"
-              onChange={(e) => setCertificateID(e.target.value)}
-              value={certificateID}
-            />
-            <button
-              className="absolute w-[185px] h-[46px] top-[455px] left-[184px] bg-white rounded-[24px] hover:bg-slate-300 hover:scale-110 transform transition duration-500"
-              onClick={addbutton}
-            >
-              <p className="absolute w-[122px] h-[44px] top-[10px] left-[33px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] text-center tracking-[0] leading-[normal]">
-                ADD
-              </p>
-            </button>
-            <div className="w-[245px] h-[34px] top-[36px] absolute left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
-              Training Name:
+              <div className="absolute inset-0 bg-black opacity-50"></div>
             </div>
-            <div className="absolute w-[245px] h-[34px] top-[317px] left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
-              Certificate ID:
-            </div>
-            <div className="w-[235px] h-[27px] top-[178px] whitespace-nowrap absolute left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
-              Training Started:
-            </div>
-            <div className="absolute w-[235px] h-[27px] top-[178px] left-[316px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal] whitespace-nowrap">
-              Training Ended:
+            <div className="relative bg-white rounded-lg p-6 mx-auto">
+              <div className="flex justify-between">
+                <div>
+                  <h1 className=" font-bold text-xl"> Add Training </h1>
+                </div>
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={trainingcard}
+                >
+                  X
+                </button>
+              </div>
+              <div className="h-[0.1rem] w-full bg-slate-600 mt-2 "></div>
+
+              <div className="mt-2">
+                <div className="font-serif p-1">Training Name:</div>
+
+                <input
+                  type="text"
+                  className=" bg-indigo-50 w-full h-8  mt-1 rounded-lg"
+                  onChange={(e) => setTrainingName(e.target.value)}
+                  value={trainingName}
+                />
+              </div>
+
+              <div>
+                <div className="font-serif mt-2">Certificate ID:</div>
+                <input
+                  type="text"
+                  className="  bg-indigo-50 w-full h-8  mt-1 rounded-lg"
+                  onChange={(e) => setCertificateID(e.target.value)}
+                  value={certificateID}
+                />
+              </div>
+
+              <div className="flex flex-row justify-between gap-32 mt-4">
+                <div>
+                  <div className="font-serif">Training Started:</div>
+
+                  <input
+                    type="date"
+                    className="text-gray-400"
+                    onChange={(e) => setTrainStart(e.target.value)}
+                    value={trainStart}
+                  />
+                </div>
+
+                <div>
+                  <div className="font-serif">Training Ended:</div>
+
+                  <input
+                    type="date"
+                    className="text-black"
+                    onChange={(e) => setTrainEnd(e.target.value)}
+                    value={trainEnd}
+                  />
+                </div>
+              </div>
+
+              <div className=" flex justify-center mt-4">
+                <button
+                  className=" bg-indigo-200 hover:bg-indigo-300 hover:scale-110 transform transition duration-500 z-1 px-[1rem] py-2 rounded-lg"
+                  onClick={addbutton}
+                >
+                  <p className="">ADD</p>
+                </button>
+                <ToastContainer />
+              </div>
             </div>
           </div>
         </div>

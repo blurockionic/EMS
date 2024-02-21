@@ -3,16 +3,69 @@
 
 
 
-<td className="border px-4 py-2">
-{teamInfoData
-  .filter((team) => team._id === project.teamId)
-  .map((filteredTeam) => (
-    <div key={filteredTeam._id}>
-      {/* Display relevant information from filteredTeam */}
-      {filteredTeam.teamName}
-    </div>
-  ))}
-</td>
+
+<h2 className="text-xl font-serif font-bold">Overview</h2>
+<p>
+  In version 1.0.08, we are excited to introduce several enhancements
+  and improvements to the project. This release focuses on refining
+  the user interface, addressing reported issues, and introducing new
+  features to enhance the overall user experience.
+</p>
+<h2>New Features</h2>
+<ol>
+  <li>
+    Redesigned Frontend
+    <ol>
+      <li>
+        User Interface Overhaul: The frontend has undergone a
+        significant redesign, featuring a modern and intuitive user
+        interface.
+      </li>
+      <li>
+        Improved Navigation: Streamlined navigation for a more
+        user-friendly experience. New layouts and visual elements have
+        been implemented to enhance usability.
+      </li>
+    </ol>
+  </li>
+  <li>
+    Feature Enhancements
+    <ol>
+      <li>
+        Dashboard Widgets: New widgets have been added to the
+        dashboard, providing at-a-glance insights into key metrics.
+        Users can now customize and rearrange widgets to suit their
+        preferences.
+      </li>
+      <li>
+        Advanced Search: The search functionality has been enhanced
+        with advanced filtering options for more precise results.
+      </li>
+    </ol>
+  </li>
+  <li>
+    Bug Fixes
+    <ol>
+      <li>Data synchronization</li>
+      <li>User authentication</li>
+      <li>Performance optimization</li>
+    </ol>
+  </li>
+  <li>
+    Important Notes
+    <ol>
+      <li>
+        Compatibility: Ensure that your system meets the updated
+        system requirements for optimal performance.
+      </li>
+      <li>
+        User Guidance: A new user guide has been provided to assist
+        users in adapting to the changes and utilizing the new
+        features effectively.
+      </li>
+    </ol>
+  </li>
+</ol>
 
 
 
@@ -25,276 +78,43 @@
 
 
 
-import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
-import { server } from "../../App";
-import { FaWindowClose } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { QRCode } from "react-qrcode";
-import { FaUserLarge } from "react-icons/fa6";
-import EmpLeaveHistory from "./EmpLeaveHistory";
-// import LeaveHistroy from "./LeaveHistroy";
 
-const EmployeeDashboard = () => {
-  const [leaveViewModal, setLeaveViewModal] = useState(false);
 
-  const handleCloseModal = () => {
-    setLeaveViewModal(false);
-  };
 
-  // handleling leave details values
-  const [LeaveFormData, setLeaveFormData] = useState({
-    ToDate: "",
-    FromDate: "",
-    LeaveType: "",
-    Reason: "",
-  });
-  // handleformData
-  const handleFormData = (e) => {
-    setLeaveFormData({ ...LeaveFormData, [e.target.name]: e.target.value });
-    console.log(LeaveFormData);
-  };
 
-  const handelchangeData = async (e) => {
-    e.preventDefault();
-    console.log(LeaveFormData);
-    const { ToDate, FromDate, Reason, LeaveType } = LeaveFormData;
 
-    const start = new Date(FromDate);
-    const end = new Date(ToDate);
-    const timeDifference = end.getTime() - start.getTime();
-    const totalDaysofLeave = Math.floor(timeDifference / (1000 * 3600 * 24));
 
-    // console.log("total leave day",totalDaysofLeave)
 
-    try {
-      const response = await axios.post(
-        `${server}/leave/newapply`,
-        {
-          ToDate,
-          FromDate,
-          Reason,
-          LeaveType,
-          totalDaysofLeave,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      const { success, message } = response.data;
 
-      if (success) {
-        alert(message);
-      }
-    } catch (error) {
-      alert(error.response.data.message);
-    }
-  };
 
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    reportTitle: "",
-    gitLink: "",
-    reportDescription: "",
-    isTaskCompleted: false,
-  });
 
-  const [allTask, setAllTask] = useState([]);
-  const myInformation = [];
-  const [employee, setEmployee] = useState([]);
-  const [profile, setProfile] = useState({});
-  const [activeTab, setActiveTab] = useState("Task");
 
-  const [showModal, setShowModal] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
 
-  //all profile
-  useEffect(() => {
-    const myProfile = async () => {
-      try {
-        const response = await axios.get(`${server}/users/me`, {
-          withCredentials: true,
-        });
 
-        setProfile(response.data.user);
-      } catch (error) {
-        console.error("Error fetching user profile:", error.message);
-      }
-    };
 
-    myProfile();
-  }, []);
 
-  const closeModal = () => {
-    setShowModal(false);
-  };
 
-  // handle for tab
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
 
-  //all employee
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const allEmployee = await axios.get(`${server}/employee/all`, {
-          withCredentials: true,
-        });
-        setEmployee(allEmployee.data.data);
-      } catch (error) {
-        console.error(
-          "Error fetching employee data:",
-          error.response.data.message
-        );
-      }
-    };
 
-    fetchData();
-  }, []);
 
-  //all task
-  useEffect(() => {
-    const getMyTask = async () => {
-      try {
-        const response = await axios.get(`${server}/task/all`, {
-          withCredentials: true,
-        });
 
-        // console.log(response);
-        setAllTask(response.data.allTask);
-      } catch (error) {
-        console.error("Error fetching task:", error.responce.data.message);
-      }
-    };
-
-    getMyTask();
-  }, []);
-
-  // const [profile, setProfile] =  useState({})
-
-  for (let i = 0; i < employee.length; i++) {
-    if (employee[i]._id === profile.employeeId) {
-      myInformation.push(employee[i]);
-    }
-  }
-
-  const [myInfo] = myInformation;
-
-  // console.log(myInfo)
-  // Set id in local storage
-  localStorage.setItem("id", profile.employeeId);
-
-  // handle for report button clicked
-  const handleReportClick = (task) => {
-    //  alert(id)
-    setSelectedTask(task);
-    setShowModal(true);
-
-    // Assuming selectedTask and selectedTask.employeeId are defined
-    if (selectedTask && selectedTask.assignTo) {
-      // Set id in local storage
-      localStorage.setItem("id", selectedTask.assignTo);
-    } else {
-      // Handle the case where selectedTask or selectedTask.employeeId is not defined
-      console.error(
-        "Unable to set id in local storage. Check selectedTask and selectedTask.employeeId."
-      );
-    }
-  };
-
-  // for update the form
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
-
-  //submit the report for create the entry on db
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Optionally, reset the form after submission
-    const { reportTitle, reportDescription, gitLink } = formData;
-
-    // console.log(reportTitle, reportDescription, isTaskCompleted);
-
-    try {
-      const responce = await axios.post(
-        `${server}/taskreport/${selectedTask._id}`,
-        {
-          reportTitle,
-          reportDescription,
-          isTaskCompleted: false,
-          gitLink,
-          isRequested: true,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-
-      const { success, message } = responce.data;
-
-      if (success) {
-        alert(message);
-      }
-
-      //reset the form
-      setFormData({
-        reportTitle: "",
-        reportDescription: "",
-        isTaskCompleted: false,
-      });
-
-      setShowModal(false);
-      navigate("../reporthistory");
-    } catch (error) {
-      alert(error.response.data.message);
-    }
-  };
-
-  // Response of LeaveApplication revert by the manager
-  // fetching data leave status of from db
-
-  //download profile card
-  const profileCardRef = useRef(null);
-
-  const downloadProfileCard = () => {
-    const profileCard = profileCardRef.current;
-
-    if (profileCard) {
-      const htmlContent = profileCard.innerHTML;
-      const blob = new Blob([htmlContent], { type: "text/html" });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "profile_card.html";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
-  };
-
-  //handle on feedback
-  const handleOnFeedback = (taskId) => {
-    localStorage.setItem("taskId", taskId);
-    navigate("../taskreportfeedback");
-  };
-
-  return (
-   
-  
-  )
-};
-
-export default EmployeeDashboard;
+<button
+className="absolute w-[185px] h-[46px] top-[455px] left-[184px] bg-white rounded-[24px] hover:bg-slate-300 hover:scale-110 transform transition duration-500"
+onClick={addbutton}
+>
+<p className="absolute w-[122px] h-[44px] top-[10px] left-[33px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] text-center tracking-[0] leading-[normal]">
+  ADD
+</p>
+</button>
+<div className="w-[245px] h-[34px] top-[36px] absolute left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
+Training Name:
+</div>
+<div className="absolute w-[245px] h-[34px] top-[317px] left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
+Certificate ID:
+</div>
+<div className="w-[235px] h-[27px] top-[178px] whitespace-nowrap absolute left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
+Training Started:
+</div>
+<div className="absolute w-[235px] h-[27px] top-[178px] left-[316px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal] whitespace-nowrap">
+Training Ended:
+</div>
