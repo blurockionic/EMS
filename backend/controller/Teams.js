@@ -79,7 +79,11 @@ export const allTeams = async (req, res) => {
 export const updateTeam = async (req,res) => {
   const {id} = req.params
   // console.log("all data of",req.body);
-  const {teamName, teamDescription, selectedManager, selectedProject, selectedMembers} =  req.body
+  
+  // updateTeamName, updateTeamDescription,adminProfile, updateProjectName, updateTeamManagerName, selectedMembers
+  const {updateTeamName, updateTeamDescription, updateTeamManagerName, updateProjectName, selectedMembers} =  req.body
+
+  
   
   try {
     if(!id) {
@@ -88,7 +92,7 @@ export const updateTeam = async (req,res) => {
         message:"Invalid Team id "
       })
     }
-    if(!teamName) {
+    if(!updateTeamName) {
       return res.status(404).json({
         success:false,
         message:"Invalid TeamName "
@@ -101,17 +105,18 @@ export const updateTeam = async (req,res) => {
     }
    
   
-    updateTeam.teamName = teamName
-    updateTeam.teamDescription = teamDescription
-    updateTeam.selectedManager = selectedManager === "" ? null :selectedManager
+    updateTeam.teamName = updateTeamName
+    updateTeam.teamDescription = updateTeamDescription
+    updateTeam.selectedManager = updateTeamManagerName.id === "" ? null :updateTeamManagerName.id
     updateTeam.selectedMembers = selectedMembers
-    updateTeam.selectedProject = selectedProject === "" ? null : selectedProject
+    updateTeam.selectedProject = updateProjectName._id === "" ? null : updateProjectName._id
     await updateTeam.save()  
-
 
 
     // console.log("working",typeof(id))
     const foundProject = await Project.findOne({ teamId: id });
+    console.log("working")
+    console.log(foundProject)
 
 if (!foundProject) {
    return res.status(400).json({
@@ -119,10 +124,8 @@ if (!foundProject) {
     message:"managerId not found in Project"
    })
 } else {
-  // console.log("Found project:", foundProject);
-
   // Assuming selectedManager is an ObjectId
-  foundProject.managerId = selectedManager;
+  foundProject.managerId = updateTeamManagerName._id;
 
   try {
     const updatedProject = await foundProject.save();
@@ -131,10 +134,6 @@ if (!foundProject) {
     console.error("Error saving project:", error);
   }
 }
-
-
-  
-
 return res.status(200).json({
   success:true,
   message:"Team details updated Successfully "

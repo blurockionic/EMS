@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { server } from "../../App";
 import { useNavigate } from "react-router-dom";
 import NET from 'vanta/dist/vanta.net.min'
+import logo from "../../assets/employee.png";
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -13,7 +14,13 @@ const Login = () => {
   useEffect(() => {
     if (!vantaEffect) {
       setVantaEffect(NET({
-        el: myRef.current
+        el: myRef.current,
+        color: 0x0,
+        waveHeight: 20,
+        shininess: 50,
+        waveSpeed: 1.5,
+        zoom: 0.75,
+        backgroundColor: 0xffffff
       }))
     }
     return () => {
@@ -77,15 +84,19 @@ const Login = () => {
   
   return (
     <div className="grid grid-cols-12 h-screen">
-      <div className="col-span-4 bg-slate-200 p-4 flex items-center" ref={myRef}>
-        <div className="mx-auto ">
-          <span className=" text-8xl font-bold text-slate-100">
+      <div
+        className="col-span-4 p-4 flex items-center "
+        ref={myRef}
+      >
+        <div className="mx-auto">
+          <img src={logo} alt="brand logo" />
+          {/* <span className=" text-8xl font-bold text-slate-100">
             Blurock <br />
-          </span>
-          <span className="text-slate-100">The Wealth Management</span>
+          </span> */}
+          <p className="text-slate-900 text-center font-bold">Automate your work with us</p>
         </div>
       </div>
-      <div className="col-span-8 bg-slate-50 flex items-center justify-center" >
+      <div className="col-span-8  flex items-center justify-center border-l-2 border-gray-300 bg-gradient-to-r from-gray-100  to-white" >
         {/* log in form  */}
 
         <form

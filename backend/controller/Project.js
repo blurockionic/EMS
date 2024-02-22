@@ -6,10 +6,7 @@ import { User } from "../model/user.js";
 // create new project
 export const newProject = async (req, res) => {
   //fetch all the data from request body
-
   // console.log(req.body)
-  // console.log("create project  working");
-
   const {
     projectName,
     projectStartDate,
@@ -32,7 +29,7 @@ export const newProject = async (req, res) => {
       ) {
         return res.status(400).jsom({
           success: false,
-          message: "Al field are required!",
+          message: "All field are required!",
         });
       }
       

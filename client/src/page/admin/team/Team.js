@@ -18,9 +18,14 @@ const Team = () => {
   const [allMembers, setAllMember] = useState([]);
   const [allManager, setAllManager] = useState([]);
 
-  const [teamDescription, setTeamDescription] = useState();
-  let [teamName, setTeamName] = useState();
+  const [teamDescription, setTeamDescription] = useState("");
+  let [teamName, setTeamName] = useState("");
   const [adminProfile, setAdminProfile] = useState("");
+
+  const [updateTeamName, setUpdateTeamName] = useState("");
+  const [updateTeamDescription, setUpdateTeamDescription] = useState("");
+  const [updateTeamManagerName, updateUpdaTeamManagerName] = useState("");
+  const [updateProjectName, setupdateProjectName] = useState("");
 
   const [allTeam, setAllTeam] = useState([]);
 
@@ -44,14 +49,13 @@ const Team = () => {
         });
 
         console.log("all teams data is here", allTeamsData.data.allTeamsData);
-        const {success} = allTeamsData.data 
-        if(success){
+        const { success } = allTeamsData.data;
+        if (success) {
           setAllTeam(allTeamsData.data.allTeamsData);
           setTeamName(filteredTeam[0].teamName);
-          setLoading(false)
-          setLoadingTwo(false)
+          setLoading(false);
+          setLoadingTwo(false);
         }
-       
       } catch (error) {
         console.error("Error fetching data:", error.message);
       }
@@ -64,7 +68,16 @@ const Team = () => {
   // update btn click handler
   const handleUpdatebtn = (id) => {
     setShowUpdateTeamModel(true);
+    const selectedTeam = allTeam.filter((team) => team._id === id);
+    setUpdateTeamName(selectedTeam[0].teamName);
+    setUpdateTeamDescription(selectedTeam[0].teamDescription);
+    updateUpdaTeamManagerName(selectedTeam[0].selectedManager);
+
+    console.log(selectedTeam[0].selectedProject);
+    setSelectedMembers(selectedTeam[0].selectedMembers);
     setFilteredTeam(allTeam.filter((team) => team._id === id));
+
+    setupdateProjectName(selectedTeam[0].selectedProject);
   };
 
   const handleDeletebtn = (id) => {
@@ -188,25 +201,15 @@ const Team = () => {
   const handleUpdateSubmit = async (e, id) => {
     e.preventDefault();
 
-    if (teamName === undefined || teamName === null) {
-      teamName = filteredTeam[0].teamName;
-    }
-    if (selectedManager === undefined || selectedManager === null) {
-      selectedManager = filteredTeam[0].selectedManager._id;
-    }
-
+    console.log(updateTeamName, updateTeamDescription,adminProfile, updateProjectName, updateTeamManagerName, selectedMembers)
+    
     try {
       // Send the form data to the backend API
-      setLoading(true)
+      setLoading(true);
       const response = await axios.put(
         `${server}/team/updateTeam/${id}`,
         {
-          teamName,
-          teamDescription,
-          adminProfile,
-          selectedManager,
-          selectedProject,
-          selectedMembers,
+          updateTeamName, updateTeamDescription,adminProfile, updateProjectName, updateTeamManagerName, selectedMembers
         },
         {
           headers: { "Content-Type": "application/json" },
@@ -219,9 +222,9 @@ const Team = () => {
       const { success, message } = response.data;
 
       if (success) {
-        setShowUpdateTeamModel(false)
+        setShowUpdateTeamModel(false);
         setLoadingTwo(true);
-        setLoading(false)
+        setLoading(false);
         alert(message);
       }
 
@@ -230,7 +233,6 @@ const Team = () => {
       console.error("Error sending form data:", error);
       // Handle error if necessary
     }
-    
   };
 
   const customStyles = {
@@ -314,8 +316,6 @@ const Team = () => {
   // selected members handle
   const handleUpdatedMembersChange = (selectedUpdatedMember) => {
     console.log(selectedUpdatedMember);
-
-    // console.log(allMembers);
 
     setSelectedMembers(selectedUpdatedMember);
   };
@@ -550,7 +550,7 @@ const Team = () => {
               <div className="flex  justify-between">
                 <div>
                   <h1 className="ml-40 uppercase font-bold text-xl">
-                    update {"   "} {filteredTeam[0].teamName}
+                    update {"   "} {updateTeamName}
                   </h1>
                 </div>
                 <button
@@ -569,11 +569,8 @@ const Team = () => {
                       className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
                       type="text"
                       placeholder="Enter New Name"
-                      defaultValue={filteredTeam[0].teamName}
-                      value={
-                        teamName === " " ? filteredTeam[0].teamName : teamName
-                      }
-                      onChange={(e) => setTeamName(e.target.value)}
+                      value={updateTeamName}
+                      onChange={(e) => setUpdateTeamName(e.target.value)}
                     />
                   </div>
                 </div>
@@ -581,19 +578,14 @@ const Team = () => {
                   {/* team Description */}
                   <div className="mr-8 ml-8">
                     <span className="font-bold text-xl ">
-                      Team Description :{" "}
+                      Team Description :
                     </span>
                     <input
                       className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
                       type="text"
-                      placeholder="Enter New Description"
-                      defaultValue={filteredTeam[0].teamDescription}
-                      value={
-                        teamDescription === ""
-                          ? filteredTeam[0].teamDescription
-                          : teamDescription
-                      }
-                      onChange={(e) => setTeamDescription(e.target.value)}
+                      placeholder="Team Description"
+                      value={updateTeamDescription}
+                      onChange={(e) => setUpdateTeamDescription(e.target.value)}
                     />
                   </div>
                 </div>
@@ -602,48 +594,46 @@ const Team = () => {
                   {/* current team Manager */}
                   <div className="flex flex-col">
                     <div className="font-bold text-xl">
-                      {" "}
-                      <span> Curret Team Manager : </span>
-                      {filteredTeam[0].selectedManager?.employeeName === ""
-                        ? "Empty"
-                        : filteredTeam[0].selectedManager?.employeeName}
+                      <span> Team Manager : </span>
                     </div>
 
                     <select
-                      value={selectedManager}
-                      onChange={(e) => setSelectedManager(e.target.value)}
+                      value={updateUpdaTeamManagerName}
+                      onChange={(e) =>
+                        updateUpdaTeamManagerName(e.target.value)
+                      }
                       className="p-4  font-semibold border-2 border-blue-500 rounded-md "
                     >
-                      <option className="font-semibold w-[15rem]   " value="">
-                        Change Manager
+                      <option
+                        className="font-semibold w-[15rem]"
+                        value={updateTeamManagerName._id}
+                      >
+                        {updateTeamManagerName.employeeName}
                       </option>
-                      {allManager.map((manager) => (
-                        <option key={manager._id} value={manager._id}>
-                          {manager.employeeName}
-                        </option>
-                      ))}
+                      {allManager
+                        .filter(
+                          (manager) => manager._id !== updateTeamManagerName._id
+                        )
+                        .map((manager) => (
+                          <option key={manager._id} value={manager._id}>
+                            {manager.employeeName}
+                          </option>
+                        ))}
                     </select>
                   </div>
 
                   {/* Current project */}
                   <div className="flex flex-col ">
-                    {" "}
                     <div className="font-bold text-xl">
-                      <span> Curret Project : </span>
-                      {filteredTeam[0].selectedProject?.projectName === ""
-                        ? "No Selected Project"
-                        : filteredTeam[0].selectedProject?.projectName}
+                      <span> Project: </span>
                     </div>
                     <select
-                      value={selectedProject}
-                      onChange={(e) => setSelectedProject(e.target.value)}
-                      className="p-4  font-semibold border-2 border-blue-500 rounded-md"
+                      defaultValue={updateProjectName.projectName}
+                      onChange={(e) => setupdateProjectName(e.target.value)}
+                      className="p-4 font-semibold border-2 border-blue-500 rounded-md"
                     >
-                      <option className="font-semibold w-[15rem]  " value="">
-                        Change Project
-                      </option>
                       {projects.map((project) => (
-                        <option key={project.id} value={project._id}>
+                        <option key={project._id} value={project._id}>
                           {project.projectName}
                         </option>
                       ))}
@@ -662,7 +652,6 @@ const Team = () => {
                         <div className="w-full mx-auto">
                           <Select
                             value={selectedMembers}
-                            defaultValue={filteredTeam[0].selectedMembers}
                             onChange={handleUpdatedMembersChange}
                             isMulti
                             options={allMembers}

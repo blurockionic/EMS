@@ -24,6 +24,9 @@ const AppVersion = () => {
               provide an extra layer of confirmation.
             </li>
             <li>
+              <span className="font-semibold">Team : </span>Previous team information automatic load on the input box when team update window is opened.
+            </li>
+            <li>
               <span className="font-semibold">Info Tab for All Users:</span>{" "}
               Grant access to the 'Info' tab button for all user types,
               including administrators, HR personnel, managers, and employees.
@@ -51,6 +54,15 @@ const AppVersion = () => {
               <span className="font-semibold">Employees UI:</span>
                 Optimize the design of the Employees Dashboard, especially in
               personal data there are an error in ui an extra shadow in layout .
+            </li>
+            <li>
+              <span className="font-semibold">Login UI: </span> Alteration on login design 
+            </li>
+            <li>
+              <span className="font-semibold">Cookie Error:</span> Fix the cookie error on current deployed software 
+            </li>
+            <li>
+              <span className="font-semibold">Team:</span> Fiexed team dscription input box.
             </li>
             <li>
               <span className="font-semibold">
