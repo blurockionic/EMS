@@ -56,7 +56,7 @@ const AppVersion = () => {
               personal data there are an error in ui an extra shadow in layout .
             </li>
             <li>
-              <span className="font-semibold">Login UI: </span> Alteration on login design 
+              <span className="font-semibold">Login UI: </span> Alteration on login page design 
             </li>
             <li>
               <span className="font-semibold">Cookie Error:</span> Fix the cookie error on current deployed software 
