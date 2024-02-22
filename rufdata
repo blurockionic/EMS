@@ -118,3 +118,79 @@ Training Started:
 <div className="absolute w-[235px] h-[27px] top-[178px] left-[316px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal] whitespace-nowrap">
 Training Ended:
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+{activeTab === "Task" && (
+  <div className="p-4">
+    <h2 className=" text-lg font-bold mb-2">Task Details</h2>
+    <div className="container mx-auto">
+      <table className="min-w-full bg-white border border-gray-300">
+        <thead>
+          <tr>
+            <th className="py-2 px-4 border-b">S.No</th>
+            <th className="py-2 px-4 border-b">Task ID</th>
+            <th className="py-2 px-4 border-b">Task Name</th>
+            <th className="py-2 px-4 border-b">Employee Name</th>
+            <th className="py-2 px-4 border-b">Employee Name</th>
+            <th className="py-2 px-4 border-b">Status</th>
+            {/* Add more columns as needed */}
+            <th className="py-2 px-4 border-b">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {allTask
+            .filter((task) => task.employeeName === profile.name)
+            .map((task, index) => (
+              <tr key={task._id}>
+                <td className="py-2 px-4 border-b text-center">
+                  {index + 1}
+                </td>
+                <td className="py-2 px-4 border-b text-center">
+                  {task._id}
+                </td>
+                <td className="py-2 px-4 border-b text-center">
+                  {task.taskTitle}
+                </td>
+                <td className="py-2 px-4 border-b text-center">
+                  {task.managerName}
+                </td>
+                <td className="py-2 px-4 border-b text-center">
+                  {task.isTaskCompleted ? "Completed" : "In progress"}
+                </td>
+                {/* Add more cells based on your task object */}
+                <td className="py-2 px-4 border-b flex items-center">
+                  {task.isTaskCompleted ? (
+                    <button
+                      disabled
+                      className="mx-auto bg-blue-500 hover:bg-blue-700 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                      onClick={() => handleReportClick(task)}
+                    >
+                      Report
+                    </button>
+                  ) : (
+                    <button
+                      className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                      onClick={() => handleReportClick(task)}
+                    >
+                      Report
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}

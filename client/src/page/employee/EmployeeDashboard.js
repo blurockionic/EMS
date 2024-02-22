@@ -18,6 +18,15 @@ const EmployeeDashboard = () => {
   const [trainStart, setTrainStart] = useState("");
   const [trainEnd, setTrainEnd] = useState("");
   const [allTrain, setAllTrain] = useState([]);
+  const [allTask, setAllTask] = useState([]);
+  const myInformation = [];
+  const [employee, setEmployee] = useState([]);
+  const [profile, setProfile] = useState({});
+  const [activeTab, setActiveTab] = useState("Task");
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+
   const [Loading, setLoading] = useState(false);
 
   // handle traing tab
@@ -26,6 +35,10 @@ const EmployeeDashboard = () => {
   };
   // addig newtraning button
   const addbutton = async () => {
+    if (!trainingName || !certificateID || !trainStart || !trainEnd) {
+      toast.warning(" All field are mandatory");
+      return;
+    }
     try {
       const response = await axios.post(
         `${server}/training/newTraining`,
@@ -43,24 +56,24 @@ const EmployeeDashboard = () => {
         }
       );
 
-      console.log(response);
+     
 
       const { message, success } = response.data;
-      console.log(message);
-      console.log(success);
+      // console.log(message);
+      // console.log(success);
 
-      if (success) {
-        toast(success);
+      if (success === true) {
+        toast.success("Training added successfully ");
         setshowtrainmodel(false);
+        setTrainingName(" ")
+        setCertificateID(" ")
+        setTrainEnd(" ")
+        setLoading(true)
       }
     } catch (e) {
       console.log(e);
     }
   };
-
-  // const traincardstyle = () =>{
-
-  // }
 
   const handleCloseModal = () => {
     setLeaveViewModal(false);
@@ -113,7 +126,7 @@ const EmployeeDashboard = () => {
 
       if (success) {
         alert(message);
-        setLoading(true);
+        // setLoading(true);
       }
     } catch (error) {
       alert(error.response.data.message);
@@ -127,15 +140,6 @@ const EmployeeDashboard = () => {
     reportDescription: "",
     isTaskCompleted: false,
   });
-
-  const [allTask, setAllTask] = useState([]);
-  const myInformation = [];
-  const [employee, setEmployee] = useState([]);
-  const [profile, setProfile] = useState({});
-  const [activeTab, setActiveTab] = useState("Task");
-
-  const [showModal, setShowModal] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
 
   //all profile
   useEffect(() => {
@@ -316,28 +320,27 @@ const EmployeeDashboard = () => {
     localStorage.setItem("taskId", taskId);
     navigate("../taskreportfeedback");
   };
-
+// get req for getting all the training data 
   useEffect(() => {
-    const showTrain = async () => {
+    const showTraining = async () => {
       try {
         const response = await axios.get(`${server}/training/showtraining`, {
           withCredentials: true,
         });
 
-        const { message, showTrain, success } = response.data;
-
-        setAllTrain(showTrain);
+        const { showTrain, success } = response.data;
+        if (success) {
+          // alert(message);
+          setAllTrain(showTrain);
+        }
       } catch (e) {
         console.log(e);
       }
     };
-    showTrain();
-  }, []);
-
-  console.log(allTrain);
-
+    showTraining();
+  }, [Loading]);
   return (
-    <div className="w-full mx-auto mt-2 p-4 bg-white rounded shadow-md">
+    <div className="w-full mx-auto mt-2 bg-white rounded shadow-md">
       <div className="flex">
         <div
           className={`cursor-pointer uppercase py-2 px-4 mr-4 ${
@@ -393,301 +396,215 @@ const EmployeeDashboard = () => {
       </div>
 
       {/* Personal Information  */}
-      <div className="mt-4">
-        {activeTab === "Personal Information" && (
-          <div className="mt-4">
-            {activeTab === "Personal Information" && (
-              <div className="bg-slate-50 flex flex-row rounded shadow-md w-full pb-6 justify-between px-12">
-                {/* Left Section */}
-                <div className="mt-10">
-                  <div className="w-[7rem] h-[7rem] flex items-center justify-center ml-24 rounded-full bg-slate-300 shadow-lg">
-                    <FaUserLarge className="text-7xl text-slate-400" />
-                  </div>
+      {activeTab === "Personal Information" && (
+        <div className=" mt-8 flex flex-row rounded w-full pb-6 justify-between px-12">
+          {/* Left Section */}
 
-                  <div className="mt-8">
-                    <div className="text-black text-sm uppercase text-center">
-                      Location
-                    </div>
-                    <div className="text-slate-600 text-lg font-semibold text-justify capitalize">
-                      {myInfo.address}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Center Section */}
-                <div className="flex flex-col">
-                  <div className="mt-4">
-                    <h2 className="text-black text-sm ">Name</h2>
-                    <div className="text-xl text-slate-800  ">
-                      {myInfo.employeeName}
-                    </div>
-                  </div>
-
-                  <div className="mt-8">
-                    <h3 className="text-black text-sm  "> Gender</h3>
-                    <div className="text-xl text-slate-800 capitalize">
-                      {myInfo.gender}
-                    </div>
-                  </div>
-
-                  <div className="mt-8">
-                    <h3 className="text-black text-sm  ">Date of Birth</h3>
-                    <div className="text-xl text-slate-800 ">
-                      {myInfo.dateOfBirth}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Section */}
-                <div className="flex flex-col">
-                  <div className="mt-4">
-                    <p className="text-black text-sm uppercase ">Email </p>
-                    <div className="text-xl text-slate-800 ">
-                      {myInfo.employeeEmail}
-                    </div>
-                  </div>
-
-                  <div className="mt-8">
-                    <p className="text-black text-sm uppercase">Phone</p>
-                    <div className="text-xl text-slate-800 ">
-                      {myInfo.employeePhoneNumber}
-                    </div>
-                  </div>
-
-                  <div className="mt-8">
-                    <p className="text-black text-sm uppercase ">Address</p>
-                    <p className="text-xl text-slate-800 ">{myInfo.address}</p>
-                  </div>
-                </div>
-
-                {/* QR Code and Button */}
-                <div className="flex flex-col">
-                  <div className="mt-4">
-                    <h3 className="text-black text-sm uppercase text-center">
-                      {" "}
-                      Designation
-                    </h3>
-                    <div className="font-bold capitalize text-center">
-                      {myInfo.designation}
-                    </div>
-                  </div>
-
-                  <div className="w-40 mx-auto mt-4">
-                    <QRCode value={myInfo._id} />
-                  </div>
-
-                  <button
-                    disabled
-                    onClick={downloadProfileCard}
-                    className=" text-white px-4 py-2 mt-4 rounded-md focus:outline-none"
-                  >
-                    Download Profile Card
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "Task" && (
-              <div>
-                <h2 className="text-lg font-bold mb-2">Task Details</h2>
-                <div className="container mx-auto">
-                  <table className="min-w-full bg-white border border-gray-300">
-                    <thead>
-                      <tr>
-                        <th className="py-2 px-4 border-b">S.No</th>
-                        <th className="py-2 px-4 border-b">Task ID</th>
-                        <th className="py-2 px-4 border-b">Task Name</th>
-                        <th className="py-2 px-4 border-b">Employee Name</th>
-                        <th className="py-2 px-4 border-b">Employee Name</th>
-                        <th className="py-2 px-4 border-b">Status</th>
-                        {/* Add more columns as needed */}
-                        <th className="py-2 px-4 border-b">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {allTask
-                        .filter((task) => task.employeeName === profile.name)
-                        .map((task, index) => (
-                          <tr key={task._id}>
-                            <td className="py-2 px-4 border-b text-center">
-                              {index + 1}
-                            </td>
-                            <td className="py-2 px-4 border-b text-center">
-                              {task._id}
-                            </td>
-                            <td className="py-2 px-4 border-b text-center">
-                              {task.taskTitle}
-                            </td>
-                            <td className="py-2 px-4 border-b text-center">
-                              {task.managerName}
-                            </td>
-                            <td className="py-2 px-4 border-b text-center">
-                              {task.isTaskCompleted
-                                ? "Completed"
-                                : "In progress"}
-                            </td>
-                            {/* Add more cells based on your task object */}
-                            <td className="py-2 px-4 border-b flex items-center">
-                              {task.isTaskCompleted ? (
-                                <button
-                                  disabled
-                                  className="mx-auto bg-blue-500 hover:bg-blue-700 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
-                                  onClick={() => handleReportClick(task)}
-                                >
-                                  Report
-                                </button>
-                              ) : (
-                                <button
-                                  className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                  onClick={() => handleReportClick(task)}
-                                >
-                                  Report
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "Attendance" && (
-              <div>
-                <h2 className="text-lg font-bold mb-2 text-center">
-                  This Feature Coming Soon
-                </h2>
-                <p className="text-center">Not Available</p>
-              </div>
-            )}
-
-            {/* {activeTab === "Report History" && (
-            <div>
-              <h2 className="text-lg font-bold mb-2">Content for Tab 2</h2>
-              <p>This is the content for Tab 4.</p>
+          <div className="mt-10">
+            <div className="w-[7rem] h-[7rem] flex justify-center flex-col items-center rounded-full ml-10 object-contain bg-slate-300 shadow-lg">
+              <FaUserLarge className="w-[4rem] h-[4rem]  text-slate-400" />{" "}
             </div>
-          )} */}
+
+            <div className="mt-8">
+              <div className="text-black text-sm uppercase text-center  flex flex-row justify-center">
+                Location
+              </div>
+              <div className="text-slate-600 text-lg font-semibold text-justify capitalize">
+                {myInfo.address}
+              </div>
+            </div>
           </div>
-        )}
-
-        {/* task  */}
-        {activeTab === "Task" && (
+          {/* border line  */}
           <div>
-            <h2 className="text-lg font-bold mb-2"> Task Details</h2>
-            <div className="container mx-auto">
-              <table className="min-w-full bg-white border border-gray-300">
-                <thead className="bg-slate-400">
-                  <tr>
-                    <th className="py-2 px-4 border-b">S.No</th>
-                    <th className="py-2 px-4 border-b">Task Name</th>
-                    <th className="py-2 px-4 border-b">Manager Name</th>
-                    <th className="py-2 px-4 border-b">Status</th>
-                    <th className="py-2 px-4 border-b">
-                      Request for Completion
-                    </th>
-                    <th className="py-2 px-4 border-b">Feedback</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allTask
-                    .filter((task) => task.employeeName === profile.name)
-                    .map((task, index) => (
-                      <tr key={task._id}>
-                        <td className="py-2 px-4 border-b text-center">
-                          {index + 1}
-                        </td>
+            <div className="bg-slate-500 h-full w-[0.1rem] "></div>
+          </div>
 
-                        <td className="py-2 px-4 border-b text-center">
-                          {task.taskTitle}
-                        </td>
-                        <td className="py-2 px-4 border-b text-center">
-                          {task.managerName}
-                        </td>
-                        <td className="py-2 px-4 border-b text-center">
-                          {task.isTaskCompleted ? "Completed" : "In Progress"}
-                        </td>
-                        <td className="py-2 px-4 border-b flex items-center">
-                          {task.isTaskCompleted ? (
-                            "completed"
-                          ) : task.isRequested ? (
-                            <button
-                              disabled
-                              className="mx-auto bg-red-300 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
-                              onClick={() => handleReportClick(task)}
-                            >
-                              Requested
-                            </button>
-                          ) : (
-                            <button
-                              className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                              onClick={() => handleReportClick(task)}
-                            >
-                              Request
-                            </button>
-                          )}
-                        </td>
-                        <td className="py-2 px-4 border-b text-center">
+          {/* Center Section */}
+          <div className="flex flex-col">
+            <div className="mt-4">
+              <h2 className="text-black text-sm ">Name</h2>
+              <div className="text-xl text-slate-800  ">
+                {myInfo.employeeName}
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <h3 className="text-black text-sm  "> Gender</h3>
+              <div className="text-xl text-slate-800 capitalize">
+                {myInfo.gender}
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <h3 className="text-black text-sm  ">Date of Birth</h3>
+              <div className="text-xl text-slate-800 ">
+                {myInfo.dateOfBirth}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Section */}
+          <div className="flex flex-col">
+            <div className="mt-4">
+              <p className="text-black text-sm uppercase ">Email </p>
+              <div className="text-xl text-slate-800 ">
+                {myInfo.employeeEmail}
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <p className="text-black text-sm uppercase">Phone</p>
+              <div className="text-xl text-slate-800 ">
+                {myInfo.employeePhoneNumber}
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <p className="text-black text-sm uppercase ">Address</p>
+              <p className="text-xl text-slate-800 ">{myInfo.address}</p>
+            </div>
+          </div>
+
+          {/* QR Code and Button */}
+          <div className="flex flex-col">
+            <div className="mt-4">
+              <h3 className="text-black text-sm uppercase text-center">
+                {" "}
+                Designation
+              </h3>
+              <div className="font-bold capitalize text-center">
+                {myInfo.designation}
+              </div>
+            </div>
+
+            <div className="w-40 mx-auto mt-4">
+              <QRCode value={myInfo._id} />
+            </div>
+
+            <button
+              disabled
+              onClick={downloadProfileCard}
+              className=" text-white px-4 py-2 mt-4 rounded-md focus:outline-none"
+            >
+              Download Profile Card
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* task  */}
+      {activeTab === "Task" && (
+        <div className="p-2">
+          <h2 className="text-lg font-bold mb-2"> Task Details</h2>
+          <div className="container mx-auto  ">
+            <table className="min-w-full bg-white border border-gray-300">
+              <thead className="bg-slate-400">
+                <tr>
+                  <th className="py-2 px-4 border-b">S.No</th>
+                  <th className="py-2 px-4 border-b">Task Name</th>
+                  <th className="py-2 px-4 border-b">Manager Name</th>
+                  <th className="py-2 px-4 border-b">Status</th>
+                  <th className="py-2 px-4 border-b">Request for Completion</th>
+                  <th className="py-2 px-4 border-b">Feedback</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allTask
+                  .filter((task) => task.employeeName === profile.name)
+                  .map((task, index) => (
+                    <tr key={task._id}>
+                      <td className="py-2 px-4 border-b text-center">
+                        {index + 1}
+                      </td>
+
+                      <td className="py-2 px-4 border-b text-center">
+                        {task.taskTitle}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">
+                        {task.managerName}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">
+                        {task.isTaskCompleted ? "Completed" : "In Progress"}
+                      </td>
+                      <td className="py-2 px-4 border-b flex items-center">
+                        {task.isTaskCompleted ? (
+                          "completed"
+                        ) : task.isRequested ? (
+                          <button
+                            disabled
+                            className="mx-auto bg-red-300 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
+                            onClick={() => handleReportClick(task)}
+                          >
+                            Requested
+                          </button>
+                        ) : (
                           <button
                             className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={() => handleOnFeedback(task._id)}
+                            onClick={() => handleReportClick(task)}
                           >
-                            View
+                            Request
                           </button>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
+                        )}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">
+                        <button
+                          className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                          onClick={() => handleOnFeedback(task._id)}
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Attendance  */}
-        {activeTab === "Attendance" && (
-          <div>
-            <h2 className="text-lg font-bold mb-2 text-center">
-              This Feature Coming Soon
-            </h2>
-            <p className="text-center">Not Available</p>
-          </div>
-        )}
-      </div>
+      {/* Attendance  */}
+      {activeTab === "Attendance" && (
+        <div className="p-2">
+          <h2 className="text-lg font-bold mb-2 text-center">
+            This Feature Coming Soon
+          </h2>
+          <p className="text-center">Not Available</p>
+        </div>
+      )}
 
       {/* leave details  */}
       {activeTab === "LeaveDetails" && (
-        <div className="flex flex-row justify-evenly ">
-          <div className=" ">
-            <div>
-              <div className="flex flex-col  items-center bg-red-600 w-[10rem] mt-6 text-2xl rounded-lg  shadow-lg shadow-slate-500">
-                <h3 className="flex  font-extrabold text-white ">Sick Leave</h3>
-                <div className="mt-2 py-1 text-white">
-                  <span className="font-extrabold text-4xl text-white">15</span>
-                  /15
-                </div>
+        <div className="p-2 flex flex-row justify-evenly ">
+          <div className="mt-5">
+            <div className="  flex flex-col items-center bg-violet-500  mt-4 rounded-lg w-[8rem] h-[4.5rem]  ">
+              <h3 className="text-white font-mono ">Sick Leave</h3>
+              <div className="text-white">
+                <span className=" text-4xl text-white">15</span>
+                /15
               </div>
+            </div>
 
-              <div className="flex flex-col items-center bg-green-600 w-[10rem] mt-6 font-bold text-white text-2xl rounded-lg  shadow-lg shadow-slate-500">
-                <h3 className="flex">Casual Leave</h3>
-                <div className="mt-2 py-1 text-white">
-                  <span className="font-extrabold text-4xl text-white">15</span>
-                  /15
-                </div>
+            <div className="  flex flex-col items-center bg-green-600  mt-4 rounded-lg w-[8rem] h-[4.5rem]  ">
+              <h3 className="text-white font-mono "> Casual Leave</h3>
+              <div className="text-white">
+                <span className=" text-4xl text-white">15</span>
+                /15
               </div>
+            </div>
 
-              <div className="flex flex-col items-center bg-blue-600 w-[10rem] mt-6 font-bold text-white text-2xl rounded-lg  shadow-lg shadow-slate-500">
-                <h3 className="flex">Paid Leave</h3>
-                <div className="mt-2 py-1 text-white">
-                  <span className="font-extrabold text-4xl text-white">20</span>
-                  /20
-                </div>
+            <div className="  flex flex-col items-center bg-sky-500  mt-4 rounded-lg w-[8rem] h-[4.5rem]  ">
+              <h3 className="text-white font-mono ">Paid Leave</h3>
+              <div className="text-white">
+                <span className=" text-4xl text-white">15</span>
+                /15
               </div>
-              <div className="bg-slate-800 rounded-lg  text-white">
-                <div className="p-4 mt-2 flex justify-center text-2xl">
-                  <button onClick={() => setLeaveViewModal(true)}>
-                    Apply Leave
-                  </button>
-                </div>
+            </div>
+
+            <div className="bg-slate-800 rounded-lg  text-white">
+              <div className="p-4 mt-2 font-sans flex justify-center ">
+                <button onClick={() => setLeaveViewModal(true)}>
+                  Apply Leave
+                </button>
               </div>
             </div>
           </div>
@@ -699,8 +616,9 @@ const EmployeeDashboard = () => {
       {/* training tab  */}
       {activeTab === "Training" && (
         <>
-          {allTrain.length <= 0 ? (
-            <div>
+          {allTrain.length > 0 ? (
+            <div className="p-2">
+              <h2 className="text-lg font-bold mb-2 px-1"> Training Details</h2>
               <div className="container mx-auto">
                 <table className="min-w-full bg-white border border-gray-300">
                   <thead className="bg-slate-300 ">
@@ -744,15 +662,15 @@ const EmployeeDashboard = () => {
                   + ADD
                 </button>
               </div>
+              <ToastContainer />
             </div>
           ) : (
-           
             <div> There is no training</div>
           )}
         </>
       )}
 
-      {/* Modal */}
+      {/* Report  Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
           <div className="bg-white p-8 rounded shadow-md">
@@ -857,7 +775,7 @@ const EmployeeDashboard = () => {
           </div>
         </div>
       )}
-
+      {/* leave module  */}
       {leaveViewModal && (
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex justify-center min-h-[90vh]">
@@ -989,20 +907,24 @@ const EmployeeDashboard = () => {
                 <div className="font-serif p-1">Training Name:</div>
 
                 <input
+                  required
                   type="text"
-                  className=" bg-indigo-50 w-full h-8  mt-1 rounded-lg"
+                  className="bg-indigo-50 w-full h-8 mt-1 rounded-lg px-3 py-2 border border-indigo-300 focus:outline-none focus:border-indigo-500"
                   onChange={(e) => setTrainingName(e.target.value)}
                   value={trainingName}
+                  placeholder="Enter Training Name"
                 />
               </div>
 
               <div>
                 <div className="font-serif mt-2">Certificate ID:</div>
                 <input
+                  required
                   type="text"
-                  className="  bg-indigo-50 w-full h-8  mt-1 rounded-lg"
+                  className="bg-indigo-50 w-full h-8 mt-1 rounded-lg px-3 py-2 border border-indigo-300 focus:outline-none focus:border-indigo-500"
                   onChange={(e) => setCertificateID(e.target.value)}
                   value={certificateID}
+                  placeholder="Enter Certificate ID"
                 />
               </div>
 
@@ -1011,6 +933,7 @@ const EmployeeDashboard = () => {
                   <div className="font-serif">Training Started:</div>
 
                   <input
+                    required
                     type="date"
                     className="text-gray-400"
                     onChange={(e) => setTrainStart(e.target.value)}
@@ -1022,8 +945,9 @@ const EmployeeDashboard = () => {
                   <div className="font-serif">Training Ended:</div>
 
                   <input
+                    required
                     type="date"
-                    className="text-black"
+                    className="text-gray-400"
                     onChange={(e) => setTrainEnd(e.target.value)}
                     value={trainEnd}
                   />
@@ -1035,9 +959,8 @@ const EmployeeDashboard = () => {
                   className=" bg-indigo-200 hover:bg-indigo-300 hover:scale-110 transform transition duration-500 z-1 px-[1rem] py-2 rounded-lg"
                   onClick={addbutton}
                 >
-                  <p className="">ADD</p>
+                  ADD
                 </button>
-                <ToastContainer />
               </div>
             </div>
           </div>
@@ -1045,6 +968,6 @@ const EmployeeDashboard = () => {
       )}
     </div>
   );
-}; /*  */
+};
 
 export default EmployeeDashboard;

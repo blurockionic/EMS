@@ -36,6 +36,8 @@ const ReportHistory = () => {
     
   return (
     <>
+    {/* Report all history  */}
+    <h2 className="text-lg font-bold mb-2"> Reports Details</h2>
     <table className="min-w-full bg-white border border-gray-300">
       <thead>
         <tr>
