@@ -24,7 +24,7 @@ const Team = () => {
 
   const [updateTeamName, setUpdateTeamName] = useState("");
   const [updateTeamDescription, setUpdateTeamDescription] = useState("");
-  const [updateTeamManagerName, updateUpdaTeamManagerName] = useState("");
+  const [updateTeamManagerName, setUpdateTeamManagerName] = useState("");
   const [updateProjectName, setupdateProjectName] = useState("");
 
   const [allTeam, setAllTeam] = useState([]);
@@ -52,7 +52,6 @@ const Team = () => {
         const { success } = allTeamsData.data;
         if (success) {
           setAllTeam(allTeamsData.data.allTeamsData);
-          setTeamName(filteredTeam[0].teamName);
           setLoading(false);
           setLoadingTwo(false);
         }
@@ -69,20 +68,33 @@ const Team = () => {
   const handleUpdatebtn = (id) => {
     setShowUpdateTeamModel(true);
     const selectedTeam = allTeam.filter((team) => team._id === id);
-    setUpdateTeamName(selectedTeam[0].teamName);
-    setUpdateTeamDescription(selectedTeam[0].teamDescription);
-    updateUpdaTeamManagerName(selectedTeam[0].selectedManager);
 
-    console.log(selectedTeam[0].selectedProject);
+
+    // set default value 
+    //team name
+    setUpdateTeamName(selectedTeam[0].teamName);
+    //team description 
+    setUpdateTeamDescription(selectedTeam[0].teamDescription);
+    
+    // selected members
     setSelectedMembers(selectedTeam[0].selectedMembers);
     setFilteredTeam(allTeam.filter((team) => team._id === id));
+    
+    //selected proeject
+    let project = []
+    project.push(selectedTeam[0].selectedProject)
+    setupdateProjectName(project);
+    setSelectedProject(selectedTeam[0].selectedProject)
 
-    setupdateProjectName(selectedTeam[0].selectedProject);
+    //selected manager name
+    let manager = []
+    manager.push(selectedTeam[0].selectedManager)
+    setUpdateTeamManagerName(manager);
+    setSelectedManager(selectedTeam[0].selectedManager)
   };
 
   const handleDeletebtn = (id) => {
     setShowSureDeleteModel(true);
-
     setFilterDeleteTeam(allTeam.filter((team) => team._id === id));
   };
 
@@ -201,7 +213,7 @@ const Team = () => {
   const handleUpdateSubmit = async (e, id) => {
     e.preventDefault();
 
-    console.log(updateTeamName, updateTeamDescription,adminProfile, updateProjectName, updateTeamManagerName, selectedMembers)
+    
     
     try {
       // Send the form data to the backend API
@@ -209,7 +221,7 @@ const Team = () => {
       const response = await axios.put(
         `${server}/team/updateTeam/${id}`,
         {
-          updateTeamName, updateTeamDescription,adminProfile, updateProjectName, updateTeamManagerName, selectedMembers
+          updateTeamName, updateTeamDescription,adminProfile, updateProjectName, updateTeamManagerName, selectedMembers, selectedManager, selectedProject
         },
         {
           headers: { "Content-Type": "application/json" },
@@ -219,6 +231,7 @@ const Team = () => {
 
       // Handle the response as needed
 
+      setFilteredTeam([])
       const { success, message } = response.data;
 
       if (success) {
@@ -226,6 +239,8 @@ const Team = () => {
         setLoadingTwo(true);
         setLoading(false);
         alert(message);
+        setSelectedManager("")
+        setSelectedProject("")
       }
 
       // Clear the form after successful submission
@@ -315,10 +330,16 @@ const Team = () => {
 
   // selected members handle
   const handleUpdatedMembersChange = (selectedUpdatedMember) => {
-    console.log(selectedUpdatedMember);
-
     setSelectedMembers(selectedUpdatedMember);
   };
+
+  const handleOnUpdateProject = (project)=>{
+    setupdateProjectName(project)
+  }
+
+  const handleOnupdateManagerName = (manager)=>{
+    setUpdateTeamManagerName(manager)
+  }
 
   // console.log("all team data with selected members ", allTeam);
   // console.log("filter datav", filteredTeam[0].selectedMembers)
@@ -596,30 +617,31 @@ const Team = () => {
                     <div className="font-bold text-xl">
                       <span> Team Manager : </span>
                     </div>
-
-                    <select
-                      value={updateUpdaTeamManagerName}
+                    {/* <select
+                      value={updateTeamManagerName}
+                      defaultValue={filteredTeam[0].selectedManager.employeeName}
                       onChange={(e) =>
-                        updateUpdaTeamManagerName(e.target.value)
+                        setUpdateTeamManagerName(e.target.value)
                       }
                       className="p-4  font-semibold border-2 border-blue-500 rounded-md "
                     >
-                      <option
-                        className="font-semibold w-[15rem]"
-                        value={updateTeamManagerName._id}
-                      >
-                        {updateTeamManagerName.employeeName}
-                      </option>
+                      <option value={null}>Select Manager</option>
                       {allManager
-                        .filter(
-                          (manager) => manager._id !== updateTeamManagerName._id
-                        )
                         .map((manager) => (
                           <option key={manager._id} value={manager._id}>
                             {manager.employeeName}
                           </option>
                         ))}
-                    </select>
+                    </select> */}
+                    <Select
+                            value={updateTeamManagerName}
+                            onChange={handleOnupdateManagerName}
+                            options={allManager}
+                            defaultValue={(option) => option._id}
+                            getOptionLabel={(option) => option.employeeName}
+                            getOptionValue={(option) => option._id}
+                            styles={customStyles}
+                          />
                   </div>
 
                   {/* Current project */}
@@ -627,17 +649,27 @@ const Team = () => {
                     <div className="font-bold text-xl">
                       <span> Project: </span>
                     </div>
-                    <select
-                      defaultValue={updateProjectName.projectName}
+                    {/* <select
+                      value={updateProjectName}
                       onChange={(e) => setupdateProjectName(e.target.value)}
                       className="p-4 font-semibold border-2 border-blue-500 rounded-md"
                     >
+                      <option value={null}>Select Project</option>
                       {projects.map((project) => (
                         <option key={project._id} value={project._id}>
                           {project.projectName}
                         </option>
                       ))}
-                    </select>
+                    </select> */}
+                    <Select
+                            value={updateProjectName}
+                            onChange={handleOnUpdateProject}
+                            options={projects}
+                            defaultValue={(option) => option._id}
+                            getOptionLabel={(option) => option.projectName}
+                            getOptionValue={(option) => option._id}
+                            styles={customStyles}
+                          />
                   </div>
                 </div>
                 {/* Team Members */}

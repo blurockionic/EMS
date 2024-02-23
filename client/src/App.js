@@ -31,7 +31,7 @@ import AppVersion from "./page/admin/AppVersion/AppVersion";
 
 
 
-export const server = "http://localhost:4000/api/v1"
+export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 
 function App() {
   return (

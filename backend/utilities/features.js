@@ -24,10 +24,10 @@ export const sendCookie = (
       httpOnly: true,
       // Add the 'SameSite=None' attribute for cross-origin requests
 
-      //sameSite: "None",
+      sameSite: "None",
 
       // Add the 'Secure' attribute for HTTPS connections
-    //   secure: true,
+      secure: true,
     };
 
     // console.log(user)
