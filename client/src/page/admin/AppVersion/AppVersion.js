@@ -3,9 +3,98 @@ import Accordion from "./Accordion";
 
 const AppVersion = () => {
   const accordionItems = [
+    //  version 15
+    {
+      title: "V1.0.15",
+
+      content: (
+        <div className="p-8">
+          <h1 className="text-2xl font-serif">Release Notes :- v1.0.15</h1>
+          <div className="font-mono text-xl mt-6 mb-6">February 23,2024</div>
+          <span className="font-mono text-xl ">Features:</span>
+          <div className="bg-black w-full h-[0.1rem]"></div>
+
+          <ul
+            className=" font-serif mt-4 mb-8 p-4"
+            style={{ listStyleType: "disc", color: "black" }}
+          >
+            <li>
+              <span className="font-semibold">
+                {" "}
+                Add Team in Employee Dashboard :
+              </span>
+              Add the 'Team' tab to the employee dashboard, allowing employees
+              to access relevant information about their team and teammates.
+              This feature facilitates the review of updates, notifications, and
+              details about ongoing projects. Employees can also check the
+              status of their teammates, including who is on leave or absent.
+            </li>
+
+            {/* <li>
+            <span className="font-semibold"> Enhanced Navigation:</span>
+              Improve navigation within the "Info" tab by organizing information
+            logically and providing easy access to key details.
+          </li> */}
+          </ul>
+
+          <span className="font-mono text-xl  ">Fixes:</span>
+          <div className="bg-black w-full h-[0.1rem]"></div>
+
+          <ul
+            className=" font-serif mt-4 p-4"
+            style={{ listStyleType: "disc", color: "black" }}
+          >
+            {/* <li className="font-semibold">Data synchronization</li>
+          <li className="font-semibold">User authentication</li> */}
+
+            <li>
+              <span className="font-semibold">Update button data</span>
+              Fix the issue with preselected data when updating team
+              information; this bug fixing is crucial. Additionally, resolve the
+              problem of reloading the 'Our Team' data when an entry is added or
+              removed.
+            </li>
+            <li>
+              <span className="font-semibold">Deploy the code </span> 
+            </li>
+            <li>
+              <span className="font-semibold">Cookie Error:</span> Fix the
+              cookie error on current deployed software
+            </li>
+            <li>
+              <span className="font-semibold">Team:</span> Fiexed team
+              dscription input box.
+            </li>
+            <li>
+              <span className="font-semibold">
+                Handle Add training button bug:
+              </span>
+              Fix a bug in the 'Add Training' button. Currently, when the 'Add'
+              button is clicked, there is no proof or confirmation to verify
+              that a new training has been successfully added. Additionally,
+              address the issue of empty fields persisting after creating a new
+              training. Ensure that all fields are properly cleared after the
+              training creation process.
+            </li>
+            {/* <li>
+            <span className="font-semibold"></span>
+          </li>
+
+          <li>
+            <span className="font-semibold">
+              
+            </span>{" "}
+            
+          </li> */}
+          </ul>
+        </div>
+      ),
+    },
+
     //  version 14
     {
       title: "V1.0.14",
+
       content: (
         <div className="p-8">
           <h1 className="text-2xl font-serif">Release Notes :- v1.0.14</h1>
@@ -24,7 +113,9 @@ const AppVersion = () => {
               provide an extra layer of confirmation.
             </li>
             <li>
-              <span className="font-semibold">Team : </span>Previous team information automatic load on the input box when team update window is opened.
+              <span className="font-semibold">Team : </span>Previous team
+              information automatic load on the input box when team update
+              window is opened.
             </li>
             <li>
               <span className="font-semibold">Info Tab for All Users:</span>{" "}
@@ -52,17 +143,20 @@ const AppVersion = () => {
 
             <li>
               <span className="font-semibold">Employees UI:</span>
-                Optimize the design of the Employees Dashboard, especially in
+              Optimize the design of the Employees Dashboard, especially in
               personal data there are an error in ui an extra shadow in layout .
             </li>
             <li>
-              <span className="font-semibold">Login UI: </span> Alteration on login page design 
+              <span className="font-semibold">Login UI: </span> Alteration on
+              login page design
             </li>
             <li>
-              <span className="font-semibold">Cookie Error:</span> Fix the cookie error on current deployed software 
+              <span className="font-semibold">Cookie Error:</span> Fix the
+              cookie error on current deployed software
             </li>
             <li>
-              <span className="font-semibold">Team:</span> Fiexed team dscription input box.
+              <span className="font-semibold">Team:</span> Fiexed team
+              dscription input box.
             </li>
             <li>
               <span className="font-semibold">

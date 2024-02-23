@@ -396,6 +396,29 @@ const SideNavbar = () => {
             </li>
           )}
 
+          {/* Employee Team related details */}
+          {profile.designationType === "employee" ? (
+            <li
+              className={`relative flex items-center px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
+            >
+              {/* New Employees */}
+              <Link to={"./empteam"} className="uppercase  font-bold">
+                <button
+                  className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
+                    path === "empteam"
+                      ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                      : "hover:bg-indigo-50 text-gray-600"
+                  }`}
+                >
+                  <span className="my-1 mr-1">
+                    <BiLogoMicrosoftTeams />
+                  </span>
+                  Team
+                </button>
+              </Link>
+            </li>
+          ) : null}
+
           {/* App version info for employee */}
           {profile.designationType === "employee" && (
             <li
@@ -418,6 +441,10 @@ const SideNavbar = () => {
               </Link>
             </li>
           )}
+
+
+
+          
         </ul>
         {/* profile section  */}
         <div className="border-t flex p-3 ">

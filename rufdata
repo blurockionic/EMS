@@ -73,6 +73,63 @@
 
 
 
+<table className="min-w-full bg-white border border-gray-300">
+  <thead>
+    <tr>
+      <th className="py-2 px-4 border-b">S.No</th>
+      <th className="py-2 px-4 border-b">Team Name</th>
+      <th className="py-2 px-4 border-b">Team Manager</th>
+      <th className="py-2 px-4 border-b">Project</th>
+      <th className="py-2 px-4 border-b">Members</th>
+      <th className="py-2 px-4 border-b">Update Team</th>
+      <th className="py-2 px-4 border-b">Action</th>
+    </tr>
+  </thead>
+  {/* <tbody>
+    {allTeam.map((emp, index) => (
+      <tr key={index} className="border-b">
+        <td className="py-2  border-r-2 text-center font-bold">
+          {index + 1}
+        </td>
+        <td className=" border-r-2 text-center">
+          {emp?.teamName}
+        </td>
+        <td className="py-2  border-r-2 text-center">
+          {emp.selectedManager?.employeeName === ""
+            ? "empty"
+            : emp.selectedManager?.employeeName}
+        </td>
+
+        <td className="py-2 border-r-2 text-center">
+          {emp.selectedProject?.projectName}
+        </td>
+        <td className="py-2 mx-auto flex justify-center">
+          {emp.selectedMembers.map((member, memberIndex) => (
+            <td className="justify-center" key={memberIndex}>
+              <div className="px-3 rounded-sm mr-2 font-semibold border-black">
+                {member.employeeName}
+              </div>
+            </td>
+          ))}
+        </td>
+        <td
+          className=" cursor-pointer py-2 text-center hover:font-extrabold bg-slate-500 hover:bg-sky-800 text-xl "
+          onClick={() => handleUpdatebtn(emp._id)}
+        >
+          Click
+        </td>
+
+        <td
+          className=" cursor-pointer py-2 text-center hover:font-extrabold bg-red-600 hover:bg-red-800 text-xl "
+          onClick={() => handleDeletebtn(emp._id)}
+        >
+          Delete
+        </td>
+      </tr>
+    ))}
+    <ToastContainer />
+  </tbody> */}
+</table>
 
 
 
@@ -98,26 +155,9 @@
 
 
 
-<button
-className="absolute w-[185px] h-[46px] top-[455px] left-[184px] bg-white rounded-[24px] hover:bg-slate-300 hover:scale-110 transform transition duration-500"
-onClick={addbutton}
->
-<p className="absolute w-[122px] h-[44px] top-[10px] left-[33px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] text-center tracking-[0] leading-[normal]">
-  ADD
-</p>
-</button>
-<div className="w-[245px] h-[34px] top-[36px] absolute left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
-Training Name:
-</div>
-<div className="absolute w-[245px] h-[34px] top-[317px] left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
-Certificate ID:
-</div>
-<div className="w-[235px] h-[27px] top-[178px] whitespace-nowrap absolute left-[57px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal]">
-Training Started:
-</div>
-<div className="absolute w-[235px] h-[27px] top-[178px] left-[316px] [font-family:'Inter-Regular',Helvetica] font-normal text-black text-[24px] tracking-[0] leading-[normal] whitespace-nowrap">
-Training Ended:
-</div>
+
+
+
 
 
 
