@@ -58,13 +58,11 @@ export const registration = async (req, res) => {
   }
 };
 
-
 //login
 export const login =  async(req, res)=>{
   // fetch all the data from request body
   const {email, password} = req.body
   
-  console.log("working")
   try {
     // validation 
     if(!email || !password){

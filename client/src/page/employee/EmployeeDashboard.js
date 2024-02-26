@@ -28,6 +28,13 @@ const EmployeeDashboard = () => {
   const [selectedTask, setSelectedTask] = useState(null);
 
   const [Loading, setLoading] = useState(false);
+  // / handleling leave details values
+  const [LeaveFormData, setLeaveFormData] = useState({
+    ToDate: "",
+    FromDate: "",
+    LeaveType: "",
+    Reason: "",
+  });
 
   // handle traing tab
   const trainingcard = () => {
@@ -79,13 +86,6 @@ const EmployeeDashboard = () => {
     setLeaveViewModal(false);
   };
 
-  // handleling leave details values
-  const [LeaveFormData, setLeaveFormData] = useState({
-    ToDate: "",
-    FromDate: "",
-    LeaveType: "",
-    Reason: "",
-  });
   // handleformData
   const handleFormData = (e) => {
     setLeaveFormData({ ...LeaveFormData, [e.target.name]: e.target.value });
@@ -339,6 +339,7 @@ const EmployeeDashboard = () => {
     };
     showTraining();
   }, [Loading]);
+
   return (
     <div className="w-full mx-auto mt-2 bg-white rounded shadow-md">
       <div className="flex">
