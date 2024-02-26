@@ -7,6 +7,7 @@ import { QRCode } from "react-qrcode";
 import { FaUserLarge } from "react-icons/fa6";
 import EmpLeaveHistory from "./EmpLeaveHistory";
 import { ToastContainer, toast } from "react-toastify";
+import ApplyLeaveModel from "./ApplyLeaveModel";
 
 // import LeaveHistroy from "./LeaveHistroy";
 
@@ -63,8 +64,6 @@ const EmployeeDashboard = () => {
         }
       );
 
-     
-
       const { message, success } = response.data;
       // console.log(message);
       // console.log(success);
@@ -72,10 +71,10 @@ const EmployeeDashboard = () => {
       if (success === true) {
         toast.success("Training added successfully ");
         setshowtrainmodel(false);
-        setTrainingName(" ")
-        setCertificateID(" ")
-        setTrainEnd(" ")
-        setLoading(true)
+        setTrainingName(" ");
+        setCertificateID(" ");
+        setTrainEnd(" ");
+        setLoading(true);
       }
     } catch (e) {
       console.log(e);
@@ -320,7 +319,7 @@ const EmployeeDashboard = () => {
     localStorage.setItem("taskId", taskId);
     navigate("../taskreportfeedback");
   };
-// get req for getting all the training data 
+  // get req for getting all the training data
   useEffect(() => {
     const showTraining = async () => {
       try {
@@ -776,110 +775,8 @@ const EmployeeDashboard = () => {
           </div>
         </div>
       )}
-      {/* leave module  */}
-      {leaveViewModal && (
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex justify-center min-h-[90vh]">
-            <div
-              className="fixed inset-0 transition-opacity"
-              onClick={handleCloseModal}
-            >
-              <div className="absolute inset-0 bg-black opacity-50"></div>
-            </div>
 
-            <div className="relative bg-white rounded-lg p-6 mx-auto">
-              <div className="flex justify-between">
-                <div>
-                  <h1 className=" font-bold text-xl"> Apply Leave</h1>
-                </div>
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={handleCloseModal}
-                >
-                  X
-                </button>
-              </div>
-              {/* Your modal content goes here */}
-
-              <div className="w-[30rem] ">
-                <h2 className=" font-bold mt-4 text-lg w-full bg-slate-900 rounded-lg p-1 flex text-white justify-center">
-                  <button onClick={() => setLeaveViewModal(true)}></button>
-                  apply Leave
-                </h2>
-                <div className="items-center  w-full rounded-lg bg-slate-10 mr-12 shadow-2xl shadow-slate-400">
-                  <div className="flex flex-row justify-between">
-                    <div className="flex-col ml-10">
-                      <div className="mt-5">
-                        <span className="font-extrabold text-xl">
-                          Leave Type
-                        </span>
-                        <select
-                          name="LeaveType"
-                          id=""
-                          className="text-lg w-[12rem]  "
-                          onChange={handleFormData}
-                        >
-                          <option selected disabled hidden>
-                            Choose Here
-                          </option>
-
-                          <option value="Sick">Sick Leave</option>
-                          <option value="Casual"> Casual Leave</option>
-                          <option value="Paid">paid leave</option>
-                        </select>
-                      </div>
-
-                      <div className="flex-col mr-10 ">
-                        {/*starting leave date */}
-                        <div className="font-bold w-[15rem] mt-4">
-                          From Date
-                        </div>
-                        <input
-                          type="date"
-                          name="FromDate"
-                          value={LeaveFormData.FromDate}
-                          required
-                          onChange={handleFormData}
-                        />
-
-                        {/*Ending leave date */}
-                        <div className="font-bold  mt-4">To Date</div>
-                        <input
-                          type="date"
-                          name="ToDate"
-                          value={LeaveFormData.ToDate}
-                          required
-                          onChange={handleFormData}
-                        />
-                      </div>
-
-                      <div className="font-bold   text-xl ">Reason</div>
-                      <textarea
-                        name="Reason"
-                        id=""
-                        required
-                        className="w-[25rem] h-[8rem] flex mx-auto mt-2 border-2 border-black"
-                        value={LeaveFormData.Reason}
-                        type="text"
-                        onChange={handleFormData}
-                      />
-
-                      <div className="flex flex-row justify-center  ">
-                        <button
-                          className=" bg-sky-700 p-2 text-white font-bold text-2xl mt-2 mb-2 rounded-lg"
-                          onClick={handelchangeData}
-                        >
-                          Apply
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+{leaveViewModal && <ApplyLeaveModel leaveViewModal={leaveViewModal} setLeaveViewModal={setLeaveViewModal}/>}
       {/* training model */}
       {showtrainmodel && (
         <div className="fixed inset-0 z-10 mt-36 overflow-y-auto">

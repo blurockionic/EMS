@@ -26,6 +26,7 @@ import ManagerProjectDetails from "./page/manager/project/ManagerProjectDetails"
 import TaskReportFeedback from "./page/employee/TaskReportFeedback";
 import EmpLeave from "./page/manager/empleaves/EmpLeave";
 import Team from "./page/admin/team/Team";
+import EmpTeam from "./page/employee/EmpTeam"
 import AppVersion from "./page/admin/AppVersion/AppVersion";
 
 
@@ -74,6 +75,8 @@ function App() {
           {/* employee  */}
           <Route path="employeedashboard" element={<EmployeeDashboard/>}/>
           <Route path="reporthistory" element={<ReportHistory/>}/>
+          <Route path ="empteam" element={<EmpTeam/>}/>
+
           <Route path="taskreportfeedback" element={<TaskReportFeedback/>}/>
 
 
