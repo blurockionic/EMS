@@ -39,7 +39,7 @@ const EmpLeaveHistory = () => {
   }, []);
 
         const data = leaveHistoryData.filter( (user) => user.employeeId === empid)
-        console.log(data)
+        // console.log(data)
        
 
   return (

@@ -327,7 +327,7 @@ const ManagerProject = () => {
             <input
               type="text"
               onChange={(e) => handleSearch(e)}
-              placeholder="Search employee name..."
+              placeholder="Search project name..."
               className="w-96 p-2 rounded-lg outline-none"
             />
           </div>
