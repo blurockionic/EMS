@@ -120,13 +120,13 @@ const AllProject = () => {
                 <div className="mt-5">
                   <div className="mb-2">
                     {/* handle search  */}
-                    <div className="w-96 flex items-center border border-green-300 rounded-md p-1 mx-1">
+                    <div className="w-96 flex items-center border border-slate-300 rounded-md p-1 mx-1">
                       <span className="text-xl mx-1">&#128269;</span>
                       <input
                         type="text"
                         onChange={(e) => handleSearch(e)}
                         placeholder="Search project name..."
-                        className="w-96 p-2 rounded-lg outline-none"
+                        className="w-96 p-1 rounded-lg outline-none"
                       />
                     </div>
                     {/* end handle search  */}
@@ -156,10 +156,10 @@ const AllProject = () => {
                           {allProject.map((project, index) => (
                             <tr key={project._id} className="text-center">
                               <td className="border px-4 py-2">{index + 1}</td>
-                              <td className="border px-4 py-2">
+                              <td className="border px-4 py-2 capitalize">
                                 {project.projectName}
                               </td>
-                              <td className="border px-4 py-2">
+                              <td className="border px-4 py-2 capitalize">
                                 {teamInfoData
                                   .filter((team) => team._id === project.teamId)
                                   .map((filteredTeam) => (
@@ -169,7 +169,7 @@ const AllProject = () => {
                                     </div>
                                   ))}
                               </td>
-                              <td className="border px-4 py-2">
+                              <td className="border px-4 py-2 ">
                                 {project.description}
                               </td>
                               <td className="border px-4 py-2">
@@ -239,7 +239,7 @@ const AllProject = () => {
                 <div className="mt-5">
                   <div className="mb-2">
                     {/* handle search  */}
-                    <div className="w-96 flex items-center border border-green-300 rounded-md p-1 mx-1">
+                    <div className="w-96 flex items-center border border-gray-300 rounded-md p-1 mx-1">
                       <span className="text-xl mx-1">&#128269;</span>
                       <input
                         type="text"
@@ -273,7 +273,7 @@ const AllProject = () => {
                         </thead>
                         <tbody>
                           {allProject.map((project, index) => (
-                            <tr key={project._id} className="text-center">
+                            <tr key={project._id} className={`text-center ${index % 2 ? "bg-slate-100" : "bg-white" }`}>
                               <td className="border px-4 py-2">{index + 1}</td>
                               <td className="border px-4 py-2">
                                 {project.projectName}

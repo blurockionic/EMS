@@ -5,7 +5,7 @@ import axios from 'axios';
 const AdminReport = () => {
     const [allProjectReport, setAllProjectReport] = useState([]);
     const [loading, setLoading] = useState(false)
-    const [isScrap, setIsScrap] = useState(false)
+    
   
  
     // load all the reports
@@ -27,6 +27,7 @@ const AdminReport = () => {
   
     const onDeleteClick = async(id)=>{
     //   console.log(id)
+      setLoading(false)
       const response = await axios.delete(`${server}/reportProject/${id}`, {withCredentials:true})
       const {success, message} = response.data
       if(success){
@@ -36,11 +37,7 @@ const AdminReport = () => {
     }
 
 
-    //project is scrap or not 
-    const handleOncheckBox =(value)=>{
-        console.log(value)
-        setIsScrap((prev)=> !prev)
-    }
+    
 
   return (
     <>
@@ -58,7 +55,7 @@ const AdminReport = () => {
        </thead>
        <tbody>
          {allProjectReport.map((project, index) => (
-           <tr key={index}>
+           <tr key={index} className={`text-center ${index % 2 ? "bg-slate-100" : "bg-white" }`}>
              <td className="border p-2">{index+1}</td>
              <td className="border p-2">{project.projectName}</td>
              <td className="border p-2">{project.reportTitle}</td>

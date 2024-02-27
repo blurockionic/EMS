@@ -6,7 +6,7 @@ const EmployeeTable = ({ employeeData }) => {
       {employeeData.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto">
-            <thead className="bg-slate-400">
+            <thead className="bg-slate-400 border-b shadow-sm">
               <tr>
                 <th className="border px-4 py-2">S.No</th>
                 <th className="border px-4 py-2">Name</th>
@@ -17,11 +17,11 @@ const EmployeeTable = ({ employeeData }) => {
             </thead>
             <tbody>
               {employeeData.map((employee, index) => (
-                <tr key={employee._id} className="text-center">
+                <tr key={employee._id} className={`text-center ${index % 2 ? "bg-slate-100" : "bg-white" }`}>
                   <td className="border px-4 py-2">{index + 1}</td>
-                  <td className="border px-4 py-2">{employee.employeeName}</td>
-                  <td className="border px-4 py-2">{employee.designation}</td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-4 py-2 capitalize">{employee.employeeName}</td>
+                  <td className="border px-4 py-2 capitalize">{employee.designation}</td>
+                  <td className="border px-4 py-2 capitalize">
                     {employee.designationType}
                   </td>
                   {/* Add more cells as needed */}

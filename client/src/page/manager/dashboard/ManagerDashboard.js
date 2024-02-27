@@ -99,11 +99,11 @@ const ManagerDashboard = () => {
     </div>
     {/* card end  */}
 
-    <div className="w-full mt-5">
+    {/* <div className="w-full mt-5">
        <div className="mb-5"><span className="ml-10 text-md  font-bold">Project Status</span></div>
         
      
-    </div>
+    </div> */}
   </>
   )
 }

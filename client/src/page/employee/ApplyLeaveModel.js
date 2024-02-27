@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import { server } from "../../App";
 
 const ApplyLeaveModel = ({ leaveViewModal, setLeaveViewModal }) => {
+  const [manager, setManager] = useState();
   const [userId, setUserId] = useState();
-  const [allTeamInfoData, setAllTeamInFoData] = useState([]);
+  const [allTeam, setAllTeam] = useState([]);
   const [allMembers, setAllMemebers] = useState([]);
   const [member, setMember] = useState();
 
@@ -15,7 +16,7 @@ const ApplyLeaveModel = ({ leaveViewModal, setLeaveViewModal }) => {
         withCredentials: true,
       });
 
-      console.log("user id OR OTHER IDS ", response.data.user.employeeId);
+      // console.log("user id OR OTHER IDS ", response.data.user.employeeId);
       setUserId(response.data.user.employeeId);
     };
 
@@ -31,40 +32,43 @@ const ApplyLeaveModel = ({ leaveViewModal, setLeaveViewModal }) => {
           withCredentials: true,
         });
 
-        console.log("all teams data is here", empTeamData.data.allTeamsData);
-        setAllTeamInFoData(empTeamData.data.allTeamsData);
-      } catch (error) {}
+        // console.log("all teams data is here", empTeamData.data.allTeamsData);
+        setAllTeam(empTeamData.data.allTeamsData);
+        
+      } catch (error) {
+        console.log(error.response.data.message)
+      }
     };
     teamData();
   }, []);
 
   // Assuming allTeamInfoData is an array of team objects with "_id" property
-  useEffect(() => {
-    // Set allMembers with the _id property of each team
-    setAllMemebers(allTeamInfoData.map((eachTeam) => eachTeam.selectedMembers));
+  // useEffect(() => {
+  //   // Set allMembers with the _id property of each team
+  //   setAllMemebers(allTeamInfoData.map((eachTeam) => eachTeam.selectedMembers));
 
-    // Log the value of allMembers
-    console.log("all each team id ", allMembers);
-  }, [allTeamInfoData]); // Add dependency array to run the effect when allTeamInfoData changes
+  //   // Log the value of allMembers
+  //   console.log("all each team id ", allMembers);
+  // }, [allTeamInfoData, allMembers]); // Add dependency array to run the effect when allTeamInfoData changes
 
-  useEffect(() => {
-    // Flatten the selectedMembers arrays into a single array
-    const flattenedMembers = allTeamInfoData.flatMap(
-      (eachTeam) => eachTeam.selectedMembers
-    );
+  // useEffect(() => {
+  //   // Flatten the selectedMembers arrays into a single array
+  //   const flattenedMembers = allTeamInfoData.flatMap(
+  //     (eachTeam) => eachTeam.selectedMembers
+  //   );
 
-    // Set allMembers with the flattened array
-    setAllMemebers(flattenedMembers);
+  //   // Set allMembers with the flattened array
+  //   setAllMemebers(flattenedMembers);
 
-    // Log the value of allMembers
-    console.log(
-      "all id in single line ",
-      typeof flattenedMembers,
-      flattenedMembers
-    );
-    const user = flattenedMembers.filter((one) => one._id === userId);
-    console.log("kuchha aa bhi raha kya ", user);  
-  }, [allTeamInfoData]);
+  //   // Log the value of allMembers
+  //   console.log(
+  //     "all id in single line ",
+  //     typeof flattenedMembers,
+  //     flattenedMembers
+  //   );
+  //   const user = flattenedMembers.filter((one) => one._id === userId);
+  //   console.log("kuchha aa bhi raha kya ", user);  
+  // }, []);
 
   const handleCloseModal = () => {
     setLeaveViewModal(false);
@@ -80,7 +84,7 @@ const ApplyLeaveModel = ({ leaveViewModal, setLeaveViewModal }) => {
   // handleformData
   const handleFormData = (e) => {
     setLeaveFormData({ ...LeaveFormData, [e.target.name]: e.target.value });
-    console.log(LeaveFormData);
+    // console.log(LeaveFormData);
   };
 
   // leave post request and applinig for the new Leave

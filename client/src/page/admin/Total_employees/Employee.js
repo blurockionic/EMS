@@ -100,13 +100,13 @@ const Employee = () => {
                 <div className="mt-5">
                   <div className="mb-2">
                     {/* handle search  */}
-                    <div className="w-96 flex items-center border border-green-300 rounded-md p-1 mx-1">
-                      <span className="text-xl mx-1"></span>
+                    <div className="w-96 flex items-center border border-slate-300 rounded-md p-1 mx-1">
+                      <span className="text-xl mx-1">&#128269;</span>
                       <input
                         type="text"
                         onChange={(e) => handleSearch(e)}
                         placeholder="Search employee name..."
-                        className="w-96 p-2 rounded-lg outline-none"
+                        className="w-96 p-1 rounded-lg outline-none"
                       />
                     </div>
                     {/* end handle search  */}

@@ -19,7 +19,6 @@ const ProjectDetails = ({ projectId }) => {
   const [taskTitle, setTaskTitle] = useState("");
   const [taskReportDesc, setTaskReportDesc] = useState("");
   const [reportTitle, setReportTitle] = useState("");
-  
 
   useEffect(() => {
     //fetch specific project details
@@ -128,11 +127,6 @@ const ProjectDetails = ({ projectId }) => {
       taskReportDesc,
       reportTitle,
     };
-    
-
-
-
-
 
     try {
       const responce = await axios.post(
@@ -160,166 +154,206 @@ const ProjectDetails = ({ projectId }) => {
 
   return (
     <>
-      <div className="max-w-md mx-auto mt-8 p-4 bg-white rounded shadow-md">
-        <h2 className="text-2xl font-bold mb-4">{project.projectName}</h2>
+      <table class="w-full mx-auto mt-2 p-4 rounded shadow-md">
+        <thead className="w-full">
+          <tr className="w-full">
+            <th
+              className="px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold"
+              colSpan={5}
+            >
+              Project Name
+            </th>
 
-        <div className="mb-4">
-          <p className="text-gray-600">Description: {project.description}</p>
-        </div>
+            <th className="px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold">
+              Status
+            </th>
 
-        <div className="mb-4">
-          <p className="text-gray-600">Priority: {project.priority}</p>
-        </div>
+            <th className="mb-4 px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold">
+              Priority
+            </th>
 
-        <div className="mb-4">
-          <p className="text-gray-600">
-            Start Date: {project.projectStartDate}
+            <th className="mb-4 px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold">
+              Assign Date
+            </th>
+
+            <th className="mb-4 px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold">
+              End Date
+            </th>
+
+            <th className="mb-4 px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold">
+              Percentage
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr className="w-full">
+            <td
+              className=" px-2 py-2 text-blue-500 text-center font-bold uppercase"
+              colSpan={5}
+            >
+              {project.projectName}
+            </td>
+            <td className="mb-4 text-gray-600 text-center">
+              {project.isCompleted ? (
+                <span className="bg-green-500 text-white">Completed</span>
+              ) : (
+                <span className="text-white bg-yellow-500 p-2">
+                  In Progress
+                </span>
+              )}
+            </td>
+
+            <td className="mb-4 text-gray-600 text-center capitalize">
+              {project.priority}
+            </td>
+
+            <td className="mb-4  text-center text-green-500 font-semibold">
+              {project.projectStartDate}
+            </td>
+
+            <td className="mb-4  text-center text-red-500 font-semibold">
+              {project.projectEndDate}
+            </td>
+
+            <td className="mb-4 text-gray-600 text-center">
+              {project.completedPercent}%
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div className="mb-4 p-4">
+        <td className="Description"></td>
+        <td colspan="6">
+          <p class="text-gray-600">
+            <span className="text-blue-700">Description:</span> <br />{" "}
+            {project.description}
           </p>
-          <p className="text-gray-600">End Date: {project.projectEndDate}</p>
-        </div>
-
-        <div className="mb-4">
-          <p className="text-gray-600">
-            Completed Percent: {project.completedPercent}%
-          </p>
-        </div>
-
-        <div className="mb-4">
-          <p className="text-gray-600">
-            Status: {project.isCompleted ? "Completed" : "In Progress"}
-          </p>
-        </div>
+        </td>
       </div>
 
       {/* table of task  */}
-      <div>
-        <div>
-          <h1 className="font-bold"> All Task</h1>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-300">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b"> Task</th>
-                <th className="py-2 px-4 border-b"> Project</th>
-                <th className="py-2 px-4 border-b"> Employee Name</th>
-                <th className="py-2 px-4 border-b">Start Date</th>
-                <th className="py-2 px-4 border-b">Status</th>
-                <th className="py-2 px-4 border-b">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {task.map((task) => (
-                <tr key={task._id}>
-                  <td className="py-2 px-4 border-b text-center">
-                    {task.taskTitle}
-                  </td>
-                  <td className="py-2 px-4 border-b text-center">
-                    {task.projectName}
-                  </td>
-                  <td className="py-2 px-4 border-b text-center">
-                    {task.employeeName}
-                  </td>
-                  <td className="py-2 px-4 border-b text-center">
-                    {task.taskAssignDate}
-                  </td>
-                  <td className="py-2 px-4 border-b text-center">
-                    {task.isTaskCompleted ? "Completed" : "In Progress"}
-                  </td>
-
-                  <td className="py-2 px-4 border-b text-center">
-                    <button
-                      className="px-4  py-2 text-white font-bold bg-blue-500 rounded-lg"
-                      onClick={() => handleOnViewReport(task)}
-                    >
-                      View Reports
-                    </button>
-                  </td>
+      <div className="flex justify-evenly items-center">
+        <div className="w-full">
+          <div className="w-full text-center p-2 bg-blue-500 text-white uppercase">
+            <h1 className="font-bold">Task</h1>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-300">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 border-b">Task Title</th>
+                  <th className="py-2 px-4 border-b"> Employee</th>
+                  <th className="py-2 px-4 border-b">Status</th>
+                  <th className="py-2 px-4 border-b">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {task.map((task) => (
+                  <tr key={task._id}>
+                    <td className="py-2 px-4 border-b text-center capitalize">
+                      {task.taskTitle}
+                    </td>
+                    <td className="py-2 px-4 border-b text-center capitalize">
+                      {task.employeeName}
+                    </td>
+                    <td className="py-2 px-4 border-b text-center capitalize">
+                      {task.isTaskCompleted ? "Completed" : "In Progress"}
+                    </td>
+
+                    <td className="py-2 px-4 border-b text-center">
+                      <button
+                        className="px-4  py-2 font-bold text-blue-500 rounded-lg"
+                        onClick={() => handleOnViewReport(task)}
+                      >
+                        View Report
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div className="mx-3"></div>
+        <div className="w-full">
+        <div className="w-full text-center p-2 bg-blue-500 text-white uppercase">
+            <h1 className="font-bold">Task Report</h1>
+          </div>
+          {/* task report  */}
+          {isOpenReport &&
+            (userReport.length > 0 ? (
+              <div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full bg-white border border-gray-300">
+                    <thead>
+                      <tr>
+                        <th className="py-2 px-4 border-b"> Title</th>
+                        <th className="py-2 px-4 border-b"> Employee Name</th>
+                        <th className="py-2 px-4 border-b">Rported Date</th>
+                        <th className="py-2 px-4 border-b">Git Link</th>
+                        <th className="py-2 px-4 border-b">Status</th>
+                        <th className="py-2 px-4 border-b">Feedback</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {userReport.map((taskReport) => (
+                        <tr key={taskReport._id}>
+                          <td className="py-2 px-4 border-b text-center">
+                            {taskReport.reportTitle}
+                          </td>
+
+                          <td className="py-2 px-4 border-b text-center">
+                            {taskReport.employeeName}
+                          </td>
+                          <td className="py-2 px-4 border-b text-center">
+                            {taskReport.createdAt}
+                          </td>
+                          <td className="py-2 px-4 border-b text-center">
+                            <a
+                              target="_blank"
+                              href={taskReport.gitLink}
+                              className="text-blue-600"
+                            >
+                              Open Link
+                            </a>
+                          </td>
+                          <td className="py-2 px-4 border-b text-center">
+                            {taskReport.isTaskCompleted
+                              ? "Completed"
+                              : "In Progress"}
+                          </td>
+                          <td className="py-2 px-4 border-b text-center">
+                            {taskReport.isTaskCompleted ? (
+                              <button
+                                disabled
+                                className="px-4 py-2 bg-red-300 text-white font-bold rounded-sm cursor-not-allowed"
+                                onClick={() => openModal(taskReport)}
+                              >
+                                Add Feedback
+                              </button>
+                            ) : (
+                              <button
+                                className="px-4 py-2 bg-green-600 text-white font-bold rounded-sm"
+                                onClick={() => openModal(taskReport)}
+                              >
+                                Add Feedback
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              <div className="p-12 mt-4 bg-slate-200 text-center rounded-sm">
+                <h1 className="font-bold uppercase">Report not available!</h1>
+              </div>
+            ))}
         </div>
       </div>
-
-      {/* task report  */}
-      {isOpenReport &&
-        (userReport.length > 0 ? (
-          <div>
-            <div>
-              <h1 className="font-bold">
-                {" "}
-                All Task report of {userReport[0].employeeName}
-              </h1>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-300">
-                <thead>
-                  <tr>
-                    <th className="py-2 px-4 border-b"> Title</th>
-                    <th className="py-2 px-4 border-b"> Employee Name</th>
-                    <th className="py-2 px-4 border-b">Rported Date</th>
-                    <th className="py-2 px-4 border-b">Git Link</th>
-                    <th className="py-2 px-4 border-b">Status</th>
-                    <th className="py-2 px-4 border-b">Feedback</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userReport.map((taskReport) => (
-                    <tr key={taskReport._id}>
-                      <td className="py-2 px-4 border-b text-center">
-                        {taskReport.reportTitle}
-                      </td>
-
-                      <td className="py-2 px-4 border-b text-center">
-                        {taskReport.employeeName}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        {taskReport.createdAt}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        <a
-                          target="_blank"
-                          href={taskReport.gitLink}
-                          className="text-blue-600"
-                        >
-                          Open Link
-                        </a>
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        {taskReport.isTaskCompleted
-                          ? "Completed"
-                          : "In Progress"}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        {taskReport.isTaskCompleted ? (
-                          <button
-                            disabled
-                            className="px-4 py-2 bg-red-300 text-white font-bold rounded-sm cursor-not-allowed"
-                            onClick={() => openModal(taskReport)}
-                          >
-                            Add Feedback
-                          </button>
-                        ) : (
-                          <button
-                            className="px-4 py-2 bg-green-600 text-white font-bold rounded-sm"
-                            onClick={() => openModal(taskReport)}
-                          >
-                            Add Feedback
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ) : (
-          <div className="p-4 mt-4 bg-slate-200 text-center rounded-sm">
-            <h1 className="font-bold uppercase">Report not available!</h1>
-          </div>
-        ))}
 
       {/* Modal component */}
       {isModalOpen && (
@@ -377,14 +411,6 @@ const ProjectDetails = ({ projectId }) => {
           </div>
         </div>
       )}
-
-
-
-
-
-
-
-     
     </>
   );
 };
