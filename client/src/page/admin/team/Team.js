@@ -5,7 +5,7 @@ import Select from "react-select";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loader from "../../../utilities/Loader";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 const Team = () => {
   const [projects, setProjects] = useState([]);
@@ -32,13 +32,20 @@ const Team = () => {
   const [filteredTeam, setFilteredTeam] = useState([]);
   const [flterDeleteTeam, setFilterDeleteTeam] = useState([]);
 
-  // const [selectedUpdatedMembers, setSelectedUpdatedMembers] = useState();
-
   // Update team Model open and close useState
   const [showUpdateTeamModel, setShowUpdateTeamModel] = useState(false);
 
   // sure delete team f
   const [showSureDeleteModel, setShowSureDeleteModel] = useState(false);
+
+  // const [dropDown, setDropdown] = useState(false);
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+
+  const handleOnthreeDot = (empId) => {
+    // Toggle the dropdown state for the clicked row
+    setOpenDropdownId((prevId) => (prevId === empId ? null : empId));
+    // setDropdown(true);
+  };
 
   // geting all Teams Data useEffect
   useEffect(() => {
@@ -69,28 +76,26 @@ const Team = () => {
     setShowUpdateTeamModel(true);
     const selectedTeam = allTeam.filter((team) => team._id === id);
 
-
-    // set default value 
     //team name
     setUpdateTeamName(selectedTeam[0].teamName);
-    //team description 
+    //team description
     setUpdateTeamDescription(selectedTeam[0].teamDescription);
-    
+
     // selected members
     setSelectedMembers(selectedTeam[0].selectedMembers);
     setFilteredTeam(allTeam.filter((team) => team._id === id));
-    
+
     //selected proeject
-    let project = []
-    project.push(selectedTeam[0].selectedProject)
+    let project = [];
+    project.push(selectedTeam[0].selectedProject);
     setupdateProjectName(project);
-    setSelectedProject(selectedTeam[0].selectedProject)
+    setSelectedProject(selectedTeam[0].selectedProject);
 
     //selected manager name
-    let manager = []
-    manager.push(selectedTeam[0].selectedManager)
+    let manager = [];
+    manager.push(selectedTeam[0].selectedManager);
     setUpdateTeamManagerName(manager);
-    setSelectedManager(selectedTeam[0].selectedManager)
+    setSelectedManager(selectedTeam[0].selectedManager);
   };
 
   const handleDeletebtn = (id) => {
@@ -154,9 +159,9 @@ const Team = () => {
       return;
     }
 
-    if (selectedProject === undefined) {
-      selectedProject = null;
-    }
+    // if (selectedProject === undefined) {
+    //   selectedProject = null;
+    // }
 
     console.log(
       teamName,
@@ -213,15 +218,20 @@ const Team = () => {
   const handleUpdateSubmit = async (e, id) => {
     e.preventDefault();
 
-    
-    
     try {
       // Send the form data to the backend API
       setLoading(true);
       const response = await axios.put(
         `${server}/team/updateTeam/${id}`,
         {
-          updateTeamName, updateTeamDescription,adminProfile, updateProjectName, updateTeamManagerName, selectedMembers, selectedManager, selectedProject
+          updateTeamName,
+          updateTeamDescription,
+          adminProfile,
+          updateProjectName,
+          updateTeamManagerName,
+          selectedMembers,
+          selectedManager,
+          selectedProject,
         },
         {
           headers: { "Content-Type": "application/json" },
@@ -231,7 +241,7 @@ const Team = () => {
 
       // Handle the response as needed
 
-      setFilteredTeam([])
+      setFilteredTeam([]);
       const { success, message } = response.data;
 
       if (success) {
@@ -239,8 +249,8 @@ const Team = () => {
         setLoadingTwo(true);
         setLoading(false);
         alert(message);
-        setSelectedManager("")
-        setSelectedProject("")
+        setSelectedManager("");
+        setSelectedProject("");
       }
 
       // Clear the form after successful submission
@@ -250,30 +260,6 @@ const Team = () => {
     }
   };
 
-  const customStyles = {
-    control: (provided) => ({
-      ...provided,
-      border: "2px solid #333",
-      borderRadius: "8px",
-    }),
-    menu: (provided) => ({
-      ...provided,
-      overflowY: "auto",
-      // width: 'full',
-      maxHeight: "10rem", // Set the width of the menu
-    }),
-    option: (provided) => ({
-      ...provided,
-      display: "flex",
-      alignItems: "center",
-      padding: "8px",
-      overflow: "hidden",
-      // width: '12rem',
-      whiteSpace: "nowrap", // Prevent option text from wrapping
-
-      textOverflow: "ellipsis", // Display ellipsis (...) for overflowed text
-    }),
-  };
   // all prject Get rq
   useEffect(() => {
     const data = async () => {
@@ -333,13 +319,13 @@ const Team = () => {
     setSelectedMembers(selectedUpdatedMember);
   };
 
-  const handleOnUpdateProject = (project)=>{
-    setupdateProjectName(project)
-  }
+  const handleOnUpdateProject = (project) => {
+    setupdateProjectName(project);
+  };
 
-  const handleOnupdateManagerName = (manager)=>{
-    setUpdateTeamManagerName(manager)
-  }
+  const handleOnupdateManagerName = (manager) => {
+    setUpdateTeamManagerName(manager);
+  };
 
   // console.log("all team data with selected members ", allTeam);
   // console.log("filter datav", filteredTeam[0].selectedMembers)
@@ -368,23 +354,12 @@ const Team = () => {
         >
           Create Team
         </div>
-
-        {/* <div
-          className={`cursor-pointer uppercase py-2 px-4 mr-4 ${
-            activeTeamTab === "Update Team"
-              ? "border-b-4 border-blue-500 text-blue-500 font-bold"
-              : "bg-white"
-          }`}
-          onClick={() => handleTabClick("Update Team")}
-        >
-          Update Team
-        </div> */}
       </div>
+
       {/* All teams  */}
       {activeTeamTab === "Our Teams" && (
-        <div className="mt-4">
-          {activeTeamTab === "Our Teams" && (
-            <div>
+        
+            <div className="mt-4">
               <h2 className="text-lg font-bold mb-2">All Teams</h2>
               <div className="container mx-auto">
                 <table className="min-w-full bg-white border border-gray-300">
@@ -395,8 +370,8 @@ const Team = () => {
                       <th className="py-2 px-4 border-b">Team Manager</th>
                       <th className="py-2 px-4 border-b">Project</th>
                       <th className="py-2 px-4 border-b">Members</th>
-                      <th className="py-2 px-4 border-b">Update Team</th>
-                      <th className="py-2 px-4 border-b">Action</th>
+                      {/* <th className="py-2 px-4 border-b">Update Team</th> */}
+                      {/* <th className="py-2 px-4 border-b">Action</th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -417,7 +392,7 @@ const Team = () => {
                         <td className="py-2 border-r-2 text-center">
                           {emp.selectedProject?.projectName}
                         </td>
-                        <td className="py-2 mx-auto flex justify-center">
+                        <td className="py-2  mx-auto flex justify-center">
                           {emp.selectedMembers.map((member, memberIndex) => (
                             <td className="justify-center" key={memberIndex}>
                               <div className="px-3 rounded-sm mr-2 font-semibold border-black">
@@ -426,18 +401,51 @@ const Team = () => {
                             </td>
                           ))}
                         </td>
-                        <td
-                          className=" cursor-pointer py-2 text-center hover:font-extrabold bg-slate-500 hover:bg-sky-800 text-xl "
-                          onClick={() => handleUpdatebtn(emp._id)}
-                        >
+                        {/* <td className=" cursor-pointer py-2 text-center hover:font-extrabold bg-slate-500 hover:bg-sky-800 text-xl ">
                           Click
                         </td>
 
-                        <td
-                          className=" cursor-pointer py-2 text-center hover:font-extrabold bg-red-600 hover:bg-red-800 text-xl "
-                          onClick={() => handleDeletebtn(emp._id)}
-                        >
+                        <td className=" cursor-pointer py-2 text-center hover:font-extrabold bg-red-600 hover:bg-red-800 text-xl ">
                           Delete
+                        </td> */}
+                        <td className="relative border-2">
+                          <div
+                            className="flex
+                           flex-row justify-center"
+                          >
+                            <BsThreeDotsVertical
+                              size={35}
+                              className="bg-fcfbfe  p-2 rounded-full cursor-pointer  "
+                              onClick={() => handleOnthreeDot(emp._id)}
+                            />
+                          </div>
+                          {openDropdownId === emp._id && (
+                            <div className="   absolute z-10 top-5 p-1 bg-slate-100 rounded shadow-md   cursor-pointer ">
+                              <ul
+                                className=""
+                                // onMouseLeave={() => setDropdown(false)}
+                              >
+                                <li
+                                  className=" py-1 px-2 font-semibold rounded cursor-pointer  hover:bg-slate-500"
+                                  onClick={() => handleUpdatebtn(emp._id)}
+                                >
+                                  Edit
+                                </li>
+                                <li
+                                  className=" py-1 px-2 font-semibold rounded cursor-pointer  hover:bg-slate-500"
+                                  onClick={() => handleDeletebtn(emp._id)}
+                                >
+                                  Delete
+                                </li>
+                                <li
+                                  className=" py-1 px-2 font-semibold rounded cursor-pointer  hover:bg-slate-500"
+                                  // onClick={() => handleDeletebtn(emp._id)}
+                                >
+                                  Details
+                                </li>
+                              </ul>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -446,274 +454,366 @@ const Team = () => {
                 </table>
               </div>
             </div>
-          )}
-        </div>
+       
+     
       )}
+
       {/* Create team */}
       {activeTeamTab === "Create Team" && (
-        <div className="mt-4">
-          {activeTeamTab === "Create Team" && (
+        <div className="container mx-auto w-[60%] h-auto bg-white shadow-2xl">
+          <div className="m-12">
             <div>
-              <div className="container mx-auto w-[70%] h-[100vh]">
+              <h1 className="text-2xl  uppercase text-center font-bold text-blue-500 ">
+                Team Details
+              </h1>
+
+              <div className="mt-2">
+                <label
+                  className="text-slate-600 text-sm font-semibold "
+                  htmlFor="teamName"
+                >
+                  Team Name
+                </label>
+                <input
+                  className="w-full border-solid border-slate-400 outline-none
+                            border-opacity-100 border
+                            rounded-sm p-2"
+                  type="text"
+                  value={teamName}
+                  required
+                  name="teamName"
+                  placeholder=" Enter team Name"
+                  onChange={(e) => setTeamName(e.target.value)}
+                />
+              </div>
+              {/* team description */}
+              <div className="mt-2">
+                <label
+                  className="text-slate-600 text-sm font-semibold "
+                  htmlFor="teamDescription"
+                >
+                  Description
+                </label>
+                <textarea
+                  className=" resize-none w-full h-[5rem] border-solid border-slate-400 outline-none
+                    border-opacity-100 border
+                    rounded-sm p-2"
+                  type="text"
+                  value={teamDescription}
+                  name="teamDescription"
+                  placeholder=" Enter team Description"
+                  onChange={(e) => setTeamDescription(e.target.value)}
+                />
+              </div>
+
+              <div className="mt-3 flex flex-row justify-between ">
+                <div className="flex flex-col w-full">
+                  <label
+                    className="text-slate-600 text-sm font-semibold"
+                    htmlFor="selcetManager"
+                  >
+                    Manager
+                  </label>
+                  <select
+                    value={selectedManager}
+                    onChange={(e) => setSelectedManager(e.target.value)}
+                    className=" p-2 font-semibold border-slate-400 outline-none
+                           border
+                            rounded-sm "
+                  >
+                    <option className=" text-slate-400" value="">
+                      Select Manager
+                    </option>
+                    {allManager.map((manager) => (
+                      <option key={manager._id} value={manager._id}>
+                        {manager.employeeName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* <div className=" flex flex-col w-[40%]">
+                  <label
+                    className="text-slate-600 text-sm font-semibold "
+                    htmlFor="selectProject"
+                  >
+                    Select Project{" "}
+                  </label>
+                  <select
+                    value={selectedProject}
+                    onChange={(e) => setSelectedProject(e.target.value)}
+                    className="p-2   font-semibold border-slate-400 outline-none
+                    border-opacity-100 border
+                    rounded-sm"
+                  >
+                    <option className="font-semibold w-[15rem]  " value="">
+                      Select Project
+                    </option>
+                    {projects.map((project) => (
+                      <option key={project.id} value={project._id}>
+                        {project.projectName}
+                      </option>
+                    ))}
+                  </select>
+                </div> */}
+              </div>
+
+              <div className=" mt-4 flex flex-col">
                 <div>
                   <div>
-                    <div>
-                      <input
-                        className=" mt-2 w-full border-solid border-blue-500
-                            border-opacity-100 border-2
-                            rounded-md p-2"
-                        type="text"
-                        value={teamName}
-                        required
-                        name="teamName"
-                        placeholder=" Enter team Name"
-                        onChange={(e) => setTeamName(e.target.value)}
-                      />
-                    </div>
+                    <label
+                      className="text-slate-600 text-sm font-semibold "
+                      htmlFor="teamMember "
+                    >
+                      Members
+                    </label>
 
-                    <div>
-                      <textarea
-                        className=" resize-none mt-2 w-full h-[5rem] border-solid border-blue-500
-                            border-opacity-100 border-2
-                            rounded-md p-2"
-                        type="text"
-                        value={teamDescription}
-                        name="teamDescription"
-                        placeholder=" Enter team Description"
-                        onChange={(e) => setTeamDescription(e.target.value)}
-                      />
-                    </div>
+                    <div className="flex flex-row justify-between z-auto">
+                      <div className="w-full mx-auto ">
+                        <Select
+                          // value={selectedMembers}
+                          onChange={handleMembersChange}
+                          isMulti
+                          options={allMembers}
+                          getOptionLabel={(option) => option.employeeName}
+                          getOptionValue={(option) => option._id}
+                          styles={{
+                            control: (provided) => ({
+                              ...provided,
 
-                    <div className=" flex flex-row justify-between ">
-                      <select
-                        value={selectedManager}
-                        onChange={(e) => setSelectedManager(e.target.value)}
-                        className="p-4  font-semibold border-2 border-blue-500 rounded-md "
-                      >
-                        <option className="font-semibold w-[15rem]" value="">
-                          Select Manager
-                        </option>
-                        {allManager.map((manager) => (
-                          <option key={manager._id} value={manager._id}>
-                            {manager.employeeName}
-                          </option>
-                        ))}
-                      </select>
-                      {/* <div className="bg-slate-900 py-4 px-2 text-white rounded-md">
-                          Assign Project to team
-                        </div> */}
-
-                      <select
-                        value={selectedProject}
-                        onChange={(e) => setSelectedProject(e.target.value)}
-                        className="p-4  font-semibold border-2 border-blue-500 rounded-md"
-                      >
-                        <option className="font-semibold w-[15rem]  " value="">
-                          Select a project
-                        </option>
-                        {projects.map((project) => (
-                          <option key={project.id} value={project._id}>
-                            {project.projectName}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="flex flex-col">
-                      <div>
-                        <div>
-                          <div className=" w-[15rem]  bg-slate-900 mt-2 p-2 text-white rounded-md">
-                            Add Team Member <span>(optional)</span>
-                          </div>
-
-                          <div className="mt-4  flex flex-row justify-between">
-                            <div className="w-full mx-auto">
-                              <Select
-                                // value={selectedMembers}
-                                onChange={handleMembersChange}
-                                isMulti
-                                options={allMembers}
-                                getOptionLabel={(option) => option.employeeName}
-                                getOptionValue={(option) => option._id}
-                                styles={customStyles}
-                              />
-                            </div>
-                          </div>
-                        </div>
+                              border: "1px solid #839DB4",
+                              borderRadius: "2px",
+                            }),
+                            menu: (provided) => ({
+                              ...provided,
+                              overflowY: "hidden",
+                              // maxHeight: "8rem",
+                            }),
+                            option: (provided) => ({
+                              ...provided,
+                              display: "flex",
+                              alignItems: "center",
+                              padding: "8px",
+                            }),
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
-                  <div className="bg-blue-500 font-semibold text-xl py-2 mt-[12rem] rounded-lg justify-center mx-auto w-[12rem] flex flex-row">
-                    <button onClick={(e) => handleFormSubmit(e)}>
-                      Create Team
-                    </button>
-                  </div>
                 </div>
               </div>
+
+              <button
+                onClick={(e) => handleFormSubmit(e)}
+                className="bg-blue-500 font-semibold text-xl py-2 mt-10 rounded-sm   justify-center mx-auto w-[80%] flex flex-row"
+              >
+                Create Team
+              </button>
             </div>
-          )}
-          <ToastContainer />
+            <div className="mt-4 h-2 w-full "></div>
+          </div>
         </div>
       )}
-
+      <ToastContainer />
       {/* Showing update team Model  */}
       {showUpdateTeamModel && (
-        <div className="z-10 inset-0 fixed   overflow-y-auto">
-          <div className="flex items-center justify-center  min-h-screen">
-            <div
-              className="fixed inset-0 transition-opacity"
-              onClick={handleCloseModal}
-            >
-              <div className="absolute inset-0 bg-black opacity-50"></div>
-            </div>
+        <div className=" z-10 inset-0 fixed flex items-center min-h-screen">
+          <div
+            className="inset-0 transition-opacity absolute bg-black opacity-50"
+            onClick={handleCloseModal}
+          ></div>
 
-            <div className="relative bg-white rounded-lg p-2 w-[800px]  mx-auto">
-              <div className="flex  justify-between">
-                <div>
-                  <h1 className="ml-40 uppercase font-bold text-xl">
-                    update {"   "} {updateTeamName}
-                  </h1>
+          <div className="relative bg-white rounded-sm w-[35rem]  mx-auto">
+            <div className="flex  justify-between text-center">
+              <div className="">
+                <h1 className="  ml-48 uppercase font-bold text-xl text-blue-600">
+                  update Team
+                </h1>
+              </div>
+              <button
+                className="bg-red-700 hover:bg-red-900 text-white font-bold py-2 px-4 rounded-sm absolute -top-10 right-0"
+                onClick={handleCloseModal}
+              >
+                X
+              </button>
+            </div>
+            <div>
+              <div>
+                {/* team Name  */}
+                <div className="m-8">
+                  <label
+                    className="text-slate-600 text-sm font-semibold "
+                    htmlFor="teamName"
+                  >
+                    Team Name
+                  </label>
+                  <input
+                    className=" w-full p-2 rounded-sm  font-semibold border-slate-400 outline-none
+                      border-opacity-100 border
+                      "
+                    type="text"
+                    placeholder="Enter New Name"
+                    value={updateTeamName}
+                    onChange={(e) => setUpdateTeamName(e.target.value)}
+                  />
                 </div>
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={handleCloseModal}
-                >
-                  X
-                </button>
               </div>
               <div>
-                <div>
-                  {/* team Name  */}
-                  <div className="m-8">
-                    <span className="font-bold text-xl ">Team Name : </span>
-                    <input
-                      className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
-                      type="text"
-                      placeholder="Enter New Name"
-                      value={updateTeamName}
-                      onChange={(e) => setUpdateTeamName(e.target.value)}
-                    />
-                  </div>
+                {/* team Description */}
+                <div className="mr-8 ml-8">
+                  <label
+                    className="text-slate-600 text-sm font-semibold "
+                    htmlFor="teamName"
+                  >
+                    New Description
+                  </label>
+                  <input
+                    className=" w-full p-2 rounded-sm border-slate-400 outline-none border-opacity-100 border "
+                    type="text"
+                    placeholder="Team Description"
+                    value={updateTeamDescription}
+                    onChange={(e) => setUpdateTeamDescription(e.target.value)}
+                  />
                 </div>
-                <div>
-                  {/* team Description */}
-                  <div className="mr-8 ml-8">
-                    <span className="font-bold text-xl ">
-                      Team Description :
-                    </span>
-                    <input
-                      className="bg-sky-100 w-full h-[2.5rem] p-2 rounded-md font-semibold bottom-2 "
-                      type="text"
-                      placeholder="Team Description"
-                      value={updateTeamDescription}
-                      onChange={(e) => setUpdateTeamDescription(e.target.value)}
-                    />
-                  </div>
-                </div>
+              </div>
 
-                <div className="flex flex-row ml-9 mr-9 justify-between">
-                  {/* current team Manager */}
-                  <div className="flex flex-col">
-                    <div className="font-bold text-xl">
-                      <span> Team Manager : </span>
-                    </div>
-                    {/* <select
-                      value={updateTeamManagerName}
-                      defaultValue={filteredTeam[0].selectedManager.employeeName}
-                      onChange={(e) =>
-                        setUpdateTeamManagerName(e.target.value)
-                      }
-                      className="p-4  font-semibold border-2 border-blue-500 rounded-md "
+              <div className="flex flex-row ml-9 mr-9 justify-between">
+                {/* current team Manager */}
+                <div className="flex flex-col  w-[40%]">
+                  <div className="font-bold text-xl">
+                    <label
+                      className="text-slate-600 text-sm font-semibold "
+                      htmlFor="teamName"
                     >
-                      <option value={null}>Select Manager</option>
-                      {allManager
-                        .map((manager) => (
-                          <option key={manager._id} value={manager._id}>
-                            {manager.employeeName}
-                          </option>
-                        ))}
-                    </select> */}
-                    <Select
-                            value={updateTeamManagerName}
-                            onChange={handleOnupdateManagerName}
-                            options={allManager}
-                            defaultValue={(option) => option._id}
-                            getOptionLabel={(option) => option.employeeName}
-                            getOptionValue={(option) => option._id}
-                            styles={customStyles}
-                          />
+                      Manager
+                    </label>
                   </div>
 
-                  {/* Current project */}
-                  <div className="flex flex-col ">
-                    <div className="font-bold text-xl">
-                      <span> Project: </span>
-                    </div>
-                    {/* <select
-                      value={updateProjectName}
-                      onChange={(e) => setupdateProjectName(e.target.value)}
-                      className="p-4 font-semibold border-2 border-blue-500 rounded-md"
-                    >
-                      <option value={null}>Select Project</option>
-                      {projects.map((project) => (
-                        <option key={project._id} value={project._id}>
-                          {project.projectName}
-                        </option>
-                      ))}
-                    </select> */}
-                    <Select
-                            value={updateProjectName}
-                            onChange={handleOnUpdateProject}
-                            options={projects}
-                            defaultValue={(option) => option._id}
-                            getOptionLabel={(option) => option.projectName}
-                            getOptionValue={(option) => option._id}
-                            styles={customStyles}
-                          />
-                  </div>
+                  <Select
+                    value={updateTeamManagerName}
+                    onChange={handleOnupdateManagerName}
+                    options={allManager}
+                    defaultValue={(option) => option._id}
+                    getOptionLabel={(option) => option.employeeName}
+                    getOptionValue={(option) => option._id}
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        border: "1px solid #839DB4",
+                        borderRadius: "2px",
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        overflowY: "hidden",
+                        // maxHeight: "8rem",
+                      }),
+                      option: (provided) => ({
+                        ...provided,
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "8px",
+                      }),
+                    }}
+                  />
                 </div>
-                {/* Team Members */}
-                <div className="flex flex-col m-9">
+
+                {/* Current project */}
+                <div className="flex flex-col  w-[40%]">
+                  <div className="font-bold text-xl ">
+                    <label
+                      className="text-slate-600 text-sm font-semibold "
+                      htmlFor="teamName"
+                    >
+                      Projects
+                    </label>
+                  </div>
+
+                  <Select
+                    value={updateProjectName}
+                    onChange={handleOnUpdateProject}
+                    options={projects}
+                    defaultValue={(option) => option._id}
+                    getOptionLabel={(option) => option.projectName}
+                    getOptionValue={(option) => option._id}
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        border: "1px solid #839DB4",
+                        borderRadius: "2px",
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        overflowY: "hidden",
+                        // maxHeight: "8rem",
+                      }),
+                      option: (provided) => ({
+                        ...provided,
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "8px",
+                      }),
+                    }}
+                  />
+                </div>
+              </div>
+              {/* Team Members */}
+              <div className="flex flex-col mt-2 mx-9">
+                <div>
                   <div>
-                    <div>
-                      <div className=" w-[15rem]  bg-slate-900  p-2 text-white rounded-md">
-                        Add Team Member <span>(optional)</span>
-                      </div>
+                    <label
+                      className="text-slate-600 text-sm font-semibold "
+                      htmlFor="teamName"
+                    >
+                      Edit Members
+                    </label>
 
-                      <div className="mt-4  flex flex-row justify-between">
-                        <div className="w-full mx-auto">
-                          <Select
-                            value={selectedMembers}
-                            onChange={handleUpdatedMembersChange}
-                            isMulti
-                            options={allMembers}
-                            getOptionLabel={(option) => option.employeeName}
-                            getOptionValue={(option) => option._id}
-                            styles={customStyles}
-                          />
-                        </div>
+                    <div className="mt-1 flex flex-row justify-between">
+                      <div className="w-full ">
+                        <Select
+                          value={selectedMembers}
+                          onChange={handleUpdatedMembersChange}
+                          isMulti
+                          options={allMembers}
+                          getOptionLabel={(option) => option.employeeName}
+                          getOptionValue={(option) => option._id}
+                          styles={{
+                            control: (provided) => ({
+                              ...provided,
+                              border: "1px solid #839DB4",
+                              borderRadius: "2px",
+                            }),
+                            menu: (provided) => ({
+                              ...provided,
+                              overflowY: "auto",
+                              maxHeight: "6rem",
+                            }),
+                            option: (provided) => ({
+                              ...provided,
+                              display: "flex",
+                              alignItems: "center",
+                              padding: "8px",
+                            }),
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div>
-                  <div className="bg-blue-500 font-semibold text-xl py-2 mt-[12rem] rounded-lg justify-center mx-auto w-[12rem] flex flex-row">
-                    <button
-                      onClick={(e) =>
-                        handleUpdateSubmit(e, filteredTeam[0]._id)
-                      }
-                    >
-                      Update Team
-                    </button>
-                  </div>
+              <div>
+                <div className="bg-blue-500 font-semibold text-xl py-2 mt-[4rem] mb-4 rounded-sm justify-center mx-auto w-[60%] flex flex-row">
+                  <button
+                    onClick={(e) => handleUpdateSubmit(e, filteredTeam[0]._id)}
+                  >
+                    Update Team
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
-
       {/* Showing Sure  team Model  */}
       {showSureDeleteModel && (
         <div className="z-10 inset-0 fixed   overflow-y-auto">
@@ -724,13 +824,16 @@ const Team = () => {
             >
               <div className="absolute inset-0 bg-black opacity-50"></div>
             </div>
-            <div className="relative bg-white rounded-lg p-2 w-[20rem] h-[20rem]  mx-auto">
+            <div className="relative bg-white rounded-lg p-2 w-[18rem] h-[16rem]  mx-auto">
               <div className="flex flex-col p-10  text-center justify-between">
-                <div className=" mt-4 text-2xl font-extrabold">
+                <div className=" text-xl font-extrabold">
                   {" "}
                   Are your sure want to delete team ?{" "}
-                  {flterDeleteTeam[0].teamName}
                 </div>
+                <span className=" mt-2 text-xl font-serif">
+                  {" "}
+                  {flterDeleteTeam[0].teamName}
+                </span>
                 <div className=" mt-4  flex flex-row mx-auto  gap-12 justify-between">
                   <button
                     className="bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"

@@ -616,7 +616,7 @@ const EmployeeDashboard = () => {
       {/* training tab  */}
       {activeTab === "Training" && (
         <>
-          {allTrain.length > 0 ? (
+          
             <div className="p-2">
               <h2 className="text-lg font-bold mb-2 px-1"> Training Details</h2>
               <div className="container mx-auto">
@@ -664,9 +664,7 @@ const EmployeeDashboard = () => {
               </div>
               <ToastContainer />
             </div>
-          ) : (
-            <div> There is no training</div>
-          )}
+          
         </>
       )}
 
