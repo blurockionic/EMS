@@ -77,9 +77,7 @@ const ManagerProject = () => {
     data();
   }, []);
 
-  
   // console.log(" All project data arha h",  profile.employeeId);
-
 
   // handle search
   const handleSearch = (e) => {
@@ -227,24 +225,6 @@ const ManagerProject = () => {
     fetchData();
   }, [setEmployeeData]);
 
-  // project
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const projectData = await axios.get(`${server}/project/all`, {
-  //         withCredentials: true,
-  //       });
-  //       setAllProject(projectData.data.allProject);
-  //       // console.log(projectData)
-  //     } catch (error) {
-  //       console.error("Error fetching project data:", error.message);
-  //       alert(error.message);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [setAllProject]);
-
   //handle for change
   const handleOnTaskChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -322,13 +302,13 @@ const ManagerProject = () => {
         </div>
         <div>
           {/* handle search  */}
-          <div className="w-96 flex items-center border border-green-300 rounded-md p-1 mx-1">
+          <div className="w-96 flex items-center border border-slate-300 rounded-md p-1 mx-1">
             <span className="text-xl mx-1"></span>
             <input
               type="text"
               onChange={(e) => handleSearch(e)}
               placeholder="Search project name..."
-              className="w-96 p-2 rounded-lg outline-none"
+              className="w-96 p-1 rounded-lg outline-none"
             />
           </div>
           {/* end handle search  */}
@@ -397,7 +377,7 @@ const ManagerProject = () => {
                         </button>
                       ) : (
                         <button
-                          className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                          className="mx-auto text-blue-500 font-bold py-2 px-4 rounded"
                           onClick={() => handleAssignTask(project)}
                         >
                           Assign Task
@@ -415,7 +395,7 @@ const ManagerProject = () => {
                         </button>
                       ) : (
                         <button
-                          className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                          className="mx-auto text-blue-500 font-bold py-2 px-4 rounded"
                           onClick={() => handleReportClick(project)}
                         >
                           Report
@@ -424,7 +404,7 @@ const ManagerProject = () => {
                     </td>
                     <td className="border px-4 py-2">
                       <button
-                        className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="mx-auto text-blue-500 font-bold py-2 px-4 rounded"
                         onClick={() => handleOnShowMore(project._id)}
                       >
                         View
@@ -458,12 +438,12 @@ const ManagerProject = () => {
             <div className="relative bg-white rounded-lg p-6 w-[500px] mx-auto">
               <div className="flex justify-between">
                 <div>
-                  <h1 className="ml-40 uppercase font-bold text-xl">
+                  <h1 className="ml-40 uppercase font-bold text-xl text-blue-500">
                     Report Project
                   </h1>
                 </div>
                 <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded absolute -top-10 right-0"
                   onClick={handleCloseModal}
                 >
                   X
@@ -482,9 +462,10 @@ const ManagerProject = () => {
                     type="text"
                     id="reportTitle"
                     name="reportTitle"
+                    disabled
                     value={formData.reportTitle}
                     onChange={handleChange}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className="capitalize appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     placeholder="Enter report title"
                   />
                 </div>
@@ -501,7 +482,7 @@ const ManagerProject = () => {
                     name="reportDescription"
                     value={formData.reportDescription}
                     onChange={handleChange}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     placeholder="Enter report description"
                   ></textarea>
                 </div>
@@ -511,7 +492,7 @@ const ManagerProject = () => {
                     className="block text-gray-700 text-sm font-bold mb-2"
                     htmlFor="isProjectCompleted"
                   >
-                    Is Project Completed
+                    Is Project Completed?
                   </label>
                   <input
                     type="checkbox"
@@ -527,7 +508,7 @@ const ManagerProject = () => {
                 <div className="flex items-center justify-between">
                   <button
                     type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    className="w-full  uppercase bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   >
                     Submit
                   </button>
@@ -552,12 +533,12 @@ const ManagerProject = () => {
             <div className="relative bg-white rounded-lg p-6 w-[500px] mx-auto">
               <div className="flex justify-between">
                 <div>
-                  <h1 className="ml-40 uppercase font-bold text-xl">
+                  <h1 className="ml-40 uppercase font-bold text-xl text-blue-500">
                     Assign Task
                   </h1>
                 </div>
                 <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded absolute -top-10 right-0"
                   onClick={handleCloseModal}
                 >
                   X
@@ -567,31 +548,34 @@ const ManagerProject = () => {
 
               <form
                 onSubmit={handleOnTaskSubmit}
-                className="max-w-md mx-auto mt-8 p-4 bg-white rounded shadow-md"
+                className="max-w-md mx-auto mt-8 "
               >
                 <label className="block mb-2">
-                  <span className="text-gray-700">Task Title:</span>
+                  <span className="text-gray-700">Task Title</span>
                   <input
                     type="text"
                     name="taskTitle"
                     value={formTaskData.taskTitle}
                     onChange={handleOnTaskChange}
-                    className="form-input mt-1 block w-full border"
+                    placeholder="Enter task title"
+                    className="form-input mt-1 p-2 block w-full rounded-sm border outline-none "
                   />
                 </label>
                 <label className="block mb-2">
-                  <span className="text-gray-700">Project:</span>
+                  <span className="text-gray-700">Project</span>
                   <select
                     name="taskOf"
                     value={formTaskData.taskOf}
+                    disabled
                     onChange={handleOnTaskChange}
-                    className="form-select mt-1 block w-full border"
+                    className="form-select mt-1 p-2 block w-full rounded-sm border outline-none capitalize"
                   >
-                    <option value="" disabled>
-                      Select a project
-                    </option>
                     {allProject.map((project) => (
-                      <option key={project._id} value={project.projectName}>
+                      <option
+                        key={project._id}
+                        value={project.projectName}
+                        disabled
+                      >
                         {project.projectName}
                       </option>
                     ))}
@@ -602,19 +586,21 @@ const ManagerProject = () => {
                   <span className="text-gray-700">Task Description:</span>
                   <textarea
                     name="taskDescription"
+                    rows={2}
                     value={formTaskData.taskDescription}
                     onChange={handleOnTaskChange}
-                    className="form-input mt-1 block w-full border"
+                    placeholder="Enter task description"
+                    className="form-input mt-1 p-2 block w-full rounded-sm border outline-none"
                   />
                 </label>
 
                 <label className="block mb-2">
-                  <span className="text-gray-700">Assign To:</span>
+                  <span className="text-gray-700">Assign To</span>
                   <select
                     name="assignTo"
                     value={formTaskData.assignTo}
                     onChange={handleOnTaskChange}
-                    className="form-select mt-1 block w-full border"
+                    className="form-select mt-1 p-2 block w-full rounded-sm border outline-none"
                   >
                     <option value="" disabled>
                       Select an employee
@@ -634,31 +620,38 @@ const ManagerProject = () => {
                   </select>
                 </label>
 
-                <label className="block mb-2">
-                  <span className="text-gray-700">Assign Date:</span>
-                  <input
-                    type="date"
-                    name="taskAssignDate"
-                    value={formTaskData.taskAssignDate}
-                    onChange={handleOnTaskChange}
-                    className="form-input mt-1 block w-full border"
-                  />
-                </label>
-                <label className="block mb-2">
-                  <span className="text-gray-700">Submission Date:</span>
-                  <input
-                    type="date"
-                    name="taskEndDate"
-                    value={formTaskData.taskEndDate}
-                    onChange={handleOnTaskChange}
-                    className="form-input mt-1 block w-full border"
-                  />
-                </label>
+                <div className="flex justify-center items-center">
+                  <div className="w-full">
+                    <label className="block mb-2">
+                      <span className="text-gray-700">Assign Date</span>
+                    </label>
+                    <input
+                      type="date"
+                      name="taskAssignDate"
+                      value={formTaskData.taskAssignDate}
+                      onChange={handleOnTaskChange}
+                      className="form-input mt-1 p-2 block w-full rounded-sm border outline-none"
+                    />
+                  </div>
+                  <div className="mx-2"></div>
+                  <div className="w-full">
+                    <label className="block mb-2">
+                      <span className="text-gray-700">Submission Date</span>
+                    </label>
+                    <input
+                      type="date"
+                      name="taskEndDate"
+                      value={formTaskData.taskEndDate}
+                      onChange={handleOnTaskChange}
+                      className="form-input mt-1 p-2 block w-full rounded-sm border outline-none"
+                    />
+                  </div>
+                </div>
 
                 <div className="flex items-center justify-between mt-4">
                   <button
                     type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
+                    className="w-full uppercase bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
                   >
                     Submit
                   </button>

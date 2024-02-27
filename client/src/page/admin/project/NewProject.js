@@ -4,13 +4,13 @@ import { server } from "../../../App";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../utilities/Loader";
 
-const NewProject = ({activeTab}) => {
+const NewProject = ({ activeTab }) => {
   const navigate = useNavigate();
   const [employeeData, setEmployeeData] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  const [allTeam, setAllTeam] = useState([])
- 
+  const [allTeam, setAllTeam] = useState([]);
+
   const [formData, setFormData] = useState({
     projectName: "",
     projectStartDate: "",
@@ -18,18 +18,13 @@ const NewProject = ({activeTab}) => {
     priority: "",
     description: "",
     websiteUrl: "",
-    teamId : "",
+    teamId: "",
     isCompleted: false,
     isScrap: false,
   });
 
-
-
-
-
-
-// handle for create new project 
-  const handleSubmit = async(e) => {
+  // handle for create new project
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission logic here
     try {
@@ -43,12 +38,12 @@ const NewProject = ({activeTab}) => {
         description,
         websiteUrl,
       } = formData;
-  
+
       //request to the server
-      if(!teamId) {
-        alert("team not created pls first create team")
-        navigate("../newTeam")
-        return
+      if (!teamId) {
+        alert("team not created pls first create team");
+        navigate("../newTeam");
+        return;
       }
       const response = await axios.post(
         `${server}/project/new`,
@@ -68,45 +63,42 @@ const NewProject = ({activeTab}) => {
           withCredentials: true,
         }
       );
-  
+
       const { success, message } = response.data;
       if (success) {
         alert(message);
-        setLoading(false)
-        activeTab("All Project")
+        setLoading(false);
+        activeTab("All Project");
         // navigate("../allProject");
       }
     } catch (error) {
-       console.log(error.response.data)
-       alert(error.response.data.message)
+      console.log(error.response.data);
+      alert(error.response.data.message);
     }
   };
 
-
-  // all the teams data 
+  // all the teams data
   useEffect(() => {
     const TeamData = async () => {
       try {
         const allTeamsData = await axios.get(`${server}/team/allTeams`, {
           withCredentials: true,
         });
-        
-        // console.log("all teams data is here",allTeamsData.data.allTeamsData);
-        setAllTeam(allTeamsData.data.allTeamsData.filter((team) =>  team.selectedProject === null));
 
-       
-      
+        // console.log("all teams data is here",allTeamsData.data.allTeamsData);
+        setAllTeam(
+          allTeamsData.data.allTeamsData.filter(
+            (team) => team.selectedProject === null
+          )
+        );
       } catch (error) {
         console.error("Error fetching data:", error.message);
       }
     };
-    
+
     TeamData();
   }, []);
 
-  
-  
- 
   //fetch all the details of employee
   useEffect(() => {
     const data = async () => {
@@ -126,8 +118,6 @@ const NewProject = ({activeTab}) => {
     data();
   }, []);
 
-
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prevData) => ({
@@ -136,200 +126,200 @@ const NewProject = ({activeTab}) => {
     }));
   };
 
-
   //set item name handle
- 
+
   const handleOnTeamId = (e) => {
-    
     const { name, value, type, checked } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: type === "checkbox" ? checked : value,
     }));
     // console.log(formData.teamId)
-  }
+  };
 
   return (
     <>
       {/* form for new project  */}
-      {
-        loading ? (<Loader/>) : ( <div className="container  w-[75rem] mx-auto flex flex-col ">
-        <form
-          onSubmit={handleSubmit}
-          className=" mx-auto w-full bg-white p-4 rounded shadow-md"
-        >
-          <h2 className="text-2xl flex justify-center font-bold">
-            Project Information
-          </h2>
+      {loading ? (
+        <Loader />
+      ) : (
+        <div className="container  w-[75rem] mx-auto flex flex-col ">
+          <form
+            onSubmit={handleSubmit}
+            className=" mx-auto w-[40rem] bg-white p-4 rounded shadow-md"
+          >
+            <h2 className="text-2xl flex justify-center font-bold text-blue-500 uppercase">
+              Project Details
+            </h2>
 
-          {/* Add more input fields as needed */}
+            {/* Add more input fields as needed */}
 
-          {/* project information */}
-          <div className="mb-4 ">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="projectName"
-            >
-              Project Name
-            </label>
-            <input
-              type="text"
-              id="projectName"
-              name="projectName"
-              value={formData.projectName}
-              onChange={handleChange}
-              className="border border-black rounded-lg  p-2 w-full"
-              required
-            />
-          </div>
-
-          {/* stating and submition date */}
-          <div className=" flex flex-row flex-wrap gap-5 justify-between">
-            <div className="mb-4">
+            {/* project information */}
+            <div className="mb-4 mt-4">
               <label
-                className=" text-gray-700 text-sm font-bold mb-2"
-                htmlFor="projectStartDate"
+                className="block text-slate-600 text-sm font-semibold mb-1"
+                htmlFor="projectName"
               >
-                Start Date
+                Project Name
               </label>
               <input
-                type="date"
-                id="projectStartDate"
-                name="projectStartDate"
-                value={formData.projectStartDate}
+                type="text"
+                id="projectName"
+                name="projectName"
+                value={formData.projectName}
                 onChange={handleChange}
-                className="border border-black rounded-lg p-2 w-full"
+                placeholder="Enter project name"
+                className="border border-slate-600 rounded-sm  p-2 w-full"
                 required
               />
             </div>
 
-            <div className="mb-4">
-              <label
-                className="  text-gray-700 text-sm font-bold mb-2"
-                htmlFor="projectStartDate"
-              >
-                Submission Date
-              </label>
-              <input
-                type="date"
-                id="projectEndDate"
-                name="projectEndDate"
-                value={formData.projectEndDate}
-                onChange={handleChange}
-                className="border border-black rounded-lg p-2 w-full"
-                required
-              />
-            </div>
-          </div>
+            {/* stating and submition date */}
+            <div className=" flex flex-row flex-wrap gap-2 justify-between">
+              <div className="mb-4 w-72">
+                <label
+                  className="block text-slate-600 text-sm font-semibold mb-1"
+                  htmlFor="projectStartDate"
+                >
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  id="projectStartDate"
+                  name="projectStartDate"
+                  value={formData.projectStartDate}
+                  onChange={handleChange}
+                  className="border border-slate-600 rounded-sm p-2 w-full outline-none"
+                  required
+                />
+              </div>
 
-          {/* priority and manager name  */}
-          <div className=" flex flex-row flex-wrap gap-5 justify-between">
-            <div className="mb-4">
-              <label
-                className=" text-gray-700 text-sm font-bold mb-2"
-                htmlFor="priority"
-              >
-                Priority
-              </label>
-              <select
-                id="priority"
-                name="priority"
-                value={formData.priority}
-                onChange={handleChange}
-                className="border border-black rounded-lg p-2 w-full"
-                required
-              >
-                <option value="" disabled>
-                  Select Priority
-                </option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
+              <div className="mb-4 w-72">
+                <label
+                  className="block text-slate-600 text-sm font-semibold mb-1"
+                  htmlFor="projectStartDate"
+                >
+                  Submission Date
+                </label>
+                <input
+                  type="date"
+                  id="projectEndDate"
+                  name="projectEndDate"
+                  value={formData.projectEndDate}
+                  onChange={handleChange}
+                  className="border border-slate-600 rounded-sm p-2 w-full outline-none"
+                  required
+                />
+              </div>
             </div>
 
-            <div className="mb-4 flex flex-col ">
-              <label
-                className=" text-gray-700 text-sm font-bold mb-1"
-              
-              >
-                Team Name
-              </label>
+            {/* priority and manager name  */}
+            <div className=" flex flex-row flex-wrap gap-5 justify-between">
+              <div className="mb-4 w-72">
+                <label
+                  className="block text-slate-600 text-sm font-semibold mb-1"
+                  htmlFor="priority"
+                >
+                  Priority
+                </label>
+                <select
+                  id="priority"
+                  name="priority"
+                  value={formData.priority}
+                  onChange={handleChange}
+                  className="border border-slate-600 rounded-sm p-2 w-full outline-none"
+                  required
+                >
+                  <option value="" disabled>
+                    Select Priority
+                  </option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
 
-              <select
-              id="teamId"
-              name="teamId"
-              value={formData.teamId}
-               onChange={handleOnTeamId}
-               
-                className="p-2 w-[12rem]  border border-black rounded-md"
-              >
-                <option className=" w-[15rem]  " value=""> Select Team </option>
-                {
-                  (allTeam.length) > 0 ? (allTeam.map((team) => (
-                    <option key={team._id} value={team._id}>
-                      {team.teamName}
-                    </option>
-                  ))) : (
+              <div className="mb-4 w-72">
+                <label className="block text-slate-600 text-sm font-semibold mb-1">
+                  Team
+                </label>
+
+                <select
+                  id="teamId"
+                  name="teamId"
+                  value={formData.teamId}
+                  onChange={handleOnTeamId}
+                  className="p-2 w-full  border border-slate-600 rounded-sm outline-none"
+                >
+                  <option className=" w-[15rem]  " value="">
+                    Select Team
+                  </option>
+                  {allTeam.length > 0 ? (
+                    allTeam.map((team) => (
+                      <option key={team._id} value={team._id}>
+                        {team.teamName}
+                      </option>
+                    ))
+                  ) : (
                     <option>No Team created yet! Please create team</option>
-                  )
-                }
-              </select>
+                  )}
+                </select>
+              </div>
             </div>
-          </div>
 
-          {/* Description */}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="projectStartDate"
-            >
-              Description
-            </label>
-            <input
-              type="text"
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="border border-black rounded-lg p-2 w-full"
-              required
-            />
-          </div>
+            {/* Description */}
+            <div className="mb-4">
+              <label
+                className="block text-slate-600 text-sm font-semibold mb-1"
+                htmlFor="projectStartDate"
+              >
+                Description
+              </label>
+              <textarea
+                type="text"
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Enter project description here"
+                className="border border-slate-600 rounded-sm p-2 w-full outline-none"
+                required
+              />
+            </div>
 
-          {/* website Urls */}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="projectStartDate"
-            >
-              Website URL(Optional)
-            </label>
-            <input
-              type="text"
-              id="websiteUrl"
-              name="websiteUrl"
-              value={formData.websiteUrl}
-              onChange={handleChange}
-              className="border border-black rounded-lg p-2 w-full"
-              // required
-            />
-          </div>
+            {/* website Urls */}
+            <div className="mb-4">
+              <label
+                className="block text-slate-600 text-sm font-semibold mb-1"
+                htmlFor="projectStartDate"
+              >
+                Website URL(Optional)
+              </label>
+              <input
+                type="text"
+                id="websiteUrl"
+                name="websiteUrl"
+                value={formData.websiteUrl}
+                onChange={handleChange}
+                placeholder="Enter website url"
+                className="border border-slate-600 rounded-sm p-2 w-full outline-none"
+                // required
+              />
+            </div>
 
-          {/* Add more input fields for other project information */}
+            {/* Add more input fields for other project information */}
 
-          <div className="mt-6 flex justify-center">
-            <button
-              type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
-      </div>)
-      }
-        
+            <div className="mt-6 flex justify-center ">
+              <button
+                type="submit"
+                className=" w-96 uppercase bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </>
   );
 };
