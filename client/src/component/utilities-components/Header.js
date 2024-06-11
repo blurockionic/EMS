@@ -53,7 +53,7 @@ const Header = () => {
                 <div
                   key={tab}
                   className={`flex items-center font-semibold cursor-pointer px-2 py-2 ${
-                    activeTab === tab ? "border-b-2 border-red-500 font-bold" : "bg-transparent"
+                    activeTab === tab ? "border-b-2 border-green-500 font-bold" : "bg-transparent"
                   }`}
                   onClick={() => setActiveTab(tab)}
                 >
