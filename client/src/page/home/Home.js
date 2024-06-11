@@ -1,30 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Header from "../../component/utilities-components/Header";
 import SideNavbar from "../../component/admin/admin-sidenavbar/SideNavbar";
 import { Outlet } from "react-router-dom";
+import { IoCloseSharp } from "react-icons/io5";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 const Home = () => {
-  // console.log(completedProjects.length)
+  const [active, setActive] = useState(false);
+
+  
 
   return (
     <>
-      {/* header  */}
-      {/* <div className="fixed w-full">
-        <Header />
-      </div> */}
-      {/* header end  */}
+      {/* outlet  */}
+      <div className="flex flex-col h-full w-full fixed">
+      <nav className="w-full p-3 flex flex-row justify-between bg-gray-100 border py-3">
+                <GiHamburgerMenu onClick={() => setActive(true)} />
 
-      {/* main content  */}
-      <div className="grid grid-cols-12 overflow-x-hidden">
-        {/* SideNavbar  */}
-        <div className="col-span-2 fixed ">
-          <SideNavbar />
-        </div>
-        {/* SideNavbar end */}
-
-        {/* outlet  */}
-        <div className="col-span-10  w-full  px-10 py-4 ml-64  overflow-y-auto h-screen ">
+            </nav>
+            {active && (
+                <div className="absolute top-0 left-0 h-full w-full bg-gray-200">
+                    <div className="absolute top-0 left-0 w-64 h-full bg-white">
+                        <SideNavbar setActive={setActive} />
+                    </div>
+                </div>
+            )}
+        <div className="flex-grow relative overflow-auto">
           <Outlet />
         </div>
       </div>

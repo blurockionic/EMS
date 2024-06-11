@@ -360,7 +360,7 @@ const Team = () => {
       {activeTeamTab === "Our Teams" && (
         
             <div className="mt-4">
-              <h2 className="text-lg font-bold mb-2">All Teams</h2>
+              <h2 className="text-lg font-bold mb-2">All Teams</h2> 
               <div className="container mx-auto">
                 <table className="min-w-full bg-white border border-gray-300">
                   <thead>

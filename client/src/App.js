@@ -26,13 +26,11 @@ import ManagerProjectDetails from "./page/manager/project/ManagerProjectDetails"
 import TaskReportFeedback from "./page/employee/TaskReportFeedback";
 import EmpLeave from "./page/manager/empleaves/EmpLeave";
 import Team from "./page/admin/team/Team";
-import EmpTeam from "./page/employee/EmpTeam"
+import EmpTeam from "./page/employee/EmpTeam";
 import AppVersion from "./page/admin/AppVersion/AppVersion";
 
-
-
-export const server = "https://ems-backend-66x8.onrender.com/api/v1"
-// export const server = "http://localhost:4000/api/v1"
+// export const server = "https://ems-backend-66x8.onrender.com/api/v1"
+export const server = "http://localhost:4000/api/v1";
 
 function App() {
   return (
@@ -42,45 +40,39 @@ function App() {
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/login" element={<Login />} />
         {/* //protected route  */}
-        <Route path="/dashboard" element={<Home/>}>
+        <Route path="/dashboard" element={<Home />}>
           <Route path="" element={<Navigate to="home" />} />
           <Route path="home" element={<MainDashboard />} />
-          <Route path="employee" element={<Employee/>}/>
-          <Route path="newProject" element={<NewProject/>}/>
-          <Route path="allProject" element={<AllProject/>}/>
-          <Route path="adminreport" element={<AdminReport/>}/>
-          <Route path="AppVersion" element={<AppVersion/>}/>
+          <Route path="employee" element={<Employee />} />
+          <Route path="newProject" element={<NewProject />} />
+          <Route path="allProject" element={<AllProject />} />
+          <Route path="adminreport" element={<AdminReport />} />
+          <Route path="AppVersion" element={<AppVersion />} />
 
-        {/* Team for all  */}
-          <Route path="newTeam" element={<Team/>}/>
+          {/* Team for all  */}
+          <Route path="newTeam" element={<Team />} />
 
           {/* //common  */}
-          <Route path="newEmployee" element={<NewEmployee/>}/>
+          <Route path="newEmployee" element={<NewEmployee />} />
 
           {/* hr  */}
-          <Route path="hrdashboard" element={<HrDashaboard/>}/>
+          <Route path="hrdashboard" element={<HrDashaboard />} />
 
           {/* manager  */}
-          <Route path="managerdashboard" element={<ManagerDashboard/>}/>
-          <Route path="task" element={<NewTask/>}/>
-          <Route path="alltask" element={<AllTask/>}/>
-          <Route path="managerproject" element={<ManagerProject/>}/>
-          <Route path="managerreport" element={<ManagerReport/>}/>
-          <Route path="projectdetails" element={<ManagerProjectDetails/>}/>
-          <Route path="empleave" element={<EmpLeave/>}/>
-
-
-
+          <Route path="managerdashboard" element={<ManagerDashboard />} />
+          <Route path="task" element={<NewTask />} />
+          <Route path="alltask" element={<AllTask />} />
+          <Route path="managerproject" element={<ManagerProject />} />
+          <Route path="managerreport" element={<ManagerReport />} />
+          <Route path="projectdetails" element={<ManagerProjectDetails />} />
+          <Route path="empleave" element={<EmpLeave />} />
 
           {/* employee  */}
-          <Route path="employeedashboard" element={<EmployeeDashboard/>}/>
-          <Route path="reporthistory" element={<ReportHistory/>}/>
-          <Route path ="empteam" element={<EmpTeam/>}/>
+          <Route path="employeedashboard" element={<EmployeeDashboard />} />
+          <Route path="reporthistory" element={<ReportHistory />} />
+          <Route path="empteam" element={<EmpTeam />} />
 
-          <Route path="taskreportfeedback" element={<TaskReportFeedback/>}/>
-
-
-
+          <Route path="taskreportfeedback" element={<TaskReportFeedback />} />
         </Route>
       </Routes>
     </Router>

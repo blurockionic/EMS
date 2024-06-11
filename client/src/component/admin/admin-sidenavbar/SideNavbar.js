@@ -9,13 +9,14 @@ import { BiLogoMicrosoftTeams } from "react-icons/bi";
 import { TbReportAnalytics } from "react-icons/tb";
 import { CiSquareInfo } from "react-icons/ci";
 import logo from "../../../assets/employee.png";
-import { LuChevronFirst } from "react-icons/lu";
 import { TbFileReport } from "react-icons/tb";
 import { RiFolderHistoryLine } from "react-icons/ri";
 import { RiNotificationBadgeLine } from "react-icons/ri";
 import { IoIosLogOut } from "react-icons/io";
+import { AiOutlineClose } from "react-icons/ai";
 
-const SideNavbar = () => {
+
+const SideNavbar = ({setActive}) => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({});
   const location = useLocation();
@@ -59,14 +60,14 @@ const SideNavbar = () => {
     }
   };
   return (
-    <aside className="bg-gray-200 text-white h-screen  flex flex-col ">
-      <nav className="flex h-full flex-col bg-white border-r shadow-sm">
+    <aside className="bg-gray-200 text-white h-screen  flex flex-col absolute z-30">
+      <div className="flex h-full flex-col bg-white border-r shadow-sm">
         <div className="p-4 pb-2 flex justify-between items-center ">
           {/* brand  */}
           <img src={logo} alt="logo" className="w-40" />
           {/* collapsable button  */}
-          <button className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-700">
-            <LuChevronFirst />
+          <button className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-700" onClick={()=>setActive(false)}>
+        <AiOutlineClose/>
           </button>
         </div>
         {/* navbar list  */}
@@ -81,7 +82,7 @@ const SideNavbar = () => {
                 <button
                   className={`w-56 px-2 pl-4 py-2 my-1 flex text-left text-lg font-semibold duration-300 rounded-md hover:shadow-md ${
                     path === "home"
-                      ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 "
+                      ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900  bg-black"
                       : "hover:bg-indigo-50 text-gray-600"
                   }`}
                 >
@@ -302,8 +303,6 @@ const SideNavbar = () => {
             </li>
           )}
 
-         
-
           {/* manager Leave Details */}
           {profile.designationType === "manager" && (
             <li
@@ -327,9 +326,8 @@ const SideNavbar = () => {
             </li>
           )}
 
-
-           {/* App version info for manager */}
-           {profile.designationType === "manager" && (
+          {/* App version info for manager */}
+          {profile.designationType === "manager" && (
             <li
               className={`relative flex items-center px-3 my-1 font-medium rounded-md cursor-pointer transition-colors`}
             >
@@ -441,10 +439,6 @@ const SideNavbar = () => {
               </Link>
             </li>
           )}
-
-
-
-          
         </ul>
         {/* profile section  */}
         <div className="border-t flex p-3 ">
@@ -467,44 +461,7 @@ const SideNavbar = () => {
             />
           </div>
         </div>
-      </nav>
-      {/* Showing Sure  team Model  */}
-      {sureLogoutModel && (
-        <div className="z-10 inset-0 fixed   overflow-y-auto">
-          <div className="flex items-center justify-center  min-h-screen">
-            <div
-              className="fixed inset-0 transition-opacity"
-              onClick={handleCloseModal}
-            >
-              <div className="absolute inset-0 bg-black opacity-80"></div>
-            </div>
-            <div className="relative bg-white rounded-lg px-6 py-6  mx-auto">
-              <div className="flex flex-col p-  text-center justify-between">
-                <div className="font-serif mt-1 text-black text-2xl font-extrabold">
-                  You are about to log out.
-                </div>
-                <span className="text-black text-xl font-serif">
-                  Are you sure you want to proceed?
-                </span>
-                <div className=" mt-4  flex flex-row mx-auto  gap-12 justify-between">
-                  <button
-                    className="bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={handleOnLogout}
-                  >
-                    Yes
-                  </button>
-                  <button
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={handleCloseModal}
-                  >
-                    No
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </aside>
   );
 };

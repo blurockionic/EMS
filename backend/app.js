@@ -33,11 +33,10 @@ app.use(cookieParser());
 // middleware for recieve request from other device
 // Allow requests from http://localhost:3000
 
-
 // Allow requests only from http://192.168.1.8:3000
 const corsOptions = {
-  origin: "https://ems-frontend-omega.vercel.app",
-  // origin: "http://localhost:3000",
+  // origin: "https://ems-frontend-omega.vercel.app",
+  origin: "http://localhost:3000",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
 };
@@ -67,8 +66,6 @@ app.use("/api/v1/taskreport", reportTaskRoutes);
 
 
 app.use("/api/v1/leave",applyLeavesRoutes )
-
-
 
 //route for task report feedback
 app.use("/api/v1/taskReportFeedback", taskReportFeedbackRoutes)
