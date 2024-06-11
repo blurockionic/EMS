@@ -28,6 +28,7 @@ import EmpLeave from "./page/manager/empleaves/EmpLeave";
 import Team from "./page/admin/team/Team";
 import EmpTeam from "./page/employee/EmpTeam";
 import AppVersion from "./page/admin/AppVersion/AppVersion";
+import EmpTasksDetails from "./component/admin/EmpTasksDetails";
 
 // export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 export const server = "http://localhost:4000/api/v1";
@@ -68,7 +69,8 @@ function App() {
           <Route path="empleave" element={<EmpLeave />} />
 
           {/* employee  */}
-          <Route path="employeedashboard" element={<EmployeeDashboard />} />
+          <Route path="employeeOverview" element={<EmployeeDashboard />} />
+          <Route path="employeetask" element={<EmpTasksDetails />} />
           <Route path="reporthistory" element={<ReportHistory />} />
           <Route path="empteam" element={<EmpTeam />} />
 
