@@ -1,125 +1,70 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { IoBookOutline } from "react-icons/io5";
+import { GoProject, GoTasklist, GoIssueTrackedBy } from "react-icons/go";
+import { MdHistory } from "react-icons/md";
+import { RiTeamLine } from "react-icons/ri";
+import axios from "axios";
 import { server } from "../../App";
-import { useNavigate } from "react-router-dom";
-import brandlogo from "../../assets/brandlogo.png"
 
 const Header = () => {
-  const navigate = useNavigate();
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [profile, setProfile] = useState({});
-  //get profile
-  useEffect(() => {
-    const myProfile = async () => {
-      const response = await axios.get(`${server}/users/me`, {
-        withCredentials: true,
-      });
+  const [activeTab, setActiveTab] = useState("overview");
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const response = await axios.get(`${server}/users/me`, { withCredentials: true });
       setProfile(response.data.user);
     };
-
-    //invoke
-    myProfile();
+    fetchProfile();
   }, []);
 
-  // const handle on profile card
-  const handleOnOpenProfile = () => {
-    setIsProfileOpen((prev) => !prev);
-  };
+  const tabData = [
+    { type: "employee", tab: "overview", label: "Overview", icon: IoBookOutline, link: "./employeeOverview" },
+    { type: "employee", tab: "project", label: "Project", icon: GoProject, link: null },
+    { type: "employee", tab: "task", label: "Task", icon: GoTasklist, link: "./employeetask" },
+    { type: "employee", tab: "issue", label: "Issues", icon: GoIssueTrackedBy, link: null },
+    { type: "employee", tab: "reporthistory", label: "Report History", icon: MdHistory, link: "./reporthistory" },
+    { type: "employee", tab: "team", label: "Team", icon: RiTeamLine, link: "./empteam" },
+    { type: "admin", tab: "overview", label: "Overview", icon: IoBookOutline, link: "" },
+    { type: "admin", tab: "project", label: "Project", icon: GoProject, link: null },
+    { type: "admin", tab: "employee", label: "Employee", icon: GoTasklist, link: "./employee" },
+    { type: "admin", tab: "issue", label: "Issues", icon: GoIssueTrackedBy, link: null },
+    { type: "admin", tab: "adminreport", label: "Report", icon: GoIssueTrackedBy, link: "./adminreport" },
+    { type: "admin", tab: "team", label: "Team", icon: GoIssueTrackedBy, link: "./newTeam" },
+    { type: "manager", tab: "overviewmanager", label: "Overview", icon: IoBookOutline, link: "./managerdashboard" },
+    { type: "manager", tab: "leaves", label: "Leaves", icon: IoBookOutline, link: "./empleave" },
+    { type: "manager", tab: "projectreport", label: "Project Reports", icon: GoProject, link: "./managerreport" },
+    { type: "manager", tab: "employee", label: "Employee", icon: GoTasklist, link: "./employee" },
+    { type: "manager", tab: "managerproject", label: "Issues", icon: GoIssueTrackedBy, link: "./managerproject" },
+    { type: "manager", tab: "adminreport", label: "Report", icon: GoIssueTrackedBy, link: "./adminreport" },
+    { type: "manager", tab: "team", label: "Team", icon: GoIssueTrackedBy, link: "./newTeam" }
+  ];
 
-  //handle logout
-  const handleOnLogout = async () => {
-    const response = await axios.get(`${server}/users/logout`, {
-      withCredentials: true,
-    });
-
-    const { success, message } = response.data;
-
-    if (success) {
-      alert(message);
-      // Assuming you want to remove an item with the key 'myItem' from local storage
-      localStorage.removeItem("id");
-      localStorage.removeItem("managerId");
-      navigate("../login");
-    }
-  };
-
-  //set managerId local storage
-  localStorage.setItem("managerId", profile.employeeId);
-  localStorage.setItem("id", profile.employeeId);
-
+  const filteredTabs = tabData.filter(tab => tab.type === profile.designationType);
 
   return (
     <>
-      <header className="bg-gray-200 p-3 flex justify-between items-center z-50 shadow-sm ">
-        <div>
-          <img src={brandlogo} alt="branlogo" className="w-[110px] h-auto object-cover"/>
-        </div>
-        <div>
-          <h1
-            className="text-lg font-semibold mx-20 cursor-pointer bg-slate-50 px-4 py-1 rounded-lg text-slate-900 shadow-sm"
-            onClick={handleOnOpenProfile}
-          >
-            Profile
-          </h1>
-        </div>
-      </header>
-
-      {/* show profile card  */}
-      {isProfileOpen && (
-        <div className="fixed z-10 inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-          {/* Profile Card */}
-          <div className="bg-white p-8 rounded-lg shadow-md">
-            <div className="flex justify-end">
-              {/* Close Button */}
-              <button
-                onClick={() => {
-                  // Set isProfileOpen to false to close the profile card
-                  // This function depends on your state management logic
-                  setIsProfileOpen(false);
-                }}
-                className="text-gray-600 hover:text-gray-800 focus:outline-none"
-              >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+      {profile.designationType && (
+        <div className="w-full border-b">
+          <div className="w-full flex flex-row justify-between items-end px-4 h-16">
+            <div className="flex w-full h-full items-end relative space-x-1">
+              {filteredTabs.map(({ tab, label, icon: Icon, link }) => (
+                <div
+                  key={tab}
+                  className={`flex items-center font-semibold cursor-pointer px-2 py-2 ${
+                    activeTab === tab ? "border-b-2 border-green-500 font-bold" : "bg-transparent"
+                  }`}
+                  onClick={() => setActiveTab(tab)}
                 >
-                  <path d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </div>
-
-            {/* Profile Content */}
-            <div className="flex items-center">
-              {/* Profile Image */}
-              <img
-                className="w-16 h-16 rounded-full mr-4"
-                src="https://placekitten.com/100/100" // Replace with your actual image URL
-                alt="Profile"
-              />
-
-              {/* Profile Details */}
-              <div>
-                <h2 className="text-xl font-bold"> Name : {profile.name}</h2>
-                <p className="text-gray-600 capitalize">
-                  Designation: {profile.designation}
-                </p>
-              </div>
-            </div>
-
-            {/* Additional Profile Information */}
-            <div className="mt-4 flex items-center justify-center">
-              <button
-                className="text-white bg-red-600 p-2 rounded px-4"
-                onClick={handleOnLogout}
-              >
-                Logout
-              </button>
+                  <Link to={link || "#"} >
+                    <div className="flex hover:bg-gray-200 py-1.5 px-2 rounded-md">
+                      <Icon className="mr-2 text-xl" />
+                      {label}
+                    </div>
+                  </Link>
+                </div>
+              ))}
             </div>
           </div>
         </div>
