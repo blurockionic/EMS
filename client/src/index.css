@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --bg-color-light: #ffffff;
+    --text-color-light: #000000;
+    /* git hub dark color  */
+    --bg-color-dark: #0D1117;  
+    /* chat gpt dark color  */
+    --bg-color-dark: #212121;
+
+    --text-color-dark: #E6EDF3;
+}
+
+body.light {
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+}
+
+body.dark {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+}

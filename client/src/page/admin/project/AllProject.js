@@ -88,7 +88,7 @@ const AllProject = () => {
   return (
     <>
     {/* Admon panel Design  */}
-      {profile.designationType === "admin" ? (
+      {profile.role === "admin" ? (
         <div>
           {/* Project Tabs */}
           <div className=" flex flex-row shadow-lg">
@@ -96,7 +96,7 @@ const AllProject = () => {
               className={`cursor-pointer uppercase py-2 px-4 mr-4 ${
                 activeTab === "All Project"
                   ? "border-b-4 border-blue-500 text-blue-500 font-bold"
-                  : "bg-white"
+                  : "bg-slate-800"
               }`}
               onClick={() => handleTabClick("All Project")}
             >
@@ -106,7 +106,7 @@ const AllProject = () => {
               className={`cursor-pointer uppercase py-2 px-4 mr-4 ${
                 activeTab === "New Project"
                   ? "border-b-4 border-blue-500 text-blue-500 font-bold"
-                  : "bg-white"
+                  : "bg-slate-800"
               }`}
               onClick={() => handleTabClick("New Project")}
             >
@@ -126,7 +126,7 @@ const AllProject = () => {
                         type="text"
                         onChange={(e) => handleSearch(e)}
                         placeholder="Search project name..."
-                        className="w-96 p-1 rounded-lg outline-none"
+                        className="w-96 p-1 rounded-lg outline-none dark:bg-slate-800"
                       />
                     </div>
                     {/* end handle search  */}
@@ -135,7 +135,7 @@ const AllProject = () => {
                   {allProject.length > 0 ? (
                     <div className="overflow-x-auto mt-5">
                       <table className="min-w-full table-auto">
-                        <thead className="bg-slate-400">
+                        <thead className="dark:bg-slate-800 bg-slate-200">
                           <tr>
                             <th className="border px-4 py-2">S.No</th>
                             <th className="border px-4 py-2">Project Name</th>

@@ -8,6 +8,11 @@ import userRoutes  from "./routes/UserRoutes.js"
 import employeeRoutes  from "./routes/EmployeeRoutes.js"
 import projectRoutes from "./routes/ProjectRoutes.js"
 import taskRoutes from "./routes/TaskRoutes.js"
+import tagRouters from "./routes/TagsRoutes.js"
+
+
+import commentRoutes from "./routes/CommentRoutes.js"
+
 import reportProjectRoutes from "./routes/ReportProjectRoutes.js"
 import reportTaskRoutes  from "./routes/ReportTaskRoutes.js"
 
@@ -19,6 +24,7 @@ import trainingRoutes from "./routes/TrainingRoutes.js";
 
 import teamRoute from "./routes/TeamRoutes.js"
 
+import issueRoutes from "./routes/IssueRoutes.js"
 export const app = express();
 
 //configure the dotenv file
@@ -56,6 +62,15 @@ app.use("/api/v1/project", projectRoutes);
 
 //route for task
 app.use("/api/v1/task", taskRoutes);
+
+// route for all tags 
+app.use("/api/v1/tag", tagRouters);
+
+// route for issue 
+app.use("/api/v1/issue", issueRoutes);
+
+// route for comments
+app.use("/api/v1/comment",commentRoutes)
 
 //route for report project
 app.use("/api/v1/reportProject", reportProjectRoutes);

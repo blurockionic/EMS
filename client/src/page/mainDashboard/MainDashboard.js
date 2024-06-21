@@ -1,51 +1,29 @@
-import React, { useEffect, useState } from 'react'
-import AdminDashboard from '../admin/dashboard/AdminDashboard'
-import axios from 'axios';
-import { server } from '../../App';
+// src/components/MainDashboard.js
+
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import AdminDashboard from '../admin/dashboard/AdminDashboard';
 import ManagerDashboard from '../manager/dashboard/ManagerDashboard';
-import HrDashaboard from '../HR/new/HrDashaboard';
+import HrDashboard from '../HR/new/HrDashaboard'; // Ensure correct import path
 import EmployeeDashboard from '../employee/EmployeeDashboard';
+import { fetchProfile } from '../../Redux/slices/profileSlice';
 
 const MainDashboard = () => {
-  const [profile, setProfile] = useState({})
+  const dispatch = useDispatch();
+  const profile = useSelector((state) => state.profile.data);
 
-   //get profile
-   useEffect(() => {
-    const myProfile = async () => {
-      const response = await axios.get(`${server}/users/me`, {
-        withCredentials: true,
-      });
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
 
-      setProfile(response.data.user);
-    };
-
-    //invoke
-    myProfile();
-  }, []);
   return (
     <div>
-         {/* admin dash board  */}
-         {
-          profile.designationType === "admin" && (<AdminDashboard/>)
-         }
-
-         {/* //manager dashboard  */}
-         {
-          profile.designationType === "manager" && (<ManagerDashboard/>)
-         }
-
-         {/* hr dashboard  */}
-         {
-          profile.designationType === "human resources" && (<HrDashaboard/>)
-         }
-
-         {/* //employee dashboard  */}
-         {
-          profile.designationType === "employee" && (<EmployeeDashboard/>)
-         }
-        
+      {profile?.role === 'admin' && <AdminDashboard />}
+      {profile?.role === 'manager' && <ManagerDashboard />}
+      {profile?.role === 'human resources' && <HrDashboard />}
+      {profile?.designationType === 'employee' && <EmployeeDashboard />}
     </div>
-  )
-}
+  );
+};
 
-export default MainDashboard
+export default MainDashboard;
