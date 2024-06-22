@@ -2,64 +2,38 @@ import mongoose from "mongoose";
 
 const taskSchema = new mongoose.Schema(
   {
-    taskTitle: {
+    title: {
       type: String,
       required: true,
-      trim: true,
     },
-    taskDescription: {
+    description: {
       type: String,
-      required: true,
-      trim: true,
     },
-    employeeName:{
-      type:String,
+    assignDate: {
+      type: Date,
+      default: Date.now,
     },
-    projectName:{
-      type:String
+    dueDate: {
+      type: Date,
     },
-    managerName:{
-      type:String,
-    },
-    assignTo: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "employee_details",
-      required: true,
-    },
-    taskOf: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "project",
-      required: true,
-    },
-    managerId:{
-      type:mongoose.Schema.Types.ObjectId,
-      ref: "employee_details",
-      required: true,
-    },
-    isTaskCompleted: {
-      type: Boolean,
-      default: false,
-    },
-    isRequested:{
-      type: Boolean,
-      default: false
-    },
-    gitLink:{
-      type: String 
-    },
-    taskAssignDate:{
-      type:String,
-      required: true
-    },
-    taskEndDate:{
-      type: String,
-      required: true
-    }
 
+    // tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tags" }],
+
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+    status: {
+      type: String,
+      enum: ["Open", "In Review", "Close"],
+      default: "Open",
+    },
+    assignBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    assignTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    project: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
+
+    createdAt: { type: Date, default: Date.now },
   },
   {
-    timestamps: true,
+    timestamps: true, // Automatically add createdAt and updatedAt fields
   }
 );
 
-export const Task = mongoose.model("task", taskSchema);
+export const Task = mongoose.model("Task", taskSchema);

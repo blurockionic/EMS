@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { server } from "../../../App";
 import { useNavigate } from "react-router-dom";
-import Loader from "../../../utilities/Loader";
+import Loader from "../../../component/utilities-components/Loader";
+
 
 const NewProject = ({ activeTab }) => {
   const navigate = useNavigate();
@@ -141,12 +142,13 @@ const NewProject = ({ activeTab }) => {
     <>
       {/* form for new project  */}
       {loading ? (
-        <Loader />
+        <Loader /> 
+      
       ) : (
         <div className="container  w-[75rem] mx-auto flex flex-col ">
           <form
             onSubmit={handleSubmit}
-            className=" mx-auto w-[40rem] bg-white p-4 rounded shadow-md"
+            className=" mx-auto w-[40rem] border dark:border-white border-slate-800 p-4 rounded shadow-md"
           >
             <h2 className="text-2xl flex justify-center font-bold text-blue-500 uppercase">
               Project Details
@@ -169,7 +171,7 @@ const NewProject = ({ activeTab }) => {
                 value={formData.projectName}
                 onChange={handleChange}
                 placeholder="Enter project name"
-                className="border border-slate-600 rounded-sm  p-2 w-full"
+                className="border  border-slate-600 rounded-sm  p-2 w-full dark:bg-slate-600"
                 required
               />
             </div>
@@ -189,7 +191,7 @@ const NewProject = ({ activeTab }) => {
                   name="projectStartDate"
                   value={formData.projectStartDate}
                   onChange={handleChange}
-                  className="border border-slate-600 rounded-sm p-2 w-full outline-none"
+                  className="border border-slate-600 rounded-sm p-2 w-full outline-none dark:bg-slate-600"
                   required
                 />
               </div>
@@ -207,7 +209,7 @@ const NewProject = ({ activeTab }) => {
                   name="projectEndDate"
                   value={formData.projectEndDate}
                   onChange={handleChange}
-                  className="border border-slate-600 rounded-sm p-2 w-full outline-none"
+                  className="border border-slate-600 rounded-sm p-2 w-full outline-none dark:bg-slate-600"
                   required
                 />
               </div>
@@ -227,7 +229,7 @@ const NewProject = ({ activeTab }) => {
                   name="priority"
                   value={formData.priority}
                   onChange={handleChange}
-                  className="border border-slate-600 rounded-sm p-2 w-full outline-none"
+                  className="border border-slate-600 rounded-sm p-2 w-full outline-none dark:bg-slate-600"
                   required
                 >
                   <option value="" disabled>
@@ -249,7 +251,7 @@ const NewProject = ({ activeTab }) => {
                   name="teamId"
                   value={formData.teamId}
                   onChange={handleOnTeamId}
-                  className="p-2 w-full  border border-slate-600 rounded-sm outline-none"
+                  className="p-2 w-full  border border-slate-600 rounded-sm outline-none dark:bg-slate-600"
                 >
                   <option className=" w-[15rem]  " value="">
                     Select Team
@@ -282,7 +284,7 @@ const NewProject = ({ activeTab }) => {
                 value={formData.description}
                 onChange={handleChange}
                 placeholder="Enter project description here"
-                className="border border-slate-600 rounded-sm p-2 w-full outline-none"
+                className="border border-slate-600 rounded-sm p-2 w-full outline-none dark:bg-slate-600"
                 required
               />
             </div>
@@ -302,7 +304,7 @@ const NewProject = ({ activeTab }) => {
                 value={formData.websiteUrl}
                 onChange={handleChange}
                 placeholder="Enter website url"
-                className="border border-slate-600 rounded-sm p-2 w-full outline-none"
+                className="border border-slate-600 rounded-sm p-2 w-full outline-none dark:bg-slate-600"
                 // required
               />
             </div>

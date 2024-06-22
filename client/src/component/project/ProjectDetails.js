@@ -158,29 +158,29 @@ const ProjectDetails = ({ projectId }) => {
         <thead className="w-full">
           <tr className="w-full">
             <th
-              className="px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold"
+              className="px-2 py-1  text-[10px] uppercase font-semibold"
               colSpan={5}
             >
               Project Name
             </th>
 
-            <th className="px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold">
+            <th className="px-2 py-1  text-[10px] uppercase font-semibold">
               Status
             </th>
 
-            <th className="mb-4 px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold">
+            <th className="mb-4 px-2 py-1 text-[10px] uppercase font-semibold">
               Priority
             </th>
 
-            <th className="mb-4 px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold">
+            <th className="mb-4 px-2 py-1  text-[10px] uppercase font-semibold">
               Assign Date
             </th>
 
-            <th className="mb-4 px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold">
+            <th className="mb-4 px-2 py-1 text-[10px] uppercase font-semibold">
               End Date
             </th>
 
-            <th className="mb-4 px-2 py-1 text-gray-600 text-[10px] uppercase font-semibold">
+            <th className="mb-4 px-2 py-1 text-[10px] uppercase font-semibold">
               Percentage
             </th>
           </tr>
@@ -188,12 +188,12 @@ const ProjectDetails = ({ projectId }) => {
         <tbody>
           <tr className="w-full">
             <td
-              className=" px-2 py-2 text-blue-500 text-center font-bold uppercase"
+              className=" px-2 py-2  text-center font-bold uppercase"
               colSpan={5}
             >
               {project.projectName}
             </td>
-            <td className="mb-4 text-gray-600 text-center">
+            <td className="mb-4  text-center">
               {project.isCompleted ? (
                 <span className="bg-green-500 text-white">Completed</span>
               ) : (
@@ -203,7 +203,7 @@ const ProjectDetails = ({ projectId }) => {
               )}
             </td>
 
-            <td className="mb-4 text-gray-600 text-center capitalize">
+            <td className="mb-4  text-center capitalize">
               {project.priority}
             </td>
 
@@ -215,7 +215,7 @@ const ProjectDetails = ({ projectId }) => {
               {project.projectEndDate}
             </td>
 
-            <td className="mb-4 text-gray-600 text-center">
+            <td className="mb-4  text-center">
               {project.completedPercent}%
             </td>
           </tr>
@@ -225,7 +225,7 @@ const ProjectDetails = ({ projectId }) => {
       <div className="mb-4 p-4">
         <td className="Description"></td>
         <td colspan="6">
-          <p class="text-gray-600">
+          <p class="">
             <span className="text-blue-700">Description:</span> <br />{" "}
             {project.description}
           </p>
@@ -235,11 +235,11 @@ const ProjectDetails = ({ projectId }) => {
       {/* table of task  */}
       <div className="flex justify-evenly items-center">
         <div className="w-full">
-          <div className="w-full text-center p-2 bg-blue-500 text-white uppercase">
+          <div className="w-full text-center p-2  uppercase">
             <h1 className="font-bold">Task</h1>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300">
+            <table className="min-w-full border border-gray-800">
               <thead>
                 <tr>
                   <th className="py-2 px-4 border-b">Task Title</th>
@@ -277,7 +277,7 @@ const ProjectDetails = ({ projectId }) => {
         </div>
         <div className="mx-3"></div>
         <div className="w-full">
-        <div className="w-full text-center p-2 bg-blue-500 text-white uppercase">
+        <div className="w-full text-center p-2  uppercase">
             <h1 className="font-bold">Task Report</h1>
           </div>
           {/* task report  */}
@@ -348,7 +348,7 @@ const ProjectDetails = ({ projectId }) => {
                 </div>
               </div>
             ) : (
-              <div className="p-12 mt-4 bg-slate-200 text-center rounded-sm">
+              <div className="p-12 mt-4  text-center rounded-sm">
                 <h1 className="font-bold uppercase">Report not available!</h1>
               </div>
             ))}
@@ -359,7 +359,7 @@ const ProjectDetails = ({ projectId }) => {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="absolute inset-0 bg-black opacity-50"></div>
-          <div className="bg-white p-2 rounded-lg z-10 ">
+          <div className=" p-2 rounded-lg z-10 ">
             {/* Your modal content goes here */}
 
             <div className="flex justify-between">
@@ -384,7 +384,7 @@ const ProjectDetails = ({ projectId }) => {
                   rows="5"
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
-                  className=" border border-slate-600 outline-none rounded-sm"
+                  className=" border border-slate-800 outline-none rounded-sm"
                 ></textarea>
               </div>
               <div>

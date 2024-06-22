@@ -15,12 +15,12 @@ const teamSchema = new mongoose.Schema({
   selectedMembers: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "employee_details",
+      ref: "users",
     },
   ],
   selectedManager: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "employee_details",
+    ref: "users",
   },
   selectedProject: {
     type: mongoose.Schema.Types.ObjectId,

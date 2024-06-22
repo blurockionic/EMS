@@ -867,3 +867,266 @@ const EmployeeDashboard = () => {
 };
 
 export default EmployeeDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // console.log(req.body)
+  // fetch all data from request body
+  // const { name, email, password, designation, designationType } = req.body;
+
+  // try {
+  //   // validation
+  //   if (!name || !email || !password || !designation || !designationType) {
+  //     return res.status(400).json({
+  //       success: false,
+  //       message: "Please fill all the details",
+  //     });
+  //   }
+
+  //   // check if email is exist
+  //   const isEmailExist = await User.findOne({ email });
+
+  //   if (isEmailExist) {
+  //     return res.status(400).json({
+  //       success: false,
+  //       message: "Email already exist",
+  //     });
+  //   }
+
+  //   //encrypt password
+  //   const hashPassword = await bcrypt.hash(password, 10);
+
+  //   //designation type convert it into lowercase()
+  //   const lowercaseDesignationType = designationType.toLowerCase();
+
+  //   // create entry on db
+  //   const user = await User.create({
+  //     name,
+  //     email,
+  //     password: hashPassword,
+  //     designation,
+  //     designationType: lowercaseDesignationType
+  //   });
+
+  //   //return the result
+  //   sendCookie(user, res, `Account created successfully!`, 201);
+
+  // } catch (error) {
+  //   return res.status(500).json({
+  //       success:false,
+  //       message: error
+  //   })
+  // }
+
+
+
+  ------------- taks old schema ----------------------------
+   // taskTitle: {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    // },
+    // taskDescription: {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    // },
+    // employeeName:{
+    //   type:String,
+    // },
+    // projectName:{
+    //   type:String
+    // },
+    // managerName:{
+    //   type:String,
+    // },
+    // assignTo: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "employee_details",
+    //   required: true,
+    // },
+    // taskOf: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "project",
+    //   required: true,
+    // },
+    // managerId:{
+    //   type:mongoose.Schema.Types.ObjectId,
+    //   ref: "employee_details",
+    //   required: true,
+    // },
+    // isTaskCompleted: {
+    //   type: Boolean,
+    //   default: false,
+    // },
+    // isRequested:{
+    //   type: Boolean,
+    //   default: false
+    // },
+    // gitLink:{
+    //   type: String
+    // },
+    // taskAssignDate:{
+    //   type:String,
+    //   required: true
+    // },
+    // taskEndDate:{
+    //   type: String,
+    //   required: true
+    // }
+
+
+
+    -----------------------  task create data ---------------------------------------------
+// // create new task //tested
+// export const task = async (req, res) => {
+//   //fetch all the data from req body
+//   const {
+//     taskTitle,
+//     taskDescription,
+//     assignTo,
+//     taskOf,
+//     taskAssignDate,
+//     taskEndDate,
+//     isTaskCompleted,
+//   } = req.body;
+  
+  
+  
+//   try {
+//     //validation
+//     if (
+//       !taskTitle ||
+//       !taskDescription ||
+//       !assignTo ||
+//       !taskOf ||
+//       !taskAssignDate ||
+//       !taskEndDate
+//       ) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "All field are required",
+//         });
+//       }
+      
+      
+      
+//       // //check designation
+//       // const { designationType } = req.user;
+//       // if (designationType != "Manager") {
+//         //   return res.status(400).json({
+//           //     success: false,
+//           //     message: "Only manager can assign the task!",
+//           //   });
+//           // }
+          
+          
+//           // check user
+//           const isEmployeeExist = await Employee.find({employeeName: assignTo});
+//           if (!isEmployeeExist) {
+//             return res.status(500).json({
+//               success: false,
+//               message: "Employee not found! Please select another employee",
+//             });
+//           }
+          
+          
+//           //check project 
+//           const isProjectExist = await Project.find({projectName: taskOf});
+//           if (!isEmployeeExist) {
+//             return res.status(400).json({
+//               success: false,
+//               message: "Project not found! Please select another Project",
+//             });
+//           }
+          
+//           // console.log(req.user)
+//           // console.log(...isProjectExist)
+//           const [project] = isProjectExist; // Assuming isProjectExist is an array
+//           // const { id } = project || {}; // Destructure id from the first element or provide a default empty object
+          
+//           console.log(project._id);
+          
+//           const [employee] = isEmployeeExist
+          
+          
+          
+//           //create entry on db
+//           const task = await Task.create({
+//             taskTitle,
+//             taskDescription,
+//             employeeName: employee.employeeName,
+//             projectName: project.projectName,
+//             managerName: req.user.name, 
+//             assignTo: employee._id,
+//             taskOf : project._id,
+//             managerId: req.user._id,
+//             isTaskCompleted,
+//             taskAssignDate,
+//             taskEndDate,
+//           });
+          
+    
+//     //return success
+//     return res.status(200).json({
+//       success: true,
+//       task,
+//       message: `Task assign successsfully to ${employee.employeeName}`,
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal server error",
+//     });
+//   }
+// };
+
+//get all task manager //tested
+
+
+
+
+
+    setEmployeeData: (state, action) => {
+      state.data = action.payload;
+      state.dataForSearch = action.payload;
+    },
+    filterEmployeeData: (state, action) => {
+      const searchTerm = action.payload.trim().toLowerCase();
+      state.data = state.dataForSearch.filter((item) =>
+        item.employeeName.trim().toLowerCase().includes(searchTerm)
+      );
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchEmployees.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchEmployees.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.data = action.payload;
+        state.dataForSearch = action.payload;
+      })
+      .addCase(fetchEmployees.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      });

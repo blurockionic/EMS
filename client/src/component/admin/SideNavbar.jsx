@@ -4,7 +4,7 @@ import logo from "./../../assets/logo.svg";
 
 const SideNavbar = ({ setActive }) => {
   return (
-    <div className="absolute inset-0 top-0 w-[20rem] h-screen z-30 bg-white  p-4">
+    <div className="absolute inset-0 top-0 w-[20rem] h-screen z-30 p-4">
       <div className="flex justify-between items-center mb-4">
         <img src={logo} alt="logo" className="w-40" />
         <GiCrossMark
@@ -15,17 +15,17 @@ const SideNavbar = ({ setActive }) => {
       <nav>
         <ul>
           <li className="mb-4">
-            <a href="#" className="text-gray-700 hover:text-gray-900">
+            <a href="#" className=" hover:bg-gray-200 dark:hover:bg-gray-700">
               Dashboard
             </a>
           </li>
           <li className="mb-4">
-            <a href="#" className="text-gray-700 hover:text-gray-900">
+            <a href="#" className=" hover:bg-gray-200 dark:hover:bg-gray-700">
               Profile
             </a>
           </li>
           <li className="mb-4">
-            <a href="#" className="text-gray-700 hover:text-gray-900">
+            <a href="#" className="hover:bg-gray-200 dark:hover:bg-gray-700">
               Settings
             </a>
           </li>
