@@ -7,6 +7,7 @@ import projectReducer from "./slices/projectSlice";
 import userReducer from "./slices/allUserSlice";
 import commentReducer from "./slices/commentSlice"
 import tagReducer from "./slices/tagSlice"
+import specificProjectReducer from "./slices/specificProjectSlice"
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     user: userReducer, //all users data
     comments: commentReducer, // add and create comments
     tags: tagReducer,
+    specificProject: specificProjectReducer,
   },
 });
 
