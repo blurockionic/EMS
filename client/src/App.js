@@ -35,6 +35,8 @@ import EmpTasksDetails from "./component/admin/EmpTasksDetails";
 import SingleTaskDetails from "./component/admin/SingleTaskDetails";
 import { fetchProfile } from "./Redux/slices/profileSlice";
 import { useEffect } from "react";
+import YourProfilePage from "./component/utilities-components/YourProfilePage";
+import YourOrganization from "./component/utilities-components/YourOrganization";
 
 // export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 export const server = "http://localhost:4000/api/v1";
@@ -73,6 +75,8 @@ function App() {
 
             {/* Team for all  */}
             <Route path="newTeam" element={<Team />} />
+            <Route path="myprofile" element={<YourProfilePage />} />
+            <Route path="myorganization" element={<YourOrganization />} />
 
             {/* //common  */}
             <Route path="newEmployee" element={<NewEmployee />} />
