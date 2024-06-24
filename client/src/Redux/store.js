@@ -6,6 +6,8 @@ import taskReducer from "./slices/taskSlice";
 import projectReducer from "./slices/projectSlice";
 import userReducer from "./slices/allUserSlice";
 import commentReducer from "./slices/commentSlice"
+import tagReducer from "./slices/tagSlice"
+
 const store = configureStore({
   reducer: {
     employee: employeeReducer,
@@ -15,6 +17,7 @@ const store = configureStore({
     project: projectReducer, // all project reducer
     user: userReducer, //all users data
     comments: commentReducer, // add and create comments
+    tags: tagReducer,
   },
 });
 
