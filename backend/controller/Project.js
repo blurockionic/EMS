@@ -262,7 +262,7 @@ export const newProject = async (req, res) => {
 export const allProject = async (req, res) => {
   try {
     // get all projects from the collection and populate the client field
-    const allProject = await Project.find({})
+    const allProject = await Project.find({}).populate('client');
 
     if (!allProject) {
       return res.status(400).json({
