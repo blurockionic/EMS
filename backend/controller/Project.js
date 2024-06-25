@@ -259,12 +259,10 @@ export const newProject = async (req, res) => {
       .json({ message: "Error creating project", error: error.message });
   }
 };
-
-// get all project
 export const allProject = async (req, res) => {
   try {
-    // get all project from the collection
-    const allProject = await Project.find({});
+    // get all projects from the collection and populate the client field
+    const allProject = await Project.find({})
 
     if (!allProject) {
       return res.status(400).json({
@@ -402,38 +400,29 @@ export const deleteProject = async (req, res) => {
 
 //get all task of specific project // tested
 export const specificProject = async (req, res) => {
-  // fetch project id from params
-  const { id } = req.params;
   try {
-    // validation
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid request",
-      });
-    }
+    const { id } = req.params;
 
-    //check user
-
-    //all task filtered by id
-    const specificProject = await Project.findById(id);
+    // Find the project by ID and populate the client field
+    const specificProject = await Project.findById(id).populate('client');
 
     if (!specificProject) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
-        message: "No task Available!",
+        message: "Project not found!",
       });
     }
 
     return res.status(200).json({
       success: true,
       specificProject,
-      message: "All task fetched successfully!",
+      message: "Project fetched successfully!",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error,
+      message: "Internal server error!",
     });
+  
   }
 };

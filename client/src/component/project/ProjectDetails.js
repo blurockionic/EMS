@@ -50,6 +50,27 @@ const ProjectDetails = ({ projectId }) => {
     return <div>No project found</div>;
   }
 
+
+if(projectStatus=== "loading" ){
+  return <div> loading .... </div>
+}
+
+  const TabButton = ({ activeTab, index, handleChangeTab, icon: Icon, label }) => (
+    <div
+      className={`tab-btn flex cursor-pointer transition duration-300 ease-in-out px-4 py-1 dark:border-[#30363D] rounded-md text-start ${
+        activeTab === index
+          ? "border-2 dark:bg-[#21262C] font-semibold bg-slate-200"
+          : "dark:hover:bg-[#21262C] hover:bg-slate-200"
+      }`}
+      onClick={() => handleChangeTab(index)}
+    >
+      <Icon className="text-lg mr-2 mt-1" />
+      <span>{label}</span>
+    </div>
+  );
+
+  
+
   return (
     <>
       <div>
@@ -86,11 +107,11 @@ const ProjectDetails = ({ projectId }) => {
 
               <div
                 className={`tab-btn  flex cursor-pointer transition duration-300 ease-in-out px-4 py-1 dark:border-[#30363D]   rounded-md text-start ${
-                  activeTab === 3
+                  activeTab === 2
                     ? "border-2 dark:bg-[#21262C] font-semibold bg-slate-200 "
                     : "dark:hover:bg-[#21262C] hover:bg-slate-200"
                 }`}
-                onClick={() => handleChangeTab(3)}
+                onClick={() => handleChangeTab(2)}
               >
                 <span className={``}>
                   <BiLoaderCircle className="text-lg mr-2 mt-1" />
@@ -100,11 +121,11 @@ const ProjectDetails = ({ projectId }) => {
 
               <div
                 className={`tab-btn  flex cursor-pointer transition duration-300 ease-in-out px-4 py-1 dark:border-[#30363D]   rounded-md text-start ${
-                  activeTab === 2
+                  activeTab === 3
                     ? "border-2 dark:bg-[#21262C] font-semibold bg-slate-200 "
                     : "dark:hover:bg-[#21262C] hover:bg-slate-200"
                 }`}
-                onClick={() => handleChangeTab(2)}
+                onClick={() => handleChangeTab(3)}
               >
                 <span className={``}>
                   <HiOutlineUserGroup className="text-lg mr-2 mt-1" />
@@ -216,7 +237,7 @@ const ProjectDetails = ({ projectId }) => {
                   <h2 className="text-xl font-semibold mb-2">
                     Client Information
                   </h2>
-                  <p>Name: {specificProject.client}</p>
+                  {/* <p>Name: {specificProject.client}</p> */}
                   there is need to get the data of client, project contain only
                   object id of client <br />
                   <span className="text-3xl">Comming Soon..............</span>
