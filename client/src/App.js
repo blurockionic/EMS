@@ -37,6 +37,7 @@ import { fetchProfile } from "./Redux/slices/profileSlice";
 import { useEffect } from "react";
 import YourProfilePage from "./component/utilities-components/YourProfilePage";
 import YourOrganization from "./component/utilities-components/YourOrganization";
+import CreateMilestone from "./component/utilities-components/CreateMilestone";
 
 // export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 export const server = "http://localhost:4000/api/v1";
@@ -80,6 +81,8 @@ function App() {
 
             {/* //common  */}
             <Route path="newEmployee" element={<NewEmployee />} />
+
+            <Route path="newMilestone/:projectId" element={<CreateMilestone />} />
 
             {/* hr  */}
             <Route path="hrdashboard" element={<HrDashaboard />} />

@@ -8,7 +8,8 @@ import userReducer from "./slices/allUserSlice";
 import commentReducer from "./slices/commentSlice"
 import tagReducer from "./slices/tagSlice"
 import specificProjectReducer from "./slices/specificProjectSlice"
-
+import milestonesReducer from "./slices/milestones/milestoneSlice"
+import fetchMilestonesReducer from "./slices/milestones/fetchMilestonesSlice"
 const store = configureStore({
   reducer: {
     employee: employeeReducer,
@@ -20,6 +21,8 @@ const store = configureStore({
     comments: commentReducer, // add and create comments
     tags: tagReducer,
     specificProject: specificProjectReducer,
+    milestones: milestonesReducer,
+    fetchMilestones: fetchMilestonesReducer,
   },
 });
 
