@@ -245,15 +245,7 @@ const ProjectDetails = ({ projectId }) => {
                     null,
                     0
                   )}
-                  {renderField(
-                    "Category",
-                    editableProject?.projectCategory ?? "No project type",
-                    "projectCategory",
-                    "input",
-                    false,
-                    null,
-                    0
-                  )}
+                 
                   {renderField(
                     "Scope",
                     editableProject?.projectScope ??

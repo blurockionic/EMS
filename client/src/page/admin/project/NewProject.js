@@ -34,6 +34,8 @@ const NewProject = () => {
   // const [requiredResources, setRequiredResources] = useState([]);
   const [newDeliverable, setNewDeliverable] = useState("");
 
+
+
   const dispatch = useDispatch();
   const { data: users, status, error } = useSelector((state) => state.user);
 
@@ -116,7 +118,7 @@ const NewProject = () => {
     setTeamMembers(selectedIds);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = {
@@ -145,24 +147,28 @@ const NewProject = () => {
       // toolsAndTechnologies,
       // requiredResources,
     };
-
-    // Here you can perform any logic with formData, like sending it to a server
-    console.log("Form data:", formData);
-
-    const response = axios
-      .post(`${server}/project/new`, formData, {
+    try {
+      const response = await axios.post(`${server}/project/new`, formData, {
         headers: {
           "Content-Type": "application/json",
         },
         withCredentials: true,
-      })
-      .then((response) => {
-        // Handle successful response
-        console.log(response);
-      })
-      .catch((error) => {
-        // Handle error
       });
+      // Handle successful response
+      console.log(response.data);
+    } catch (error) {
+      // Handle error
+      if (error.response) {
+        // Server responded with a status other than 200 range
+        console.error("Error response:", error.response.data);
+      } else if (error.request) {
+        // Request was made but no response received
+        console.error("Error request:", error.request);
+      } else {
+        // Something happened in setting up the request
+        console.error("Error message:", error.message);
+      }
+    }
   };
 
   return (
@@ -302,10 +308,13 @@ const NewProject = () => {
                 required
                 className="w-full px-3  py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
               />
+              <small className="block mt-1 text-gray-500 dark:text-gray-400">
+                Add first country code like +91
+              </small>
             </div>
 
             <div className="mt-4">
-              <label className="block dark:text-white font-semibold ">
+              <label className="block dark:text-white font-semibold">
                 Address
               </label>
               <input
@@ -313,10 +322,13 @@ const NewProject = () => {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 required
-                className="w-full px-3 py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+                className="w-full px-3 py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
               />
+              <small className="block mt-1 text-gray-500 dark:text-gray-400">
+                Use comma (,) to separate house no, landmark, state, and
+                country.
+              </small>
             </div>
-
             <div className="mt-4">
               <label className="block font-semibold">Project type</label>
               <select
