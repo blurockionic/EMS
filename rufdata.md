@@ -1130,3 +1130,91 @@ export default EmployeeDashboard;
         state.status = "failed";
         state.error = action.error.message;
       });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProjects } from "../../../Redux/slices/projectSlice";
+import ProjectCard from "../../../component/utilities-components/ProjectCard";
+
+
+const ManagerProject = () => {
+  const [activeTab, setActiveTab] = useState(0);
+
+  //fetch all the details of project
+  const dispatch = useDispatch();
+
+  const projectState = useSelector((state) => state.project);
+  const {
+    allProject,
+    status: projectStatus,
+    error: projectError,
+  } = projectState;
+
+  useEffect(() => {
+    if (projectStatus === "idle") {
+      dispatch(fetchProjects());
+    }
+  }, [projectStatus, dispatch]);
+
+  console.log("all project data me h kuchh ", allProject);
+
+  const handleChangeTab = (index) => {
+    setActiveTab(index);
+  };
+  //hnadle for show mare
+  return (
+    <>
+      <div className=" flex flex-row space-x-2 ">
+        <div
+          className={`tab-btn  flex cursor-pointer transition duration-300 ease-in-out px-4 py-1 dark:border-[#30363D]  rounded-md text-start ${
+            activeTab === 0
+              ? "border-2 dark:bg-[#21262C] font-semibold bg-slate-200 "
+              : "dark:hover:bg-[#21262C] hover:bg-slate-200"
+          }`}
+          onClick={() => handleChangeTab(0)}
+        >
+          <span className={``}>
+            <a className="text-lg mr-2 mt-1" />
+          </span>
+          <span>All project</span>
+        </div>
+        <div
+          className={`tab-btn  flex cursor-pointer transition duration-300 ease-in-out px-4 py-1 dark:border-[#30363D]  rounded-md text-start ${
+            activeTab === 1
+              ? "border-2 dark:bg-[#21262C] font-semibold bg-slate-200 "
+              : "dark:hover:bg-[#21262C] hover:bg-slate-200"
+          }`}
+          onClick={() => handleChangeTab(1)}
+        >
+          <span className={``}>
+            <a className="text-lg mr-2 mt-1" />
+          </span>
+          <span>create</span>
+        </div>
+      </div>
+
+      <div className={`${activeTab === 0 ? "block" : "hidden"}`}>
+        <div className="w-[80%] mx-auto p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-12 ">
+          {allProject.map((project) => (
+            <ProjectCard key={project._id} project={project} />
+          ))}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default ManagerProject;

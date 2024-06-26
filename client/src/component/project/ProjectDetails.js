@@ -1,416 +1,573 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { server } from "../../App";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProjectById } from "../../Redux/slices/specificProjectSlice";
+import { TiDocumentText } from "react-icons/ti";
+import { HiOutlineUserGroup } from "react-icons/hi";
+import { BiLoaderCircle } from "react-icons/bi";
+import { MdAttractions } from "react-icons/md";
+import { RxPerson } from "react-icons/rx";
+import { GrOverview, GrTechnology } from "react-icons/gr";
+import { CgCalendarNext } from "react-icons/cg";
 
 const ProjectDetails = ({ projectId }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isOpenReport, setIsOpenReport] = useState(false);
-  const [userReport, setUserReport] = useState([]);
-  const [project, setProject] = useState({});
-  const [task, setTask] = useState([]);
-  const [taskReport, setTaskReport] = useState([]);
-
-  const [isTaskCompleted, setIsTaskCompleted] = useState(false);
-  const [feedback, setFeedback] = useState("");
-  const [employeeId, setEmployeeId] = useState("");
-  const [employeeName, setEmployeeName] = useState("");
-  const [taskId, setTaskId] = useState("");
-  const [taskReportId, setTaskReportId] = useState("");
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskReportDesc, setTaskReportDesc] = useState("");
-  const [reportTitle, setReportTitle] = useState("");
+  const dispatch = useDispatch();
+  const { specificProject, status, error } = useSelector(
+    (state) => state.specificProject
+  );
 
   useEffect(() => {
-    //fetch specific project details
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${server}/project/specific/${projectId}`,
-          { withCredentials: true }
-        );
-
-        setProject(response.data.specificProject);
-        const { success } = response.data;
-
-        if (success) {
-          //   alert(message);
-        }
-      } catch (error) {
-        // Handle errors, e.g., alert(error.response.data.message);
-      }
-    };
-
-    //fetch all task report
-    const fetchAssignTask = async () => {
-      try {
-        const response = await axios.get(
-          `${server}/task/specific/${projectId}`,
-          { withCredentials: true }
-        );
-
-        setTask(response.data.specificProjectTask);
-        // console.log(response)
-        const { success } = response.data;
-
-        if (success) {
-          //   alert(message);
-        }
-      } catch (error) {
-        // Handle errors, e.g., alert(error.response.data.message);
-      }
-    };
-
-    const fetchTaskReport = async () => {
-      try {
-        const response = await axios.get(
-          `${server}/taskReport/specific/${projectId}`,
-          { withCredentials: true }
-        );
-
-        setTaskReport(response.data.allTaskReport);
-        const { success } = response.data;
-
-        if (success) {
-          //   alert(message);
-        }
-      } catch (error) {
-        // Handle errors, e.g., alert(error.response.data.message);
-      }
-    };
-
-    // Invoke the fetchData function immediately
-    fetchAssignTask();
-    fetchData();
-    fetchTaskReport();
-  }, [projectId]); // Add projectId as a dependency
-
-  // handle on view report
-  const handleOnViewReport = (task) => {
-    const filteredTaskReport = taskReport.filter(
-      (report) => report.taskId === task._id
-    );
-    setUserReport(filteredTaskReport);
-    setIsOpenReport(true);
-  };
-
-  const openModal = (taskReport) => {
-    setIsModalOpen(true);
-    console.log(taskReport);
-    setTaskReportId(taskReport._id);
-    setEmployeeId(taskReport.employeeId);
-    setTaskId(taskReport.taskId);
-    setEmployeeName(taskReport.employeeName);
-    setTaskTitle(taskReport.taskTitle);
-    setTaskReportDesc(taskReport.reportDescription);
-    setReportTitle(taskReport.reportTitle);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  // handle for change the checkbox
-  const handleCheckboxChange = () => {
-    setIsTaskCompleted(!isTaskCompleted);
-  };
-
-  // handle on task report feedback
-  const handleOnTaskReportFeedback = async (e) => {
-    const data = {
-      isTaskCompleted,
-      feedback,
-      employeeId,
-      taskId,
-      taskReportId,
-      employeeName,
-      taskTitle,
-      taskReportDesc,
-      reportTitle,
-    };
-
-    try {
-      const responce = await axios.post(
-        `${server}/taskReportFeedback/new`,
-        { data },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-
-      const { success, message } = responce.data;
-      if (success) {
-        alert(message);
-        setFeedback("");
-        setIsTaskCompleted(false);
-        setIsModalOpen(false);
-      }
-    } catch (error) {
-      alert(error.response.data.message);
+    if (projectId) {
+      dispatch(fetchProjectById(projectId));
     }
+  }, [dispatch, projectId]);
+
+  const [activeTab, setActiveTab] = useState(0);
+  const [editableProject, setEditableProject] = useState({});
+  const [isEditing, setIsEditing] = useState({});
+
+  useEffect(() => {
+    if (specificProject) {
+      setEditableProject(specificProject);
+    }
+  }, [specificProject]);
+
+  const handleInputChange = (e, field) => {
+    setEditableProject({
+      ...editableProject,
+      [field]: e.target.value,
+    });
   };
+
+  const handleNestedInputChange = (e, parentField, field) => {
+    setEditableProject({
+      ...editableProject,
+      [parentField]: {
+        ...editableProject[parentField],
+        [field]: e.target.value,
+      },
+    });
+  };
+
+  const handleArrayInputChange = (e, parentField, index) => {
+    const updatedArray = [...editableProject[parentField]];
+    updatedArray[index] = e.target.value;
+    setEditableProject({
+      ...editableProject,
+      [parentField]: updatedArray,
+    });
+  };
+
+  const toggleEditing = (tabIndex) => {
+    setIsEditing((prev) => ({
+      ...prev,
+      [tabIndex]: !prev[tabIndex],
+    }));
+  };
+
+  const renderField = (
+    label,
+    value,
+    field,
+    type = "input",
+    nested = false,
+    parentField = null,
+    tabIndex
+  ) => (
+    <div className="flex flex-col mt-4">
+      <span className="pl-2 font-semibold">{label}</span>
+      {isEditing[tabIndex] ? (
+        type === "textarea" ? (
+          <textarea
+            className="py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+            value={value}
+            onChange={(e) =>
+              nested
+                ? handleNestedInputChange(e, parentField, field)
+                : handleInputChange(e, field)
+            }
+          />
+        ) : (
+          <input
+            className="py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+            value={value}
+            onChange={(e) =>
+              nested
+                ? handleNestedInputChange(e, parentField, field)
+                : handleInputChange(e, field)
+            }
+          />
+        )
+      ) : (
+        <p className="py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400">
+          {value}
+        </p>
+      )}
+    </div>
+  );
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (status === "failed") {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!specificProject) {
+    return <div>No project found</div>;
+  }
+
+  const TabButton = ({ index, handleChangeTab, icon: Icon, label }) => (
+    <div
+      className={`tab-btn flex cursor-pointer transition duration-300 ease-in-out px-4 py-1 dark:border-[#30363D] rounded-md text-start ${
+        activeTab === index
+          ? "border-2 dark:bg-[#21262C] font-semibold bg-slate-200"
+          : "dark:hover:bg-[#21262C] hover:bg-slate-200"
+      }`}
+      onClick={() => handleChangeTab(index)}
+    >
+      <Icon className="text-lg mr-2 mt-1" />
+      <span>{label}</span>
+    </div>
+  );
 
   return (
     <>
-      <table class="w-full mx-auto mt-2 p-4 rounded shadow-md">
-        <thead className="w-full">
-          <tr className="w-full">
-            <th
-              className="px-2 py-1  text-[10px] uppercase font-semibold"
-              colSpan={5}
-            >
-              Project Name
-            </th>
-
-            <th className="px-2 py-1  text-[10px] uppercase font-semibold">
-              Status
-            </th>
-
-            <th className="mb-4 px-2 py-1 text-[10px] uppercase font-semibold">
-              Priority
-            </th>
-
-            <th className="mb-4 px-2 py-1  text-[10px] uppercase font-semibold">
-              Assign Date
-            </th>
-
-            <th className="mb-4 px-2 py-1 text-[10px] uppercase font-semibold">
-              End Date
-            </th>
-
-            <th className="mb-4 px-2 py-1 text-[10px] uppercase font-semibold">
-              Percentage
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="w-full">
-            <td
-              className=" px-2 py-2  text-center font-bold uppercase"
-              colSpan={5}
-            >
-              {project.projectName}
-            </td>
-            <td className="mb-4  text-center">
-              {project.isCompleted ? (
-                <span className="bg-green-500 text-white">Completed</span>
-              ) : (
-                <span className="text-white bg-yellow-500 p-2">
-                  In Progress
-                </span>
-              )}
-            </td>
-
-            <td className="mb-4  text-center capitalize">
-              {project.priority}
-            </td>
-
-            <td className="mb-4  text-center text-green-500 font-semibold">
-              {project.projectStartDate}
-            </td>
-
-            <td className="mb-4  text-center text-red-500 font-semibold">
-              {project.projectEndDate}
-            </td>
-
-            <td className="mb-4  text-center">
-              {project.completedPercent}%
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div className="mb-4 p-4">
-        <td className="Description"></td>
-        <td colspan="6">
-          <p class="">
-            <span className="text-blue-700">Description:</span> <br />{" "}
-            {project.description}
-          </p>
-        </td>
-      </div>
-
-      {/* table of task  */}
-      <div className="flex justify-evenly items-center">
-        <div className="w-full">
-          <div className="w-full text-center p-2  uppercase">
-            <h1 className="font-bold">Task</h1>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full border border-gray-800">
-              <thead>
-                <tr>
-                  <th className="py-2 px-4 border-b">Task Title</th>
-                  <th className="py-2 px-4 border-b"> Employee</th>
-                  <th className="py-2 px-4 border-b">Status</th>
-                  <th className="py-2 px-4 border-b">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {task.map((task) => (
-                  <tr key={task._id}>
-                    <td className="py-2 px-4 border-b text-center capitalize">
-                      {task.taskTitle}
-                    </td>
-                    <td className="py-2 px-4 border-b text-center capitalize">
-                      {task.employeeName}
-                    </td>
-                    <td className="py-2 px-4 border-b text-center capitalize">
-                      {task.isTaskCompleted ? "Completed" : "In Progress"}
-                    </td>
-
-                    <td className="py-2 px-4 border-b text-center">
-                      <button
-                        className="px-4  py-2 font-bold text-blue-500 rounded-lg"
-                        onClick={() => handleOnViewReport(task)}
-                      >
-                        View Report
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div className="mx-3"></div>
-        <div className="w-full">
-        <div className="w-full text-center p-2  uppercase">
-            <h1 className="font-bold">Task Report</h1>
-          </div>
-          {/* task report  */}
-          {isOpenReport &&
-            (userReport.length > 0 ? (
-              <div>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full bg-white border border-gray-300">
-                    <thead>
-                      <tr>
-                        <th className="py-2 px-4 border-b"> Title</th>
-                        <th className="py-2 px-4 border-b"> Employee Name</th>
-                        <th className="py-2 px-4 border-b">Rported Date</th>
-                        <th className="py-2 px-4 border-b">Git Link</th>
-                        <th className="py-2 px-4 border-b">Status</th>
-                        <th className="py-2 px-4 border-b">Feedback</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {userReport.map((taskReport) => (
-                        <tr key={taskReport._id}>
-                          <td className="py-2 px-4 border-b text-center">
-                            {taskReport.reportTitle}
-                          </td>
-
-                          <td className="py-2 px-4 border-b text-center">
-                            {taskReport.employeeName}
-                          </td>
-                          <td className="py-2 px-4 border-b text-center">
-                            {taskReport.createdAt}
-                          </td>
-                          <td className="py-2 px-4 border-b text-center">
-                            <a
-                              target="_blank"
-                              href={taskReport.gitLink}
-                              className="text-blue-600"
-                            >
-                              Open Link
-                            </a>
-                          </td>
-                          <td className="py-2 px-4 border-b text-center">
-                            {taskReport.isTaskCompleted
-                              ? "Completed"
-                              : "In Progress"}
-                          </td>
-                          <td className="py-2 px-4 border-b text-center">
-                            {taskReport.isTaskCompleted ? (
-                              <button
-                                disabled
-                                className="px-4 py-2 bg-red-300 text-white font-bold rounded-sm cursor-not-allowed"
-                                onClick={() => openModal(taskReport)}
-                              >
-                                Add Feedback
-                              </button>
-                            ) : (
-                              <button
-                                className="px-4 py-2 bg-green-600 text-white font-bold rounded-sm"
-                                onClick={() => openModal(taskReport)}
-                              >
-                                Add Feedback
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            ) : (
-              <div className="p-12 mt-4  text-center rounded-sm">
-                <h1 className="font-bold uppercase">Report not available!</h1>
-              </div>
-            ))}
-        </div>
-      </div>
-
-      {/* Modal component */}
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="absolute inset-0 bg-black opacity-50"></div>
-          <div className=" p-2 rounded-lg z-10 ">
-            {/* Your modal content goes here */}
-
-            <div className="flex justify-between">
-              <p className="ml-28">Review Task Report</p>
-              <button
-                className="px-4 py-2 bg-red-600 text-white font-bold rounded-sm"
-                onClick={closeModal}
-              >
-                X
-              </button>
+      <div>
+        <div className="max-w-[90%] mx-auto p-2">
+          <div className="flex flex-row space-x-8">
+            <div className="flex flex-col space-y-1 mb-6 w-[14rem]">
+              <TabButton
+                index={0}
+                handleChangeTab={setActiveTab}
+                icon={GrOverview}
+                label="Overview"
+              />
+              <TabButton
+                index={1}
+                handleChangeTab={setActiveTab}
+                icon={RxPerson}
+                label="Client Details"
+              />
+              <TabButton
+                index={2}
+                handleChangeTab={setActiveTab}
+                icon={BiLoaderCircle}
+                label="Phases"
+              />
+              <TabButton
+                index={3}
+                handleChangeTab={setActiveTab}
+                icon={HiOutlineUserGroup}
+                label="Team Details"
+              />
+              <TabButton
+                index={4}
+                handleChangeTab={setActiveTab}
+                icon={GrTechnology}
+                label="Tools and Techs"
+              />
+              <TabButton
+                index={5}
+                handleChangeTab={setActiveTab}
+                icon={MdAttractions}
+                label="Tracking"
+              />
+              <TabButton
+                index={6}
+                handleChangeTab={setActiveTab}
+                icon={TiDocumentText}
+                label="Documentation"
+              />
+              <TabButton
+                index={7}
+                handleChangeTab={setActiveTab}
+                icon={CgCalendarNext}
+                label="Others"
+              />
             </div>
-            {/* form for submit the feedback on report of specific Task  */}
-            <div>
-              <div>
-                <label htmlFor="Feedback" className="block mb-2">
-                  Feedback
-                </label>
-                <textarea
-                  name="feedback"
-                  id="feedback"
-                  cols="50"
-                  rows="5"
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  className=" border border-slate-800 outline-none rounded-sm"
-                ></textarea>
-              </div>
-              <div>
-                <label className="block mb-2 text-sm font-bold">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={isTaskCompleted}
-                    onChange={() => handleCheckboxChange()}
-                  />
-                  Approved Task Completion Request
-                </label>
-              </div>
-              <div className="flex justify-center mt-4">
+
+            <div className="flex-1">
+              <div className="flex justify-between">
+                <h2 className="text-xl font-bold mb-2 border-b-2 p-2 dark:border-[#30363D]">
+                  {activeTab === 0 && "Project Details"}
+                  {activeTab === 1 && "Client Information"}
+                  {activeTab === 2 && "Project Phases"}
+                  {activeTab === 3 && "Team Members"}
+                  {activeTab === 4 && "Tools and Tech"}
+                  {activeTab === 5 && "Tracking"}
+                  {activeTab === 6 && "Documentation"}
+                  {activeTab === 7 && "Other Details"}
+                </h2>
                 <button
-                  type="submit"
-                  className=" w-full px-4 py-2 bg-green-600 text-white rounded-sm"
-                  onClick={handleOnTaskReportFeedback}
+                  className="mb-2 p-2 bg-blue-500 text-white rounded"
+                  onClick={() => toggleEditing(activeTab)}
                 >
-                  Submit
+                  {isEditing[activeTab] ? "Save" : "Edit"}
                 </button>
               </div>
+
+              {activeTab === 0 && (
+                <>
+                  {renderField(
+                    "Project Name",
+                    editableProject?.projectName ?? "N/A",
+                    "projectName",
+                    "input",
+                    false,
+                    null,
+                    0
+                  )}
+                  {renderField(
+                    "Description",
+                    editableProject?.projectDescription ?? "No description",
+                    "projectDescription",
+                    "textarea",
+                    false,
+                    null,
+                    0
+                  )}
+                  {renderField(
+                    "Objective",
+                    editableProject?.projectObjectives ?? "No data present",
+                    "projectObjectives",
+                    "textarea",
+                    false,
+                    null,
+                    0
+                  )}
+                  {renderField(
+                    "Type",
+                    editableProject?.projectType ?? "No project type",
+                    "projectType",
+                    "input",
+                    false,
+                    null,
+                    0
+                  )}
+                  {renderField(
+                    "Category",
+                    editableProject?.projectCategory ?? "No project type",
+                    "projectCategory",
+                    "input",
+                    false,
+                    null,
+                    0
+                  )}
+                  {renderField(
+                    "Scope",
+                    editableProject?.projectScope ??
+                      "No scope mention by creater",
+                    "projectScope",
+                    "input",
+                    false,
+                    null,
+                    0
+                  )}
+                  {renderField(
+                    "Start Date",
+                    new Date(editableProject.startDate).toLocaleDateString(),
+                    "startDate",
+                    "input",
+                    false,
+                    null,
+                    0
+                  )}
+                  {renderField(
+                    "End Date",
+                    new Date(editableProject.endDate).toLocaleDateString(),
+                    "endDate",
+                    "input",
+                    false,
+                    null,
+                    0
+                  )}
+                  {renderField(
+                    "Quality Standards",
+                    editableProject?.qualityStandards ??
+                      "No scope mention by creater",
+                    "qualityStandards",
+                    "input",
+                    false,
+                    null,
+                    0
+                  )}
+                </>
+              )}
+
+              {activeTab === 1 && (
+                <>
+                  {renderField(
+                    "Name",
+                    editableProject?.client?.name ?? "N/A",
+                    "name",
+                    "input",
+                    true,
+                    "client",
+                    1
+                  )}
+                  {renderField(
+                    "Email",
+                    editableProject?.client?.contactInformation?.email ?? "N/A",
+                    "email",
+                    "input",
+                    true,
+                    "client.contactInformation",
+                    1
+                  )}
+                  {renderField(
+                    "Phone",
+                    editableProject?.client?.contactInformation?.phoneNumber ??
+                      "N/A",
+                    "phoneNumber",
+                    "input",
+                    true,
+                    "client.contactInformation",
+                    1
+                  )}
+                  {renderField(
+                    "Address",
+                    editableProject?.client?.contactInformation?.address ?? "N/A",
+                    "address",
+                    "input",
+                    true,
+                    "client.contactInformation",
+                    1
+                  )}
+                </>
+              )}
+
+              {activeTab === 2 && (
+                <>
+                  {editableProject?.phases?.map((phase, index) => (
+                    <div key={index} className="flex flex-col mt-4">
+                      {isEditing[2] ? (
+                        <input
+                          className="py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+                          value={phase ?? "N/A"}
+                          onChange={(e) =>
+                            handleArrayInputChange(e, "phases", index)
+                          }
+                        />
+                      ) : (
+                        <p className="py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400">
+                          {phase}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </>
+              )}
+
+              {activeTab === 3 && (
+                <>
+                  {editableProject?.teamMembers?.map((team, index) => (
+                    <div key={index} className="flex flex-col mt-4">
+                      {isEditing[3] ? (
+                        <input
+                          className="py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+                          value={team ?? "N/A"}
+                          onChange={(e) =>
+                            handleArrayInputChange(e, "teamMembers", index)
+                          }
+                        />
+                      ) : (
+                        <p className="py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400">
+                          {team}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                  {renderField(
+                    "Project Manager",
+                    editableProject?.projectManager ?? "N/A",
+                    "projectManager",
+                    "input",
+                    false,
+                    null,
+                    3
+                  )}
+                </>
+              )}
+
+              {activeTab === 4 && (
+                <>
+                  {editableProject?.toolsAndTechnologies?.map((tech, index) => (
+                    <div key={index} className="flex flex-col mt-4">
+                      {isEditing[4] ? (
+                        <input
+                          className="py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+                          value={tech ?? "N/A"}
+                          onChange={(e) =>
+                            handleArrayInputChange(e, "toolsAndTechnologies", index)
+                          }
+                        />
+                      ) : (
+                        <p className="py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400">
+                          {tech}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                  <h2 className="text-xl font-semibold mb-2">Required Resources</h2>
+                  {editableProject?.requiredResources?.map((reso, index) => (
+                    <div key={index} className="flex flex-col mt-4">
+                      {isEditing[4] ? (
+                        <input
+                          className="py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+                          value={reso ?? "N/A"}
+                          onChange={(e) =>
+                            handleArrayInputChange(e, "requiredResources", index)
+                          }
+                        />
+                      ) : (
+                        <p className="py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400">
+                          {reso}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                  {renderField(
+                    "Resource Status",
+                    editableProject?.resourceAllocation ?? "N/A",
+                    "resourceAllocation",
+                    "input",
+                    false,
+                    null,
+                    4
+                  )}
+                </>
+              )}
+
+              {activeTab === 5 && (
+                <>
+                  {renderField(
+                    "Status Report",
+                    editableProject?.statusReports ?? "N/A",
+                    "statusReports",
+                    "textarea",
+                    false,
+                    null,
+                    5
+                  )}
+                  {renderField(
+                    "Progress Tracking",
+                    editableProject?.progressTracking ?? "N/A",
+                    "progressTracking",
+                    "textarea",
+                    false,
+                    null,
+                    5
+                  )}
+                </>
+              )}
+
+              {activeTab === 6 && (
+                <>
+                  {renderField(
+                    "Design",
+                    editableProject?.documentation?.design ?? "N/A",
+                    "design",
+                    "textarea",
+                    true,
+                    "documentation",
+                    6
+                  )}
+                  {renderField(
+                    "Project Plan",
+                    editableProject?.documentation?.projectPlan ?? "N/A",
+                    "projectPlan",
+                    "textarea",
+                    true,
+                    "documentation",
+                    6
+                  )}
+                  {renderField(
+                    "Requirements",
+                    editableProject?.documentation?.requirements ?? "N/A",
+                    "requirements",
+                    "textarea",
+                    true,
+                    "documentation",
+                    6
+                  )}
+                  {renderField(
+                    "Technical Specifications",
+                    editableProject?.documentation?.technicalSpecifications ??
+                      "N/A",
+                    "technicalSpecifications",
+                    "textarea",
+                    true,
+                    "documentation",
+                    6
+                  )}
+                  {renderField(
+                    "Test Plans",
+                    editableProject?.documentation?.testPlans ?? "N/A",
+                    "testPlans",
+                    "textarea",
+                    true,
+                    "documentation",
+                    6
+                  )}
+                  {renderField(
+                    "User Manuals",
+                    editableProject?.documentation?.userManuals ?? "N/A",
+                    "userManuals",
+                    "textarea",
+                    true,
+                    "documentation",
+                    6
+                  )}
+                  {renderField(
+                    "Archiving Documents",
+                    editableProject?.archivingDocumentation ?? "N/A",
+                    "archivingDocumentation",
+                    "textarea",
+                    true,
+                    "documentation",
+                    6
+                  )}
+                </>
+              )}
+
+              {activeTab === 7 && (
+                <>
+                  {renderField(
+                    "IP Management",
+                    "All IP rights reserved to the client",
+                    "ipManagement",
+                    "input",
+                    false,
+                    null,
+                    7
+                  )}
+                  <h3 className="text-lg font-medium mb-1">KPIs</h3>
+                  <ul className="list-disc pl-6">
+                    {editableProject?.kpis?.map((kpi, index) => (
+                      <li
+                        key={index}
+                        className="py-1.5 pl-2 border-b dark:border-[#30363D] text-lg font-normal dark:bg-[#161B22] dark:text-slate-400"
+                      >
+                        {isEditing[7] ? (
+                          <input
+                            value={kpi}
+                            onChange={(e) =>
+                              handleArrayInputChange(e, "kpis", index)
+                            }
+                          />
+                        ) : (
+                          kpi
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 };

@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { server } from "../../../App";
 import Titlebar from "../../../component/utilities-components/Titlebar";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProjects } from "../../../Redux/slices/projectSlice";
 
 const ManagerProject = () => {
   const navigate = useNavigate();
@@ -34,7 +36,6 @@ const ManagerProject = () => {
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
   const [profile, setProfile] = useState({});
 
-  const [allProject, setAllProject] = useState([]);
   const [allProjectForSearch, setAllProjectForSearch] = useState([]);
   const [teamInfoData, setTeamInfoData] = useState([]);
 
@@ -55,44 +56,40 @@ const ManagerProject = () => {
     };
     teamData();
   }, []);
+;
 
-  //fetch all the details of project
-  useEffect(() => {
-    const data = async () => {
-      try {
-        const data = await axios.get(`${server}/project/all`, {
-          withCredentials: true,
-        });
-        // Handle the data from the API response
-        setAllProject(data.data.allProject);
+      //fetch all the details of project
+const dispatch = useDispatch()
+// Fetching projects
+const projectState = useSelector((state) => state.project);
+const {
+  allProject,
+  status: projectStatus,
+  error: projectError,
+} = projectState;
 
-        setAllProjectForSearch(data.data.allProject);
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
-        // Handle the error
-      }
-    };
+useEffect(() => {
+  if (projectStatus === "idle") {
+    dispatch(fetchProjects());
+  }
+}, [projectStatus, dispatch]);
 
-    //invocke
-    data();
-  }, []);
-
-  // console.log(" All project data arha h",  profile.employeeId);
+console.log("all project data me h kuchh ",allProject);
 
   // handle search
-  const handleSearch = (e) => {
-    const searchTerm = e.target.value.trim().toLowerCase(); // Get the trimmed lowercase search term
+  // const handleSearch = (e) => {
+  //   const searchTerm = e.target.value.trim().toLowerCase(); // Get the trimmed lowercase search term
 
-    if (searchTerm === " ") {
-      setAllProject(allProject); // If the search term is empty, show the entire original array
-    } else {
-      // Filter the array based on the search term
-      const tempVar = allProjectForSearch?.filter((item) =>
-        item.projectName?.trim().toLowerCase().includes(searchTerm)
-      );
-      setAllProject(tempVar); // Update the array state with the filtered results
-    }
-  };
+  //   if (searchTerm === " ") {
+  //     setAllProject(allProject); // If the search term is empty, show the entire original array
+  //   } else {
+  //     // Filter the array based on the search term
+  //     const tempVar = allProjectForSearch?.filter((item) =>
+  //       item.projectName?.trim().toLowerCase().includes(searchTerm)
+  //     );
+  //     setAllProject(tempVar); // Update the array state with the filtered results
+  //   }
+  // };
 
   //profile data
   useEffect(() => {
@@ -294,6 +291,8 @@ const ManagerProject = () => {
   const tempData = [...empData];
   console.log("temp data", tempData);
 
+
+
   return (
     <>
       <div className="flex justify-between">
@@ -306,7 +305,7 @@ const ManagerProject = () => {
             <span className="text-xl mx-1"></span>
             <input
               type="text"
-              onChange={(e) => handleSearch(e)}
+              // onChange={(e) => handleSearch(e)}
               placeholder="Search project name..."
               className="w-96 p-1 rounded-lg outline-none"
             />
@@ -335,12 +334,7 @@ const ManagerProject = () => {
               </tr>
             </thead>
             <tbody>
-              {allProject
-                .filter(
-                  (assignProject) =>
-                    assignProject.managerId === profile.employeeId
-                )
-                .map((project, index) => (
+              {allProject.map((project, index) => (
                   <tr key={project._id} className="text-center">
                     <td className="border px-4 py-2">{index + 1}</td>
                     <td className="border px-4 py-2">{project.projectName}</td>

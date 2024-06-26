@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoBookOutline } from "react-icons/io5";
-import { GoProject, GoTasklist, GoIssueTrackedBy } from "react-icons/go";
+import { GoProject, GoTasklist, GoIssueTrackedBy, GoPeople,GoReport } from "react-icons/go";
 import { MdHistory } from "react-icons/md";
 import { RiTeamLine } from "react-icons/ri";
 
@@ -119,39 +119,39 @@ const Header = () => {
       icon: IoBookOutline,
       link: "./managerdashboard",
     },
-    {
-      type: "manager",
-      tab: "leaves",
-      label: "Leaves",
-      icon: IoBookOutline,
-      link: "./empleave",
-    },
+    // {
+    //   type: "manager",
+    //   tab: "leaves",
+    //   label: "Leaves",
+    //   icon: IoBookOutline,
+    //   link: "./empleave",
+    // },
     {
       type: "manager",
       tab: "projectreport",
       label: "Reports",
-      icon: GoProject,
+      icon: GoReport,
       link: "./managerreport",
     },
     {
       type: "manager",
       tab: "task",
       label: "Task",
-      icon: GoProject,
+      icon: GoTasklist,
       link: "./alltask",
     },
     {
       type: "manager",
       tab: "employee",
       label: "Employee",
-      icon: GoTasklist,
+      icon: GoPeople,
       link: "./employee",
     },
     {
       type: "manager",
       tab: "managerproject",
-      label: "Issues",
-      icon: GoIssueTrackedBy,
+      label: "Project",
+      icon: GoProject,
       link: "./managerproject",
     },
     {
@@ -165,7 +165,7 @@ const Header = () => {
       type: "manager",
       tab: "team",
       label: "Team",
-      icon: GoIssueTrackedBy,
+      icon: RiTeamLine,
       link: "./newTeam",
     },
   ];
