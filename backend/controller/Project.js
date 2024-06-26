@@ -189,6 +189,11 @@ export const newProject = async (req, res) => {
     if (!clientRecord) {
       clientRecord = new Client(client);
       await clientRecord.save();
+    }else{
+      return res.status(400).json({
+        success: false,
+        message: "Client already exists",
+      })
     }
 
     // Create new project with client ID
