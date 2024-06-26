@@ -10,6 +10,11 @@ const milestoneSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
+      status: {
+        type: String,
+        enum: ['Open', 'In Progress', 'Closed'],
+        default: 'Open',
+      },
       projectId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Project',

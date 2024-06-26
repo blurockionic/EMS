@@ -3,8 +3,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { server } from "../../../App";
 
-
-
 // Async Thunks for fetching milestones
 export const fetchAllMilestones = createAsyncThunk(
   "milestones/fetchAllMilestones",
@@ -22,8 +20,11 @@ export const fetchMilestonesByProjectId = createAsyncThunk(
   "milestones/fetchMilestonesByProjectId",
   async (projectId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${server}?projectId=${projectId}`);
-      return response.data;
+      const response = await axios.get(
+        `${server}/milestone/getprojectmilestones/${projectId}`
+      );
+      // console.log("milestone by project id", response)
+      return response.data.milestones;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -58,6 +59,7 @@ const fetchMilestonesSlice = createSlice({
       })
       .addCase(fetchMilestonesByProjectId.fulfilled, (state, action) => {
         state.loading = false;
+        // console.log("action.payload", action.payload);
         state.milestones = action.payload;
       })
       .addCase(fetchMilestonesByProjectId.rejected, (state, action) => {

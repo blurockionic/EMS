@@ -9,6 +9,7 @@ import { RxPerson } from "react-icons/rx";
 import { GrOverview, GrTechnology } from "react-icons/gr";
 import { CgCalendarNext } from "react-icons/cg";
 import { Link } from "react-router-dom";
+import Milestones from "../utilities-components/Milestones";
 
 const ProjectDetails = ({ projectId }) => {
   const dispatch = useDispatch();
@@ -31,7 +32,7 @@ const ProjectDetails = ({ projectId }) => {
   const [toggleTabButton, setToggleTabButton] = useState("Project details");
 
   const toggleTab = (tab) => {
-    console.log(tab);
+    // console.log(tab);
     setToggleTabButton(tab);
   };
 
@@ -185,16 +186,7 @@ const ProjectDetails = ({ projectId }) => {
               </span>
             </div>
 
-            <div>
-              {toggleTabButton === "Milestone" && (
-                <Link  to={`../newMilestone/${projectId}`} 
-                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-4 rounded"
 
-                >
-                  New milestone
-                </Link> 
-              )}
-            </div>
           </div>
 
           <div className="flex flex-row space-x-8">
@@ -204,21 +196,7 @@ const ProjectDetails = ({ projectId }) => {
               )}
 
               {toggleTabButton === "Milestone" && (
-                <div className="max-w-4xl mx-auto mt-8">
-                  <h1 className="text-3xl font-bold mb-4">Milestones</h1>
-                  <div className="bg-white rounded-lg shadow-md p-4 mb-4 dark:bg-slate-600">
-                    <h3 className="text-lg font-bold mb-2">{/* {title} */}</h3>
-                    <p className="text-gray-700 mb-2">{/* {description} */}</p>
-                    <p>
-                      <strong>Due Date:</strong>
-                      {/* {dueDate} */}
-                    </p>
-                    <p>
-                      <strong>Project:</strong>
-                      {/* {projectReference} */}
-                    </p>
-                  </div>
-                </div>
+               <Milestones projectId={projectId}/>
               )}
               {toggleTabButton === "All task" && (
                 <div className="text-white">

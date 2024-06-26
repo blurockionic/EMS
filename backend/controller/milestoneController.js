@@ -71,8 +71,32 @@ export const getMilestonesByProjectId = async (req, res) => {
   try {
     const { projectId } = req.params;
     const milestones = await Milestone.find({ projectId });
-    res.json(milestones);
+    res.json( {success: true, message: "Milestones fetched successfully ", milestones});
   } catch (error) {
     res.status(500).json({ message: "Error fetching milestones", error });
+  }
+};
+
+
+// Controller function to update milestone status
+export const updateMilestoneStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const milestone = await Milestone.findByIdAndUpdate(
+      id,
+      { status }, // Update status field
+      { new: true } // Return updated document
+    );
+
+    if (!milestone) {
+      return res.status(404).json({ error: 'Milestone not found' });
+    }
+
+    res.json(milestone);
+  } catch (error) {
+    console.error('Error updating milestone status:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
