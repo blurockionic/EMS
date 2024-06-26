@@ -88,7 +88,7 @@ const Header = () => {
       type: "admin",
       tab: "employee",
       label: "Employee",
-      icon: GoTasklist,
+      icon: GoPeople,
       link: "./employee",
     },
     {
@@ -102,14 +102,14 @@ const Header = () => {
       type: "admin",
       tab: "adminreport",
       label: "Report",
-      icon: GoIssueTrackedBy,
+      icon: GoReport,
       link: "./adminreport",
     },
     {
       type: "admin",
       tab: "team",
       label: "Team",
-      icon: GoIssueTrackedBy,
+      icon: RiTeamLine,
       link: "./newTeam",
     },
     {
