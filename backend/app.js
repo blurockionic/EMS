@@ -25,6 +25,8 @@ import trainingRoutes from "./routes/TrainingRoutes.js";
 import teamRoute from "./routes/TeamRoutes.js"
 
 import issueRoutes from "./routes/IssueRoutes.js"
+
+import milestoneRoutes from "./routes/milestoneRoutes.js"
 export const app = express();
 
 //configure the dotenv file
@@ -59,6 +61,9 @@ app.use("/api/v1/employee", employeeRoutes);
 
 // route for project
 app.use("/api/v1/project", projectRoutes);
+
+// route for milestone
+app.use("/api/v1/milestone", milestoneRoutes);
 
 //route for task
 app.use("/api/v1/task", taskRoutes);

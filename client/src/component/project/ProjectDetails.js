@@ -8,6 +8,7 @@ import { MdAttractions } from "react-icons/md";
 import { RxPerson } from "react-icons/rx";
 import { GrOverview, GrTechnology } from "react-icons/gr";
 import { CgCalendarNext } from "react-icons/cg";
+import { Link } from "react-router-dom";
 
 const ProjectDetails = ({ projectId }) => {
   const dispatch = useDispatch();
@@ -21,6 +22,9 @@ const ProjectDetails = ({ projectId }) => {
     }
   }, [dispatch, projectId]);
 
+
+  
+
   const [activeTab, setActiveTab] = useState(0);
   const [editableProject, setEditableProject] = useState({});
   const [isEditing, setIsEditing] = useState({});
@@ -30,6 +34,7 @@ const ProjectDetails = ({ projectId }) => {
     console.log(tab);
     setToggleTabButton(tab);
   };
+
   useEffect(() => {
     if (specificProject) {
       setEditableProject(specificProject);
@@ -139,11 +144,11 @@ const ProjectDetails = ({ projectId }) => {
   return (
     <>
       <div>
-        <div className="max-w-[90%] mx-auto p-2">
+        <div className="max-w-[80%] mx-auto p-2">
           <div className="relative flex items-center justify-between h-16">
             <div className="flex space-x-4">
               <span
-                className={` px-3 py-2 rounded-md text-sm font-medium ${
+                className={` px-3 py-1.5 rounded-md text-sm font-medium ${
                   toggleTabButton === "Project details"
                     ? "bg-blue-600 text-white"
                     : ""
@@ -153,7 +158,7 @@ const ProjectDetails = ({ projectId }) => {
                 Project details
               </span>
               <span
-                className={` px-3 py-2 rounded-md text-sm font-medium ${
+                className={` px-3 py-1.5 rounded-md text-sm font-medium ${
                   toggleTabButton === "Milestone"
                     ? "bg-blue-600 text-white"
                     : ""
@@ -163,7 +168,7 @@ const ProjectDetails = ({ projectId }) => {
                 Milestone
               </span>
               <span
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                className={`px-3 py-1.5 rounded-md text-sm font-medium ${
                   toggleTabButton === "All task" ? "bg-blue-600 text-white" : ""
                 } hover:bg-gray-700 dark:hover:bg-gray-900 dark:hover:text-white`}
                 onClick={() => toggleTab("All task")}
@@ -171,13 +176,24 @@ const ProjectDetails = ({ projectId }) => {
                 All task
               </span>
               <span
-                className={` px-3 py-2 rounded-md text-sm font-medium ${
+                className={` px-3 py-1.5 rounded-md text-sm font-medium ${
                   toggleTabButton === "Other" ? "bg-blue-600 text-white" : ""
                 } hover:bg-gray-700 dark:hover:bg-gray-900 dark:hover:text-white`}
                 onClick={() => toggleTab("Other")}
               >
                 Other Details
               </span>
+            </div>
+
+            <div>
+              {toggleTabButton === "Milestone" && (
+                <Link  to={`../newMilestone/${projectId}`} 
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-4 rounded"
+
+                >
+                  New milestone
+                </Link> 
+              )}
             </div>
           </div>
 
@@ -188,7 +204,21 @@ const ProjectDetails = ({ projectId }) => {
               )}
 
               {toggleTabButton === "Milestone" && (
-                <div className="text-white"></div>
+                <div className="max-w-4xl mx-auto mt-8">
+                  <h1 className="text-3xl font-bold mb-4">Milestones</h1>
+                  <div className="bg-white rounded-lg shadow-md p-4 mb-4 dark:bg-slate-600">
+                    <h3 className="text-lg font-bold mb-2">{/* {title} */}</h3>
+                    <p className="text-gray-700 mb-2">{/* {description} */}</p>
+                    <p>
+                      <strong>Due Date:</strong>
+                      {/* {dueDate} */}
+                    </p>
+                    <p>
+                      <strong>Project:</strong>
+                      {/* {projectReference} */}
+                    </p>
+                  </div>
+                </div>
               )}
               {toggleTabButton === "All task" && (
                 <div className="text-white">
