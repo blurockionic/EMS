@@ -33,3 +33,25 @@
               className="w-full px-3  py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
             />
           </div>
+
+
+
+  {/* <div className="mt-4">
+              <label className="block font-semibold ">Add payment terms</label>
+              <input
+                type="text"
+                value={paymentTerms}
+                onChange={(e) => setPaymentTerms(e.target.value)}
+                className="w-full px-3  py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+              />
+            </div>
+
+            <div className="mt-4">
+              <label className="block font-semibold ">Add billing timing</label>
+              <input
+                type="text"
+                value={billingFrequency}
+                onChange={(e) => setBillingFrequency(e.target.value)}
+                className="w-full px-3  py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+              />
+            </div> */}

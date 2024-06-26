@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { server } from "../../../App";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../component/utilities-components/Loader";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers } from "../../../Redux/slices/allUserSlice";
+import Select from "react-select";
+
+import { AiOutlineMinusCircle } from "react-icons/ai";
 
 const NewProject = () => {
   const [name, setName] = useState("");
@@ -16,7 +21,7 @@ const NewProject = () => {
   const [projectScope, setProjectScope] = useState("");
   const [deliverables, setDeliverables] = useState([]);
   const [projectType, setProjectType] = useState("");
-  const [projectCategory, setProjectCategory] = useState("");
+
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [estimatedBudget, setEstimatedBudget] = useState("");
@@ -24,14 +29,91 @@ const NewProject = () => {
   const [billingFrequency, setBillingFrequency] = useState("");
   const [projectManager, setProjectManager] = useState("");
   const [teamMembers, setTeamMembers] = useState([]);
-  const [phases, setPhases] = useState([]);
-  const [toolsAndTechnologies, setToolsAndTechnologies] = useState([]);
-  const [requiredResources, setRequiredResources] = useState([]);
+  // const [phases, setPhases] = useState([]);
+  // const [toolsAndTechnologies, setToolsAndTechnologies] = useState([]);
+  // const [requiredResources, setRequiredResources] = useState([]);
+  const [newDeliverable, setNewDeliverable] = useState("");
 
-  const handleArrayInput = (setter) => (event) => {
-    const newValue = event.target.value;
-    const newArray = newValue.split(",").map((item) => item.trim());
-    setter(newArray);
+  const dispatch = useDispatch();
+  const { data: users, status, error } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchUsers());
+    }
+  }, [status, dispatch]);
+
+  console.log("all data", users);
+
+  const handleAddDeliverable = () => {
+    if (newDeliverable.trim() !== "") {
+      setDeliverables([...deliverables, newDeliverable.trim()]);
+      setNewDeliverable("");
+    }
+  };
+
+  const handleRemoveDeliverable = (index) => {
+    const updatedDeliverables = [...deliverables];
+    updatedDeliverables.splice(index, 1);
+    setDeliverables(updatedDeliverables);
+  };
+
+  const customStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      width: "100%",
+      padding: "6px 8px",
+      borderColor: state.isFocused ? "#30363D" : "#30363D",
+      backgroundColor: "#161B22",
+      color: "#ffffff",
+      fontSize: "1rem",
+      borderRadius: "4px",
+      "&:hover": {
+        borderColor: "#30363D",
+      },
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: "#161B22",
+      borderColor: "#30363D",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? "#30363D" : "#161B22",
+      "&:hover": {
+        backgroundColor: "#30363D",
+      },
+      color: "#ffffff",
+    }),
+    multiValue: (provided) => ({
+      ...provided,
+      backgroundColor: "#30363D",
+      color: "#ffffff",
+    }),
+    multiValueLabel: (provided) => ({
+      ...provided,
+      color: "#ffffff",
+    }),
+    multiValueRemove: (provided) => ({
+      ...provided,
+      color: "#ffffff",
+      "&:hover": {
+        backgroundColor: "#ffffff",
+        color: "#000000",
+      },
+    }),
+  };
+
+  const options = users
+    .filter((user) => user.role === "employee") // Adjust role based on your application logic
+    .map((teamMember) => ({
+      value: teamMember._id,
+      label: `${teamMember.firstName} ${teamMember.lastName}`,
+    }));
+
+  const handleTeamMembersChange = (selectedOptions) => {
+    const selectedIds = selectedOptions.map((option) => option.value);
+    setTeamMembers(selectedIds);
   };
 
   const handleSubmit = (e) => {
@@ -52,34 +134,39 @@ const NewProject = () => {
       projectScope,
       deliverables,
       projectType,
-      projectCategory,
       startDate,
       endDate,
       estimatedBudget,
-      paymentTerms,
-      billingFrequency,
+      // paymentTerms,
+      // billingFrequency,
       projectManager,
       teamMembers,
-      phases,
-      toolsAndTechnologies,
-      requiredResources,
+      // phases,
+      // toolsAndTechnologies,
+      // requiredResources,
     };
 
     // Here you can perform any logic with formData, like sending it to a server
     console.log("Form data:", formData);
 
-    // Example of using axios to send data to a server
-    // axios.post(`${server}/projects`, formData)
-    //   .then(response => {
-    //     // Handle successful response
-    //   })
-    //   .catch(error => {
-    //     // Handle error
-    //   });
+    const response = axios
+      .post(`${server}/project/new`, formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        // Handle successful response
+        console.log(response);
+      })
+      .catch((error) => {
+        // Handle error
+      });
   };
 
   return (
-    <div className="max-w-[80%] mx-auto p-2">
+    <div className="max-w-[80%] mx-auto p-2 border mt-2 rounded-md shadow-xl mb-8">
       <div className="flex flex-col ">
         <div className="flex flex-row space-x-8 ">
           <div className="w-[70%] mt-4">
@@ -111,7 +198,7 @@ const NewProject = () => {
 
             <div className="mt-4">
               <label className="block  font-semibold mb-1">
-                Add a description project objective
+                Add a project objective
               </label>
               <div className="border p-2 rounded-md">
                 <textarea
@@ -125,7 +212,7 @@ const NewProject = () => {
 
             <div className="mt-4">
               <label className="block  font-semibold mb-1">
-                Add a description project scope
+                Add a project scope
               </label>
               <div className="border p-2 rounded-md">
                 <textarea
@@ -138,45 +225,48 @@ const NewProject = () => {
             </div>
 
             <div className="mt-4">
-              <label className="block    font-semibold ">
+              <label className="block font-semibold">
                 Add deliverables list of items
               </label>
-              <textarea
-                value={deliverables.join("\n")}
-                onChange={handleArrayInput(setDeliverables)}
-                rows={deliverables.length + 1}
-                className="w-full px-3   py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
-              />
-            </div>
-
-            <div className="mt-4">
-              <label className="block font-semibold ">Estimated budget</label>
-              <input
-                type="number"
-                value={estimatedBudget}
-                onChange={(e) => setEstimatedBudget(e.target.value)}
-                className="w-full px-3   py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
-              />
-            </div>
-
-            <div className="mt-4">
-              <label className="block font-semibold ">Add payment terms</label>
-              <input
-                type="text"
-                value={paymentTerms}
-                onChange={(e) => setPaymentTerms(e.target.value)}
-                className="w-full px-3  py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
-              />
-            </div>
-
-            <div className="mt-4">
-              <label className="block font-semibold ">Add billing timing</label>
-              <input
-                type="text"
-                value={billingFrequency}
-                onChange={(e) => setBillingFrequency(e.target.value)}
-                className="w-full px-3  py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
-              />
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  value={newDeliverable}
+                  onChange={(e) => setNewDeliverable(e.target.value)}
+                  list="deliverablesList"
+                  className="w-full px-3 py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded-l dark:bg-[#161B22] dark:text-slate-400"
+                  placeholder="Enter or select deliverable"
+                />
+                <datalist id="deliverablesList">
+                  {deliverables.map((deliverable, index) => (
+                    <option key={index} value={deliverable} />
+                  ))}
+                </datalist>
+                <button
+                  type="button"
+                  onClick={handleAddDeliverable}
+                  className="flex items-center font-semibold bg-slate-800 dark:bg-gray-600 text-white px-4 py-1.5 rounded-md shadow-inner hover:bg-gray-600 dark:hover:bg-gray-500 cursor-pointer mx-1"
+                >
+                  Add
+                </button>
+              </div>
+              <ul className="mt-2">
+                {deliverables.map((deliverable, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center justify-between py-1 bg-gray-100 dark:bg-[#2D333B] px-3 rounded mb-1"
+                  >
+                    <span className="mr-2 text-lg">{deliverable}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveDeliverable(index)}
+                      className="text-red-600 hover:text-red-700 focus:outline-none"
+                    >
+                      <AiOutlineMinusCircle size={20} />{" "}
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
@@ -223,48 +313,38 @@ const NewProject = () => {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 required
-                className="w-full px-3   py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+                className="w-full px-3 py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
               />
             </div>
 
             <div className="mt-4">
-              <label className="block font-semibold ">Project type</label>
+              <label className="block font-semibold">Project type</label>
               <select
                 value={projectType}
                 onChange={(e) => setProjectType(e.target.value)}
-                className="w-full px-3   py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+                className="w-full px-3 py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
               >
                 <option value="">Select</option>
-                <option value="Type1">Type 1</option>
-                <option value="Type2">Type 2</option>
+                <option value="Web Development">Web Development</option>
+                <option value="Mobile App Development">
+                  Mobile App Development
+                </option>
+                <option value="System Software">System Software</option>
               </select>
             </div>
 
             <div className="mt-4">
-              <label className="block font-semibold ">Project Category:</label>
-              <select
-                value={projectCategory}
-                onChange={(e) => setProjectCategory(e.target.value)}
-                className="w-full px-3   py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
-              >
-                <option value="">Select</option>
-                <option value="Category1">Category 1</option>
-                <option value="Category2">Category 2</option>
-              </select>
-            </div>
-
-            <div className="mt-4">
-              <label className="block  font-semibold ">Start Date:</label>
+              <label className="block  font-semibold ">Start date</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3   py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+                className="w-full px-3 py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
               />
             </div>
 
             <div className="mt-4">
-              <label className="block font-semibold ">End Date:</label>
+              <label className="block font-semibold ">End date</label>
               <input
                 type="date"
                 value={endDate}
@@ -274,25 +354,43 @@ const NewProject = () => {
             </div>
 
             <div className="mt-4">
-              <label className="block    font-semibold ">
-                Project Manager:
-              </label>
-              <input
-                type="text"
+              <label className="block font-semibold">Project manager</label>
+              <select
                 value={projectManager}
                 onChange={(e) => setProjectManager(e.target.value)}
-                className="w-full px-3   py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+                className="w-full px-3 py-1.5 pl-2 border dark:border-[#30363D] text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
+              >
+                <option value="">Select Project Manager</option>
+                {users
+                  .filter((user) => user.role === "manager")
+                  .map((manager) => (
+                    <option key={manager._id} value={manager._id}>
+                      {manager.firstName} {manager.lastName}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            <div className="mt-4">
+              <label className="block font-semibold">Team members</label>
+              <Select
+                options={options}
+                value={options.filter((option) =>
+                  teamMembers.includes(option.value)
+                )}
+                onChange={handleTeamMembersChange}
+                isMulti
+                placeholder="Select Team Members"
+                styles={customStyles}
               />
             </div>
 
             <div className="mt-4">
-              <label className="block    font-semibold ">
-                Team Members (comma-separated):
-              </label>
+              <label className="block font-semibold ">Estimated budget</label>
               <input
-                type="text"
-                value={teamMembers.join(", ")}
-                onChange={handleArrayInput(setTeamMembers)}
+                type="number"
+                value={estimatedBudget}
+                onChange={(e) => setEstimatedBudget(e.target.value)}
                 className="w-full px-3   py-1.5 pl-2 border dark:border-[#30363D]  text-lg font-normal rounded dark:bg-[#161B22] dark:text-slate-400"
               />
             </div>
@@ -301,7 +399,7 @@ const NewProject = () => {
         <div className="mt-4 flex justify-center">
           <button
             onClick={handleSubmit}
-            className="bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="flex items-center font-semibold bg-slate-800 dark:bg-gray-600 text-white px-4 py-1.5 rounded-md shadow-inner hover:bg-gray-600 dark:hover:bg-gray-500 cursor-pointer mx-1"
           >
             Submit
           </button>
