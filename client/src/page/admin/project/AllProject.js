@@ -61,7 +61,7 @@ const AllProject = () => {
             </div>
           </nav>
           <>
-            <div className="w-[80%] mx-auto p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-12 ">
+            <div className="w-[80%] mx-auto p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-12">
               {allProject.map((project) => (
                 <ProjectCard key={project._id} project={project} />
               ))}
