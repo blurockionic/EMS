@@ -170,11 +170,11 @@ const Header = () => {
     },
   ];
 
-  const filteredTabs = tabData.filter((tab) => tab.type === profile.role);
+  const filteredTabs = tabData.filter((tab) => tab.type === profile?.role);
 
   return (
     <>
-      {profile.role && (
+      {profile?.role && (
         <div className="w-full border-b">
           <div className="w-full flex flex-row justify-between items-end px-4 h-16">
             <div className="flex w-full h-full items-end relative space-x-1">

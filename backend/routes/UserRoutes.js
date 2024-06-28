@@ -1,12 +1,13 @@
 import express from "express"
 import { allUsers, deleteUserProfile, getMyProfile, login, logout, registration, updateUserDetails,  } from "../controller/User.js"
 import { isAuthenticated } from "../middleware/auth.js"
+import {upload} from "../middleware/multer.middleware.js"
 
 const router  =  express.Router()
 
 
 //routes for registration
-router.post("/signup", registration)
+router.post("/signup",upload.single("profilePicture"), registration)
 
 //routes for login
 router.post("/login", login)

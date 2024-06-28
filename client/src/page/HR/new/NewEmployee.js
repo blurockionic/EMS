@@ -22,7 +22,7 @@ const NewEmployee = () => {
     phoneNumber: "",
     employeeId: "",
     onboardingDate: "",
-    profilePicture: null,
+    profilePicture: selectedFile,
   });
 
   const handleFileChange = (event) => {
@@ -68,14 +68,28 @@ const NewEmployee = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async () => {
-    // Include profilePicture in the form data for logging
-    const formDataToSubmit = { ...formData, profilePicture: selectedFile };
-    console.log("Form Data:", formDataToSubmit);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    console.log("Form data before API call:", formData);
 
-    // Perform further actions such as API calls, form submission, etc.
+
+    try {
+      const response = await axios.post(
+        `${server}/users/signup`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log(response.data.message);
+    } catch (error) {
+      console.log(error.response.data.message);
+    }
   };
-
   return (
     <div className="max-w-[80%] mx-auto p-8 shadow-lg rounded-lg">
       {/* <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
