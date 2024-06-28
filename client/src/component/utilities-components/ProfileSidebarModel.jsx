@@ -54,9 +54,9 @@ const ProfileSidebarModel = ({ active, setActive }) => {
             <div className="w-full flex justify-between px-4 items-center py-5 border-b border-gray-200 dark:border-gray-700">
               <div className="flex flex-col">
                 <span className="text-lg font-bold">
-                  {profile.firstName} {profile.lastName}
+                  {profile?.firstName} {profile?.lastName}
                 </span>
-                <span> {profile.role}</span>
+                <span> {profile?.role}</span>
               </div>
               <button
                 className="self-end p-2 hover:text-red-600"

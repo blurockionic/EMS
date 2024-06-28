@@ -116,3 +116,126 @@
         </div>
       </div>
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //new employee
+export const newEmployee = async (req, res) => {
+  // Fetch all the details from the request body
+  const {
+    firstName,
+    lastName,
+  gender,
+    email,
+    password,
+    department,
+    role,
+    position,
+    currentAddress,
+    permanentAddress,
+    bio,
+    nationality,
+    dateOfBirth,
+    phoneNumber,
+    onboardingDate,
+    profilePicture 
+  } = req.body;
+
+  try {
+    // Validation
+    if (
+      !employeeName ||
+      !employeeEmail ||
+      !employeePhoneNumber ||
+      !password ||
+      !designation ||
+      !designationType
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required!",
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).send("No file uploaded");
+    }
+
+    // Encrypt password
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    // Check if the email already exists
+    const isEmailExist = await User.findOne({ email: employeeEmail });
+    if (isEmailExist) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists",
+      });
+    }
+
+
+    //convert the designation type into lowercase character
+    const lowercaseDesignationType = designationType.toLowerCase();
+
+
+    
+      // Create an entry in the employee collection
+      const employee = await Employee.create({
+        employeeName,
+        employeeEmail,
+        password: hashPassword,
+        gender,
+        employeePhoneNumber,
+        dateOfBirth,
+        address,
+        postOffice,
+        policeStation,
+        city,
+        state,
+        pinNumber,
+        designation,
+        designationType: lowercaseDesignationType,
+        department,
+      });
+
+      
+      // Create a user entry for authentication
+      const user = await User.create({
+        employeeId: employee._id,
+        name: employeeName,
+        email: employeeEmail,
+        password: hashPassword,
+        designation,
+        designationType : lowercaseDesignationType,
+      });
+
+
+      return res.status(200).json({
+        success: true,
+        user,
+        employee,
+        message: "Account created successfully!",
+      });
+    
+    
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Please check all the details",
+    });
+  }
+};

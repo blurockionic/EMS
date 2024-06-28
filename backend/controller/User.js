@@ -2,6 +2,7 @@ import { User } from "../model/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { sendCookie } from "../utilities/features.js";
+import {uploadOnCloudinary } from "../utilities/cloudinary.js"
 
 // register
 export const registration = async (req, res) => {
@@ -17,7 +18,7 @@ export const registration = async (req, res) => {
 
     return newEmployeeId;
   };
-
+console.log("req me kya aya ",req.body);
   const {
     firstName,
     lastName,
@@ -33,6 +34,8 @@ export const registration = async (req, res) => {
     nationality,
     dateOfBirth,
     phoneNumber,
+    onboardingDate,
+    
   } = req.body;
 
   try {
@@ -63,7 +66,18 @@ export const registration = async (req, res) => {
       dateOfBirth,
       phoneNumber,
       employeeId,
+      onboardingDate,
     });
+
+    if (req.file) {
+      // Upload profile picture to Cloudinary
+      const uploadResult = await uploadOnCloudinary(req.file.path);
+      if (uploadResult) {
+        user.profilePicture = uploadResult.url;
+      }
+    }
+
+
 
     const savedUser = await user.save();
     sendCookie(user, res, `Account created successfully!`, 201);
@@ -73,7 +87,7 @@ export const registration = async (req, res) => {
     console.error(`Error registering user: ${err.message}`);
     return res.status(500).json({
       success: false,
-      message: error,
+      message: "internal server error",
     });
   }
 };
