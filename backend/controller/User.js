@@ -33,6 +33,7 @@ export const registration = async (req, res) => {
     nationality,
     dateOfBirth,
     phoneNumber,
+    onboardingDate,
   } = req.body;
 
   try {
@@ -63,6 +64,7 @@ export const registration = async (req, res) => {
       dateOfBirth,
       phoneNumber,
       employeeId,
+      onboardingDate,
     });
 
     const savedUser = await user.save();
