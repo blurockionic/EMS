@@ -75,6 +75,8 @@ console.log("req me kya aya ",req.body);
       if (uploadResult) {
         user.profilePicture = uploadResult.url;
       }
+    } else {
+      console.log("No file recieved");
     }
 
 

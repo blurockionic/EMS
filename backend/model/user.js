@@ -52,6 +52,7 @@ const userSchema = new mongoose.Schema(
     phoneNumber: { type: String },
     employeeId: { type: String },
     onboardingDate: { type: Date, default: Date.now },
+    profilePicture: { type: String },  // Add this line to store profile picture URL
   },
   {
     timestamps: true,
