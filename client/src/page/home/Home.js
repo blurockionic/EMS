@@ -54,7 +54,17 @@ const Home = () => {
         <div className="flex items-center">
           <ThemeToggle />
           <button className="" onClick={() => setProfileSidebar(true)}>
-            <CgProfile className="text-2xl" />
+            {profile?.profilePicture ? (
+              <div className="flex justify-center">
+                <img
+                  src={profile?.profilePicture}
+                  alt={`${profile?.firstName}'s profile`}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              </div>
+            ) : (
+              <CgProfile className="text-2xl" />
+            )}
           </button>
         </div>
       </nav>
@@ -78,17 +88,26 @@ const Home = () => {
             </div>
             <ul>
               <li className="mb-4">
-                <a href="#" className="hover:bg-gray-200 dark:hover:bg-gray-700">
+                <a
+                  href="#"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700"
+                >
                   Dashboard
                 </a>
               </li>
               <li className="mb-4">
-                <a href="#" className=" hover:bg-gray-200 dark:hover:bg-gray-700">
+                <a
+                  href="#"
+                  className=" hover:bg-gray-200 dark:hover:bg-gray-700"
+                >
                   Profile
                 </a>
               </li>
               <li className="mb-4">
-                <a href="#" className=" hover:bg-gray-200 dark:hover:bg-gray-700">
+                <a
+                  href="#"
+                  className=" hover:bg-gray-200 dark:hover:bg-gray-700"
+                >
                   Settings
                 </a>
               </li>

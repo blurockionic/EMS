@@ -28,39 +28,7 @@ const NewEmployee = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
-
-    const imagename = file.name;
-    const reader = new FileReader();
-
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      const img = new Image();
-      img.src = reader.result;
-      img.onload = () => {
-        const maxSize = Math.max(img.width, img.height);
-        const canvas = document.createElement("canvas");
-        canvas.width = maxSize;
-        canvas.height = maxSize;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(
-          img,
-          (maxSize - img.width) / 2,
-          (maxSize - img.height) / 2
-        );
-        canvas.toBlob(
-          (blob) => {
-            const newFile = new File([blob], imagename, {
-              type: "image/png",
-              lastModified: Date.now(),
-            });
-            setSelectedFile(newFile);
-            setFormData({ ...formData, profilePicture: newFile });
-          },
-          "image/jpeg",
-          0.8
-        );
-      };
-    };
+    setFormData({ ...formData, profilePicture: file });
   };
 
   const handleChange = (event) => {
@@ -70,13 +38,22 @@ const NewEmployee = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("Form data before API call:", formData);
+    const data = new FormData();
+    Object.keys(formData).forEach((key) => {
+      data.append(key, formData[key]);
+    });
 
+  // Log the FormData entries
+  for (let pair of data.entries()) {
+    console.log(pair[0] + ': ' + pair[1]);
+  }
+
+// 
 
     try {
       const response = await axios.post(
         `${server}/users/signup`,
-        formData,
+        data,
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -90,6 +67,7 @@ const NewEmployee = () => {
       console.log(error.response.data.message);
     }
   };
+
   return (
     <div className="max-w-[80%] mx-auto p-8 shadow-lg rounded-lg">
       {/* <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">

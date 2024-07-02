@@ -10,7 +10,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProfile } from "../../Redux/slices/profileSlice";
 import { FaRegBuilding } from "react-icons/fa";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { server } from "../../App";
 import axios from "axios";
 
@@ -69,10 +69,11 @@ const ProfileSidebarModel = ({ active, setActive }) => {
             <ul className="w-full mt-4">
               <div>
                 <li className="mb-4 w-full">
-                  <Link to={"./myprofile"}>
-                    <span className="flex items-center px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700">
-                      <AiOutlineUser className="mr-3" /> Your Profile
-                    </span>
+                  <Link
+                    to={"./myprofile"}
+                    className={`flex items-center px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 `}
+                  >
+                    <AiOutlineUser className="mr-3" /> Your Profile
                   </Link>
                 </li>
                 <li className="mb-4 w-full">
@@ -84,10 +85,11 @@ const ProfileSidebarModel = ({ active, setActive }) => {
                   </a>
                 </li>
                 <li className="mb-4 w-full">
-                  <Link to={"./myorganization"}>
-                    <span className="flex items-center px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700">
-                      <FaRegBuilding className="mr-3" /> Your Organization
-                    </span>
+                  <Link
+                    to={"./myorganization"}
+                    className={`flex items-center px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 `}
+                  >
+                    <FaRegBuilding className="mr-3" /> Your Organization
                   </Link>
                 </li>
               </div>

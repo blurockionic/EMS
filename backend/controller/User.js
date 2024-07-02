@@ -2,7 +2,7 @@ import { User } from "../model/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { sendCookie } from "../utilities/features.js";
-import {uploadOnCloudinary } from "../utilities/cloudinary.js"
+import { uploadOnCloudinary } from "../utilities/cloudinary.js";
 
 // register
 export const registration = async (req, res) => {
@@ -18,7 +18,7 @@ export const registration = async (req, res) => {
 
     return newEmployeeId;
   };
-console.log("req me kya aya ",req.body);
+  console.log("req me kya aya ", req.body);
   const {
     firstName,
     lastName,
@@ -35,7 +35,6 @@ console.log("req me kya aya ",req.body);
     dateOfBirth,
     phoneNumber,
     onboardingDate,
-    
   } = req.body;
 
   try {
@@ -75,9 +74,9 @@ console.log("req me kya aya ",req.body);
       if (uploadResult) {
         user.profilePicture = uploadResult.url;
       }
+    } else {
+      console.log("No file recieved");
     }
-
-
 
     const savedUser = await user.save();
     sendCookie(user, res, `Account created successfully!`, 201);
@@ -186,10 +185,7 @@ export const allUsers = async (req, res) => {
     // const data = await User.find({});
 
     // Get all users
-    const data = await User.find(
-      {},
-      "firstName lastName email department role"
-    );
+    const data = await User.find({});
 
     // Validation
     if (!data || data.length === 0) {
