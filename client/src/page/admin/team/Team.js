@@ -36,7 +36,6 @@ const Team = () => {
     error: projectError,
   } = projectState;
 
-  const [allProjects] = useState(allProject);
   const [viewMode, setViewMode] = useState("gallery");
   const [activeTeamTab, setActiveTeamTab] = useState("Our Teams");
   const [selectedMembers, setSelectedMembers] = useState([]);
@@ -65,10 +64,19 @@ const Team = () => {
     dispatch(fetchProjects());
   }, [dispatch]);
 
+  console.log("all project me kuchh data h ki nii ", allProject);
+
+  const projectOptions = allProject.map((project) => ({
+    value: project._id,
+    label: project.projectName,
+  }));
+
+  // use effect dispatch for fetch user profile(admin)
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
 
+  // use effect dispatch for get all users
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchUsers());
@@ -155,7 +163,6 @@ const Team = () => {
         selectedManager,
         selectedProject,
       };
-     
 
       const resultAction = dispatch(updateTeam({ id, teamData }));
       if (resultAction.payload) {
@@ -195,432 +202,256 @@ const Team = () => {
     // setDropdown(true);
   };
 
-  console.log("filter team k andar ky data h ", filteredUpdateTeamId);
+  console.log("filter team k andar ky data h ", allProject);
 
   return (
     <>
-      {error ? (
-        <ErrorPage />
-      ) : (
-        <div>
-          <div className="flex flex-row justify-between border-b">
-            <div className="flex flex-row">
-              <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
-                <button
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    activeTeamTab === "Our Teams"
-                      ? "bg-gray-900 text-white"
-                      : ""
-                  } hover:bg-gray-700 dark:hover:bg-gray-900 dark:hover:text-white cursor-pointer`}
-                  onClick={() => handleTabClick("Our Teams")}
-                >
-                  Our Team
-                </button>
-                <button
-                  className={`p-2 rounded-md text-sm font-medium ${
-                    activeTeamTab === "Activity" ? "bg-gray-900 text-white" : ""
-                  } hover:bg-gray-700 dark:hover:bg-gray-900 dark:hover:text-white cursor-pointer`}
-                  onClick={() => handleTabClick("Activity")}
-                >
-                  Activity
-                </button>
-              </div>
-            </div>
-            <div className="flex flex-row">
-              <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
-                <button
-                  className={`tooltip-class p-2 rounded ${
-                    viewMode === "table"
-                      ? "bg-slate-900 dark:bg-gray-800"
-                      : "bg-gray-500 dark:bg-gray-700"
-                  }`}
-                  onClick={() => setViewMode("table")}
-                  data-tip="Switch to Table View"
-                >
-                  <LuLayoutList className="text-white dark:text-gray-300" />
-                  <Tooltip anchorSelect=".tooltip-class" place="bottom">
-                    Table View
-                  </Tooltip>{" "}
-                </button>
-                <button
-                  className={`tooltip-2-class p-2 rounded ${
-                    viewMode === "gallery"
-                      ? "bg-slate-900 dark:bg-gray-800"
-                      : "bg-gray-500 dark:bg-gray-700"
-                  }`}
-                  onClick={() => setViewMode("gallery")}
-                  data-tip="Switch to Gallery View"
-                >
-                  <LuGalleryVerticalEnd className="text-white dark:text-gray-300" />
-                  <Tooltip anchorSelect=".tooltip-2-class" place="bottom">
-                    Gallery View
-                  </Tooltip>{" "}
-                </button>
-                <button
-                  className={`tooltip-3-class p-2 rounded flex ${
-                    activeTeamTab === "Create Team"
-                      ? "dark:bg-[#21262C] font-semibold bg-slate-900 text-blue-500"
-                      : "bg-gray-500 dark:hover:bg-[#21262C] hover:bg-slate-400 dark:bg-gray-700"
-                  }`}
-                  onClick={() => handleTabClick("Create Team")}
-                >
-                  <span>
-                    <IoMdAdd className="text-xl text-white dark:text-gray-300" />
-                  </span>
-                  <span>
-                    <AiOutlineTeam className="text-xl text-white dark:text-gray-300" />
-                  </span>
-                  <Tooltip anchorSelect=".tooltip-3-class" place="bottom">
-                    add new team
-                  </Tooltip>{" "}
-                </button>
-              </div>
+      <div>
+        <div className="flex flex-row justify-between border-b">
+          <div className="flex flex-row">
+            <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
+              <button
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  activeTeamTab === "Our Teams" ? "bg-gray-900 text-white" : ""
+                } hover:bg-gray-700 dark:hover:bg-gray-900 dark:hover:text-white cursor-pointer`}
+                onClick={() => handleTabClick("Our Teams")}
+              >
+                Our Team
+              </button>
+              <button
+                className={`p-2 rounded-md text-sm font-medium ${
+                  activeTeamTab === "Activity" ? "bg-gray-900 text-white" : ""
+                } hover:bg-gray-700 dark:hover:bg-gray-900 dark:hover:text-white cursor-pointer`}
+                onClick={() => handleTabClick("Activity")}
+              >
+                Activity
+              </button>
             </div>
           </div>
-          ;{/* Render based on active tab */}
-          {/* All teams  */}
-          {activeTeamTab === "Our Teams" && (
-            <>
-              {viewMode === "gallery" && (
-                <div className="grid grid-cols-3 flex-wrap gap-12 p-4 mx-auto">
-                  {teams?.map((team) => (
-                    <div key={team?._id}>
-                      <div className="max-w-sm mx-auto rounded overflow-hidden shadow-lg dark:bg-slate-950">
-                        <div className="dark:bg-slate-950 p-6 mb-6">
-                          <div className="flex items-center">
-                            <img
-                              className="w-20 h-20 rounded-full mr-6"
-                              src={
-                                team?.profilePicture ??
-                                "https://via.placeholder.com/150"
-                              }
-                              alt="Profile"
-                            />
-                            <div>
-                              <h2 className="text-xl font-bold">
-                                <span className="capitalize">
-                                  {team?.teamName}
-                                </span>
-                              </h2>
-                              <p>{team?.position ?? ""}</p>
-                            </div>
-                          </div>
-                          <div className="flex mt-2 p-3">
-                            <p className="text-blue-500 text-base">
-                              {team?.email}
-                            </p>
-                          </div>
-                          <div className="flex justify-between">
-                            <div className="flex space-x-2">
-                              <span>
-                                {/* <TbBuildingEstate className="text-2xl" /> */}
+          <div className="flex flex-row">
+            <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
+              <button
+                className={`tooltip-class p-2 rounded ${
+                  viewMode === "table"
+                    ? "bg-slate-900 dark:bg-gray-800"
+                    : "bg-gray-500 dark:bg-gray-700"
+                }`}
+                onClick={() => setViewMode("table")}
+                data-tip="Switch to Table View"
+              >
+                <LuLayoutList className="text-white dark:text-gray-300" />
+                <Tooltip anchorSelect=".tooltip-class" place="bottom">
+                  Table View
+                </Tooltip>{" "}
+              </button>
+              <button
+                className={`tooltip-2-class p-2 rounded ${
+                  viewMode === "gallery"
+                    ? "bg-slate-900 dark:bg-gray-800"
+                    : "bg-gray-500 dark:bg-gray-700"
+                }`}
+                onClick={() => setViewMode("gallery")}
+                data-tip="Switch to Gallery View"
+              >
+                <LuGalleryVerticalEnd className="text-white dark:text-gray-300" />
+                <Tooltip anchorSelect=".tooltip-2-class" place="bottom">
+                  Gallery View
+                </Tooltip>{" "}
+              </button>
+              <button
+                className={`tooltip-3-class p-2 rounded flex ${
+                  activeTeamTab === "Create Team"
+                    ? "dark:bg-[#21262C] font-semibold bg-slate-900 text-blue-500"
+                    : "bg-gray-500 dark:hover:bg-[#21262C] hover:bg-slate-400 dark:bg-gray-700"
+                }`}
+                onClick={() => handleTabClick("Create Team")}
+              >
+                <span>
+                  <IoMdAdd className="text-xl text-white dark:text-gray-300" />
+                </span>
+                <span>
+                  <AiOutlineTeam className="text-xl text-white dark:text-gray-300" />
+                </span>
+                <Tooltip anchorSelect=".tooltip-3-class" place="bottom">
+                  add new team
+                </Tooltip>{" "}
+              </button>
+            </div>
+          </div>
+        </div>
+        ;{/* Render based on active tab */}
+        {/* All teams  */}
+        {activeTeamTab === "Our Teams" && (
+          <>
+            {viewMode === "gallery" && (
+              <div className="grid grid-cols-3 flex-wrap gap-12 p-4 mx-auto">
+                {teams?.map((team) => (
+                  <div key={team?._id}>
+                    <div className="max-w-sm mx-auto rounded overflow-hidden shadow-lg dark:bg-slate-950">
+                      <div className="dark:bg-slate-950 p-6 mb-6">
+                        <div className="flex items-center">
+                          <img
+                            className="w-20 h-20 rounded-full mr-6"
+                            src={
+                              team?.profilePicture ??
+                              "https://via.placeholder.com/150"
+                            }
+                            alt="Profile"
+                          />
+                          <div>
+                            <h2 className="text-xl font-bold">
+                              <span className="capitalize">
+                                {team?.teamName}
                               </span>
-                              <p>{team?.department}</p>
-                            </div>
-                            <div className="flex space-x-2">
-                              <span>
-                                {/* <GoLocation className="text-xl" /> */}
-                              </span>
-                              <p className="capitalize">
-                                {team?.currentAddress}
-                              </p>
-                            </div>
+                            </h2>
+                            <p>{team?.position ?? ""}</p>
+                          </div>
+                        </div>
+                        <div className="flex mt-2 p-3">
+                          <p className="text-blue-500 text-base">
+                            {team?.email}
+                          </p>
+                        </div>
+                        <div className="flex justify-between">
+                          <div className="flex space-x-2">
+                            <span>
+                              {/* <TbBuildingEstate className="text-2xl" /> */}
+                            </span>
+                            <p>{team?.department}</p>
+                          </div>
+                          <div className="flex space-x-2">
+                            <span>
+                              {/* <GoLocation className="text-xl" /> */}
+                            </span>
+                            <p className="capitalize">{team?.currentAddress}</p>
                           </div>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-              {viewMode === "table" && (
-                <div className="w-full">
-                  <table className="min-w-full table-auto">
-                    <thead className="bg-gray-100 dark:bg-gray-700">
-                      <tr>
-                        <th className="py-2 px-4 border-b">S.No</th>
-                        <th className="py-2 px-4 border-b">Team Name</th>
-                        <th className="py-2 px-4 border-b">Team Manager</th>
-                        <th className="py-2 px-4 border-b">Project</th>
-                        <th className="py-2 px-4 border-b">Members</th>
-                        <th className="py-2 px-4 border-b">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {teams?.map((team, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="py-2 border-r-2 text-center font-bold">
-                            {index + 1}
-                          </td>
-                          <td className="border-r-2 text-center">
-                            {team?.teamName}
-                          </td>
-                          <td className="py-2 border-r-2 text-center">
-                            {team.selectedManager?.employeeName === ""
-                              ? "empty"
-                              : team.selectedManager?.employeeName}
-                          </td>
-                          <td className="py-2 border-r-2 text-center">
-                            {team.selectedProject?.projectName}
-                          </td>
-                          <td className="py-2 mx-auto flex justify-center">
-                            {team.selectedMembers.map((member, memberIndex) => (
-                              <div
-                                className="px-3 rounded-sm mr-2 font-semibold border-black"
-                                key={memberIndex}
-                              >
-                                {member.employeeName}
-                              </div>
-                            ))}
-                          </td>
-                          <td className="relative border-2">
-                            <div className="flex flex-row justify-center">
-                              <BsThreeDotsVertical
-                                size={35}
-                                className="bg-fcfbfe p-2 rounded-full cursor-pointer"
-                                onClick={() => handleOnthreeDot(team._id)}
-                              />
+                  </div>
+                ))}
+              </div>
+            )}
+            {viewMode === "table" && (
+              <div className="w-full">
+                <table className="min-w-full table-auto">
+                  <thead className="bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                      <th className="py-2 px-4 border-b">S.No</th>
+                      <th className="py-2 px-4 border-b">Team Name</th>
+                      <th className="py-2 px-4 border-b">Team Manager</th>
+                      <th className="py-2 px-4 border-b">Project</th>
+                      <th className="py-2 px-4 border-b">Members</th>
+                      <th className="py-2 px-4 border-b">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teams?.map((team, index) => (
+                      <tr key={index} className="border-b">
+                        <td className="py-2 border-r-2 text-center font-bold">
+                          {index + 1}
+                        </td>
+                        <td className="border-r-2 text-center">
+                          {team?.teamName}
+                        </td>
+                        <td className="py-2 border-r-2 text-center">
+                          {team.selectedManager?.employeeName === ""
+                            ? "empty"
+                            : team.selectedManager?.employeeName}
+                        </td>
+                        <td className="py-2 border-r-2 text-center">
+                          {team.selectedProject?.projectName}
+                        </td>
+                        <td className="py-2 mx-auto flex justify-center">
+                          {team.selectedMembers.map((member, memberIndex) => (
+                            <div
+                              className="px-3 rounded-sm mr-2 font-semibold border-black"
+                              key={memberIndex}
+                            >
+                              {member.employeeName}
                             </div>
-                            {openDropdownId === team._id && (
-                              <div className="absolute z-10 top-5 p-1 bg-slate-100 rounded shadow-md cursor-pointer">
-                                <ul>
-                                  <li
-                                    className="py-1 px-2 font-semibold rounded cursor-pointer hover:bg-slate-500"
-                                    onClick={() => handleUpdatebtn(team._id)}
-                                  >
-                                    Edit
-                                  </li>
-                                  <li
-                                    className="py-1 px-2 font-semibold rounded cursor-pointer hover:bg-slate-500"
-                                    onClick={() => handleDeletebtn(team._id)}
-                                  >
-                                    Delete
-                                  </li>
-                                  <li
-                                    className="py-1 px-2 font-semibold rounded cursor-pointer hover:bg-slate-500"
-                                    // onClick={() => handleDeletebtn(team._id)}
-                                  >
-                                    Details
-                                  </li>
-                                </ul>
-                              </div>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </>
-          )}
-          {/* Activity Tab */}
-          {activeTeamTab === "Activity" && (
-            <div className="p-4">
-              <div className="flex items-center justify-between border-b pb-2">
-                <h1 className="text-2xl font-semibold">Team Activity</h1>
+                          ))}
+                        </td>
+                        <td className="relative border-2">
+                          <div className="flex flex-row justify-center">
+                            <BsThreeDotsVertical
+                              size={35}
+                              className="bg-fcfbfe p-2 rounded-full cursor-pointer"
+                              onClick={() => handleOnthreeDot(team._id)}
+                            />
+                          </div>
+                          {openDropdownId === team._id && (
+                            <div className="absolute z-10 top-5 p-1 bg-slate-100 rounded shadow-md cursor-pointer">
+                              <ul>
+                                <li
+                                  className="py-1 px-2 font-semibold rounded cursor-pointer hover:bg-slate-500"
+                                  onClick={() => handleUpdatebtn(team._id)}
+                                >
+                                  Edit
+                                </li>
+                                <li
+                                  className="py-1 px-2 font-semibold rounded cursor-pointer hover:bg-slate-500"
+                                  onClick={() => handleDeletebtn(team._id)}
+                                >
+                                  Delete
+                                </li>
+                                <li
+                                  className="py-1 px-2 font-semibold rounded cursor-pointer hover:bg-slate-500"
+                                  // onClick={() => handleDeletebtn(team._id)}
+                                >
+                                  Details
+                                </li>
+                              </ul>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              <div className="mt-8">
-                <ul className="border-t border-gray-200 divide-y divide-gray-200">
-                  {/* Render Activity */}
-                </ul>
-              </div>
+            )}
+          </>
+        )}
+        {/* Activity Tab */}
+        {activeTeamTab === "Activity" && (
+          <div className="p-4">
+            <div className="flex items-center justify-between border-b pb-2">
+              <h1 className="text-2xl font-semibold">Team Activity</h1>
             </div>
-          )}
-          {/* Create Team Tab */}
-          {activeTeamTab === "Create Team" && (
-            <CreateNewTeam
-              allManagers={allManagers}
-              allMembers={allMembers}
-              profile={profile}
-              loading={loading}
-              setLoading={setLoading}
-            />
-          )}
-          {/* Modals */}
-          {/* Update Team Modal */}
-          {showUpdateTeamModel && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-              <div className="relative w-auto my-6 mx-auto max-w-3xl">
-                <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                  <form
-                    onSubmit={(e) =>
-                      handleUpdateSubmit(e, filteredUpdateTeamId)
-                    }
-                  >
-                    <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
-                      <h3 className="text-2xl font-semibold">
-                        Update Team Details
-                      </h3>
-                      <button
-                        className="p-1 ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                        onClick={() => handleCloseModal()}
-                      >
-                        <span className="text-black-600 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                          ×
-                        </span>
-                      </button>
-                    </div>
-                    <div className="relative p-6 flex-auto">
-                      <div className="mb-4">
-                        <label
-                          htmlFor="teamName"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Team Name
-                        </label>
-                        <input
-                          type="text"
-                          id="teamName"
-                          value={updateTeamName}
-                          onChange={(e) => setUpdateTeamName(e.target.value)}
-                          className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                          required
-                        />
-                      </div>
-                      <div className="mb-4">
-                        <label
-                          htmlFor="teamDescription"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Team Description
-                        </label>
-                        <textarea
-                          id="teamDescription"
-                          value={updateTeamDescription}
-                          onChange={(e) =>
-                            setUpdateTeamDescription(e.target.value)
-                          }
-                          className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                          rows="3"
-                          required
-                        ></textarea>
-                      </div>
-                      <div className="mb-4">
-                        <label
-                          htmlFor="selectedMembers"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Select Members
-                        </label>
-                        <Select
-                          id="selectedMembers"
-                          value={selectedMembers}
-                          onChange={(selectedOptions) =>
-                            setSelectedMembers(selectedOptions)
-                          }
-                          options={allMembers}
-                          getOptionLabel={(option) =>
-                            `${option.firstName} ${option.lastName}`
-                          }
-                          getOptionValue={(option) => option._id} // Assuming _id is the unique identifier for each user
-                          styles={{
-                            control: (provided) => ({
-                              ...provided,
-                              border: "1px solid #839DB4",
-                              borderRadius: "2px",
-                            }),
-                            menu: (provided) => ({
-                              ...provided,
-                              overflowY: "hidden",
-                            }),
-                            option: (provided) => ({
-                              ...provided,
-                              display: "flex",
-                              alignItems: "center",
-                              padding: "8px",
-                            }),
-                          }}
-                          isMulti
-                          className="mt-1 w-full"
-                          placeholder="Select members"
-                        />
-                      </div>
-                      <div className="mb-4">
-                        <label
-                          htmlFor="selectedProject"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Select Project
-                        </label>
-                        <Select
-                          id="selectedProject"
-                          value={selectedProject}
-                          onChange={(selectedOption) =>
-                            setSelectedProject(selectedOption)
-                          }
-                          options={allProjects}
-                          className="mt-1 w-full"
-                          placeholder="Select project"
-                        />
-                      </div>
-                      <div className="mb-4">
-                        <label
-                          htmlFor="selectedManager"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Select Manager
-                        </label>
-                        <Select
-                          id="selectedManager"
-                          value={selectedManager}
-                          onChange={(selectedOption) =>
-                            setSelectedManager(selectedOption)
-                          }
-                          options={allManagers}
-                          getOptionLabel={(option) =>
-                            `${option.firstName} ${option.lastName}`
-                          }
-                          getOptionValue={(option) => option._id} // Assuming _id is the unique identifier for each user
-                          styles={{
-                            control: (provided) => ({
-                              ...provided,
-                              border: "1px solid #839DB4",
-                              borderRadius: "2px",
-                            }),
-                            menu: (provided) => ({
-                              ...provided,
-                              overflowY: "hidden",
-                            }),
-                            option: (provided) => ({
-                              ...provided,
-                              display: "flex",
-                              alignItems: "center",
-                              padding: "8px",
-                            }),
-                          }}
-                          placeholder="Select manager"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
-                      <button
-                        className="py-2 px-4 mr-2 text-gray-500 bg-transparent border border-gray-500 rounded hover:bg-gray-200"
-                        onClick={() => setShowUpdateTeamModel(false)}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="py-2 px-4 ml-2 bg-indigo-500 text-white rounded hover:bg-indigo-700"
-                      >
-                        Update Team
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+            <div className="mt-8">
+              <ul className="border-t border-gray-200 divide-y divide-gray-200">
+                {/* Render Activity */}
+              </ul>
             </div>
-          )}
-          {/* Sure Delete Team Modal */}
-          {showSureDeleteModel && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-              <div className="relative w-auto my-6 mx-auto max-w-3xl">
-                <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+          </div>
+        )}
+        {/* Create Team Tab */}
+        {activeTeamTab === "Create Team" && (
+          <CreateNewTeam
+            allManagers={allManagers}
+            allMembers={allMembers}
+            profile={profile}
+            loading={loading}
+            setLoading={setLoading}
+          />
+        )}
+        {/* Modals */}
+        {/* Update Team Modal */}
+        {showUpdateTeamModel && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+            <div className="relative w-auto my-6 mx-auto max-w-3xl">
+              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                <form
+                  onSubmit={(e) => handleUpdateSubmit(e, filteredUpdateTeamId)}
+                >
                   <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
-                    <h3 className="text-2xl font-semibold">Delete Team</h3>
+                    <h3 className="text-2xl font-semibold">
+                      Update Team Details
+                    </h3>
                     <button
                       className="p-1 ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                      onClick={() => setShowSureDeleteModel(false)}
+                      onClick={() => handleCloseModal()}
                     >
                       <span className="text-black-600 h-6 w-6 text-2xl block outline-none focus:outline-none">
                         ×
@@ -628,30 +459,194 @@ const Team = () => {
                     </button>
                   </div>
                   <div className="relative p-6 flex-auto">
-                    <p>Are you sure you want to delete this team?</p>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="teamName"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Team Name
+                      </label>
+                      <input
+                        type="text"
+                        id="teamName"
+                        value={updateTeamName}
+                        onChange={(e) => setUpdateTeamName(e.target.value)}
+                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        required
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="teamDescription"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Team Description
+                      </label>
+                      <textarea
+                        id="teamDescription"
+                        value={updateTeamDescription}
+                        onChange={(e) =>
+                          setUpdateTeamDescription(e.target.value)
+                        }
+                        className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        rows="3"
+                        required
+                      ></textarea>
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="selectedMembers"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Select Members
+                      </label>
+                      <Select
+                        id="selectedMembers"
+                        value={selectedMembers}
+                        onChange={(selectedOptions) =>
+                          setSelectedMembers(selectedOptions)
+                        }
+                        options={allMembers}
+                        getOptionLabel={(option) =>
+                          `${option.firstName} ${option.lastName}`
+                        }
+                        getOptionValue={(option) => option._id} // Assuming _id is the unique identifier for each user
+                        styles={{
+                          control: (provided) => ({
+                            ...provided,
+                            border: "1px solid #839DB4",
+                            borderRadius: "2px",
+                          }),
+                          menu: (provided) => ({
+                            ...provided,
+                            overflowY: "hidden",
+                          }),
+                          option: (provided) => ({
+                            ...provided,
+                            display: "flex",
+                            alignItems: "center",
+                            padding: "8px",
+                          }),
+                        }}
+                        isMulti
+                        className="mt-1 w-full"
+                        placeholder="Select members"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="selectedProject"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Select Project
+                      </label>
+                      <Select
+                        id="selectedProject"
+                        value={selectedProject}
+                        onChange={setSelectedProject}
+                        options={projectOptions}
+                        className="mt-1 w-full"
+                        placeholder="Select project"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="selectedManager"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Select Manager
+                      </label>
+                      <Select
+                        id="selectedManager"
+                        value={selectedManager}
+                        onChange={(selectedOption) =>
+                          setSelectedManager(selectedOption)
+                        }
+                        options={allManagers}
+                        getOptionLabel={(option) =>
+                          `${option.firstName} ${option.lastName}`
+                        }
+                        getOptionValue={(option) => option._id} // Assuming _id is the unique identifier for each user
+                        styles={{
+                          control: (provided) => ({
+                            ...provided,
+                            border: "1px solid #839DB4",
+                            borderRadius: "2px",
+                          }),
+                          menu: (provided) => ({
+                            ...provided,
+                            overflowY: "hidden",
+                          }),
+                          option: (provided) => ({
+                            ...provided,
+                            display: "flex",
+                            alignItems: "center",
+                            padding: "8px",
+                          }),
+                        }}
+                        placeholder="Select manager"
+                      />
+                    </div>
                   </div>
                   <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
                     <button
                       className="py-2 px-4 mr-2 text-gray-500 bg-transparent border border-gray-500 rounded hover:bg-gray-200"
-                      onClick={() => setShowSureDeleteModel(false)}
+                      onClick={() => setShowUpdateTeamModel(false)}
                     >
                       Cancel
                     </button>
                     <button
-                      className="py-2 px-4 ml-2 bg-red-500 text-white rounded hover:bg-red-700"
-                      onClick={() => handleDeleteTeam(filteredDeleteTeamId)}
+                      type="submit"
+                      className="py-2 px-4 ml-2 bg-indigo-500 text-white rounded hover:bg-indigo-700"
                     >
-                      Delete Team
+                      Update Team
                     </button>
                   </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Sure Delete Team Modal */}
+        {showSureDeleteModel && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+            <div className="relative w-auto my-6 mx-auto max-w-3xl">
+              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
+                  <h3 className="text-2xl font-semibold">Delete Team</h3>
+                  <button
+                    className="p-1 ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                    onClick={() => setShowSureDeleteModel(false)}
+                  >
+                    <span className="text-black-600 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                      ×
+                    </span>
+                  </button>
+                </div>
+                <div className="relative p-6 flex-auto">
+                  <p>Are you sure you want to delete this team?</p>
+                </div>
+                <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
+                  <button
+                    className="py-2 px-4 mr-2 text-gray-500 bg-transparent border border-gray-500 rounded hover:bg-gray-200"
+                    onClick={() => setShowSureDeleteModel(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="py-2 px-4 ml-2 bg-red-500 text-white rounded hover:bg-red-700"
+                    onClick={() => handleDeleteTeam(filteredDeleteTeamId)}
+                  >
+                    Delete Team
+                  </button>
                 </div>
               </div>
             </div>
-          )}
-          {/* Toast Container */}
-          <ToastContainer />
-        </div>
-      )}
+          </div>
+        )}
+        {/* Toast Container */}
+        <ToastContainer />
+      </div>
     </>
   );
 };
