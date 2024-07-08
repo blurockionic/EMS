@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Calendar from "./Calendar";
 import {
   MdAdd,
@@ -6,6 +6,11 @@ import {
   MdTimer,
   MdClose,
 } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import Select from "react-select";
+import { createEvent } from "../../Redux/slices/eventSlice";
+import { fetchUsers } from "../../Redux/slices/allUserSlice";
+import { ToastContainer, toast } from "react-toastify";
 
 const MyEvents = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -13,35 +18,52 @@ const MyEvents = () => {
   const [eventDate, setEventDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [people, setPeople] = useState("");
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const { data: users } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    // Fetch users on component mount
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
+  // create new event handler for each event 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      // Handle form data submission
       const eventData = {
         eventTitle,
         eventDate,
         startTime,
         endTime,
-        people,
+        people: selectedMembers.map((member) => member._id), // Assuming selectedMembers has _id field
       };
-      console.log("Event Data:", eventData);
+      console.log(eventData);
+
+      const response = await dispatch(createEvent(eventData)); // Dispatch the action and await the response
+
+      if (response?.payload?.success === true) {
+        toast.success(response?.payload?.message); // Show success toast notification
+      }
 
       // Reset form state
       setEventTitle("");
       setEventDate("");
       setStartTime("");
       setEndTime("");
-      setPeople("");
+      setSelectedMembers([]);
 
-      // Update state or notify user of success
-      setIsFormVisible(false); // Close the form modal after submission
+      // Close the form modal after submission
+      setIsFormVisible(false);
     } catch (error) {
       console.error("Error adding event: ", error);
       // Handle error state or notify user
     }
+  };
+
+  const toggleFormModal = () => {
+    setIsFormVisible(!isFormVisible);
   };
 
   return (
@@ -56,7 +78,7 @@ const MyEvents = () => {
             <h3 className="font-bold">Events</h3>
             <button
               className="bg-purple-500 text-white py-1 px-2 rounded hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              onClick={() => setIsFormVisible(true)}
+              onClick={toggleFormModal}
             >
               <MdAdd />
             </button>
@@ -91,7 +113,7 @@ const MyEvents = () => {
           <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg w-11/12 max-w-md">
             <div className="flex justify-end">
               <button
-                onClick={() => setIsFormVisible(false)}
+                onClick={toggleFormModal}
                 className="text-gray-700 dark:text-gray-300"
               >
                 <MdClose className="text-2xl hover:text-red-600" />
@@ -140,14 +162,63 @@ const MyEvents = () => {
               </div>
 
               <label className="block mb-2 dark:text-white">Add People</label>
-              <input
-                type="text"
-                value={people}
-                onChange={(e) => setPeople(e.target.value)}
-                placeholder="Search by name or email..."
-                className="w-full p-2 border border-gray-300 rounded mb-4 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              <Select
+                value={selectedMembers}
+                onChange={setSelectedMembers}
+                isMulti
+                options={users} // Assuming users array is correctly fetched from Redux store
+                getOptionLabel={(option) =>
+                  `${option.firstName} ${option.lastName}`
+                }
+                getOptionValue={(option) => option._id} // Assuming _id is the unique identifier for each user
+                className="basic-multi-select"
+                classNamePrefix="select"
+                styles={{
+                  control: (provided, state) => ({
+                    ...provided,
+                    backgroundColor: state.isFocused ? "#4B5563" : "#CBD5E0",
+                    borderColor: "#4B5563",
+                    borderRadius: "4px",
+                    minHeight: "40px",
+                    boxShadow: state.isFocused ? "0 0 0 1px #4B5563" : null,
+                    "&:hover": {
+                      borderColor: state.isFocused ? "#4B5563" : "#CBD5E0",
+                    },
+                  }),
+                  menu: (provided) => ({
+                    ...provided,
+                    backgroundColor: "#1A202C",
+                    color: "#E2E8F0",
+                    borderRadius: "4px",
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+                  }),
+                  option: (provided, state) => ({
+                    ...provided,
+                    backgroundColor: state.isSelected
+                      ? "#2D3748"
+                      : state.isFocused
+                      ? "#4A5568"
+                      : null,
+                    color: state.isSelected
+                      ? "#E2E8F0"
+                      : state.isFocused
+                      ? "#E2E8F0"
+                      : "#CBD5E0",
+                    "&:hover": {
+                      backgroundColor: state.isSelected
+                        ? "#2D3748"
+                        : state.isFocused
+                        ? "#4A5568"
+                        : null,
+                      color: state.isSelected
+                        ? "#E2E8F0"
+                        : state.isFocused
+                        ? "#E2E8F0"
+                        : "#CBD5E0",
+                    },
+                  }),
+                }}
               />
-
               <button
                 type="button"
                 onClick={handleFormSubmit}
@@ -159,6 +230,7 @@ const MyEvents = () => {
           </div>
         </div>
       )}
+      <ToastContainer />
     </>
   );
 };

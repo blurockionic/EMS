@@ -31,19 +31,50 @@ export const getEventById = async (req, res) => {
 // Create a new event
 export const createEvent = async (req, res) => {
   const { eventTitle, eventDate, startTime, endTime, people } = req.body;
-  const newEvent = new Event({
-    eventTitle,
-    eventDate,
-    startTime,
-    endTime,
-    people,
-  });
+
+  // Basic validation
+  if (!eventTitle || !eventDate || !startTime || !endTime || !people) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing required fields" });
+  }
+
+  // Validate people array contains valid MongoDB ObjectIds
+  if (
+    !Array.isArray(people) ||
+    people.some((id) => !mongoose.Types.ObjectId.isValid(id))
+  ) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid people array" });
+  }
 
   try {
+    // Create a new Event instance
+    const newEvent = new Event({
+      eventTitle,
+      eventDate,
+      startTime,
+      endTime,
+      people,
+    });
+
+    // Save the new event to the database
     await newEvent.save();
-    res.status(201).json(newEvent);
+
+    // Respond with a success message and the created event
+    res.status(201).json({
+      success: true,
+      message: "Event created successfully",
+      event: newEvent,
+    });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    // Handle errors and respond with an appropriate error message
+    res.status(400).json({
+      success: false,
+      message: "Failed to create event",
+      error: error.message,
+    });
   }
 };
 
