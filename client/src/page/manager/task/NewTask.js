@@ -114,127 +114,154 @@ const NewTask = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-md mx-auto mt-8 p-4 bg-white dark:bg-gray-800 rounded shadow-md"
-    >
-      <label className="block mb-4">
-        <span className="text-gray-700 dark:text-gray-300">Task Title:</span>
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          className="form-input mt-1 block w-full border dark:bg-gray-700 dark:text-gray-300"
-          placeholder="Enter task title"
-        />
-      </label>
-      <label className="block mb-4">
-        <span className="text-gray-700 dark:text-gray-300">Description:</span>
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          className="form-input mt-1 block w-full border dark:bg-gray-700 dark:text-gray-300"
-          placeholder="Enter task description"
-        />
-      </label>
-      <label className="block mb-4">
-        <span className="text-gray-700 dark:text-gray-300">Tags:</span>
-        <input
-          type="text"
-          name="tags"
-          value={formData.tags}
-          onChange={handleChange}
-          className="form-input mt-1 block w-full border dark:bg-gray-700 dark:text-gray-300"
-          placeholder="Enter tags separated by commas"
-        />
-      </label>
+   
 
-      <label className="block mb-4">
-        <span className="text-gray-700 dark:text-gray-300">Assign By:</span>
-        <select
-          name="assignBy"
-          value={formData.assignBy}
-          onChange={handleChange}
-          className="form-select mt-1 block w-full border dark:bg-gray-700 dark:text-gray-300"
-        >
-          <option value="" disabled>
-            Select an assigner
-          </option>
 
-          <option key={profile._Id} value={`${profile._id}`}>
-            {`${profile.firstName} ${profile.lastName}`}
-          </option>
-        </select>
-      </label>
-      <label className="block mb-4">
-        <span className="text-gray-700 dark:text-gray-300">Assign To:</span>
-        <select
-          name="assignTo"
-          value={formData.assignTo}
-          onChange={handleChange}
-          className="form-select mt-1 block w-full border dark:bg-gray-700 dark:text-gray-300"
-        >
-          <option value="" disabled>
-            Assign to
-          </option>
-          {users
-            ?.filter((employee) => employee?.role === "employee")
-            .map((employee) => (
-              <option key={employee._id} value={`${employee._id}`}>
-                {`${employee.firstName} ${employee.lastName}`}
-              </option>
-            ))}
-        </select>
-      </label>
-      <label className="block mb-4">
-        <span className="text-gray-700 dark:text-gray-300">Project:</span>
-        <select
-          name="project"
-          value={formData.project}
-          onChange={handleChange}
-          className="form-select mt-1 block w-full border dark:bg-gray-700 dark:text-gray-300"
-        >
-          <option value="" disabled>
-            Select a project
-          </option>
-          {allProject.map((project) => (
-            <option key={project._id} value={project._id}>
-              {project.projectName}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="block mb-4">
-        <span className="text-gray-700 dark:text-gray-300">Assign Date:</span>
-        <input
-          type="date"
-          name="assignDate"
-          value={formData.assignDate}
-          onChange={handleChange}
-          className="form-input mt-1 block w-full border dark:bg-gray-700 dark:text-gray-300"
-        />
-      </label>
-      <label className="block mb-4">
-        <span className="text-gray-700 dark:text-gray-300">
-          Submission Date:
-        </span>
-        <input
-          type="date"
-          name="dueDate"
-          value={formData.dueDate}
-          onChange={handleChange}
-          className="form-input mt-1 block w-full border dark:bg-gray-700 dark:text-gray-300"
-        />
-      </label>
-      <div className="flex items-center justify-between mt-4">
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Submit
-        </button>
+    <form onSubmit={handleSubmit} className="w-full h-[100%] dark:bg-gray-800 rounded shadow-md flex  items-center justify-center ">
+      <div className="mainContainer border-2  flex flex-col md:flex-row rounded shadow-md w-4/5 mx-auto">
+          <div className="left  md:w-2/3 flex flex-col m-2 p-2 border border-gray-300 rounded shadow-md">
+            <div>
+              <label className="block mb-2">
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">Task Title:</span>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
+                  placeholder="Enter task title"
+                />
+              </label>
+            </div>
+
+            <div className="w-full rounded-lg flex-grow">
+              <label className="block mb-2">
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">Description:</span>
+                <textarea
+                  name="description"
+                  rows="17"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
+                  placeholder="Enter task description"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="right  md:w-1/3 h-full flex flex-col gap-4  m-2 p-2 border border-gray-300 rounded shadow-md">
+            <div>
+              <label className="block mb-2">
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">Tags:</span>
+                <input
+                  type="text"
+                  name="tags"
+                  value={formData.tags}
+                  onChange={handleChange}
+                  className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
+                  placeholder="Enter tags separated by commas"
+                />
+              </label>
+            </div>
+
+            <div>
+              <label className="block mb-2">
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">Assign By:</span>
+                <select
+                  name="assignBy"
+                  value={formData.assignBy}
+                  onChange={handleChange}
+                  className="form-select mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded "
+                >
+                  <option value="" disabled>
+                    Select an assigner
+                  </option>
+                  <option key={profile._Id} value={`${profile._id}`}>
+                    {`${profile.firstName} ${profile.lastName}`}
+                  </option>
+                </select>
+              </label>
+            </div>
+
+            <div>
+              <label className="block mb-2">
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">Assign To:</span>
+                <select
+                  name="assignTo"
+                  value={formData.assignTo}
+                  onChange={handleChange}
+                  className="form-select mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
+                >
+                  <option value="" disabled>
+                    Assign to
+                  </option>
+                  {users
+                    ?.filter((employee) => employee?.role === "employee")
+                    .map((employee) => (
+                      <option key={employee._id} value={`${employee._id}`}>
+                        {`${employee.firstName} ${employee.lastName}`}
+                      </option>
+                    ))}
+                </select>
+              </label>
+            </div>
+
+            <div>
+              <label className="block mb-2">
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">Project:</span>
+                <select
+                  name="project"
+                  value={formData.project}
+                  onChange={handleChange}
+                  className="form-select mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
+                >
+                  <option value="" disabled>
+                    Select a project
+                  </option>
+                  {allProject.map((project) => (
+                    <option key={project._id} value={project._id}>
+                      {project.projectName}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div>
+              <label className="block mb-2">
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">Assign Date:</span>
+                <input
+                  type="date"
+                  name="assignDate"
+                  value={formData.assignDate}
+                  onChange={handleChange}
+                  className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
+                />
+              </label>
+            </div>
+
+            <div>
+              <label className="block mb-2">
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">Submission Date:</span>
+                <input
+                  type="date"
+                  name="dueDate"
+                  value={formData.dueDate}
+                  onChange={handleChange}
+                  className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
+                />
+              </label>
+            </div>
+
+            <div className="flex items-center justify-between mt-4">
+              <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
       </div>
     </form>
   );
