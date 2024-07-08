@@ -4,29 +4,30 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 //all routes
-import userRoutes  from "./routes/UserRoutes.js"
-import employeeRoutes  from "./routes/EmployeeRoutes.js"
-import projectRoutes from "./routes/ProjectRoutes.js"
-import taskRoutes from "./routes/TaskRoutes.js"
-import tagRouters from "./routes/TagsRoutes.js"
+import userRoutes from "./routes/UserRoutes.js";
+import employeeRoutes from "./routes/EmployeeRoutes.js";
+import projectRoutes from "./routes/ProjectRoutes.js";
+import taskRoutes from "./routes/TaskRoutes.js";
+import tagRouters from "./routes/TagsRoutes.js";
 
+import commentRoutes from "./routes/CommentRoutes.js";
 
-import commentRoutes from "./routes/CommentRoutes.js"
+import reportProjectRoutes from "./routes/ReportProjectRoutes.js";
+import reportTaskRoutes from "./routes/ReportTaskRoutes.js";
 
-import reportProjectRoutes from "./routes/ReportProjectRoutes.js"
-import reportTaskRoutes  from "./routes/ReportTaskRoutes.js"
+import applyLeavesRoutes from "./routes/LeaveDetailsRoutes.js";
 
-import  applyLeavesRoutes  from "./routes/LeaveDetailsRoutes.js";
-
-import taskReportFeedbackRoutes from "./routes/TaskReportFeedback.js"
+import taskReportFeedbackRoutes from "./routes/TaskReportFeedback.js";
 
 import trainingRoutes from "./routes/TrainingRoutes.js";
 
-import teamRoute from "./routes/TeamRoutes.js"
+import teamRoute from "./routes/TeamRoutes.js";
 
-import issueRoutes from "./routes/IssueRoutes.js"
+import issueRoutes from "./routes/IssueRoutes.js";
 
-import milestoneRoutes from "./routes/milestoneRoutes.js"
+import eventRoutes from "./routes/EventRoutes.js";
+
+import milestoneRoutes from "./routes/milestoneRoutes.js";
 export const app = express();
 
 //configure the dotenv file
@@ -52,7 +53,6 @@ const corsOptions = {
 //cors
 app.use(cors(corsOptions));
 
-
 // Routes for user
 app.use("/api/v1/users", userRoutes);
 
@@ -68,14 +68,14 @@ app.use("/api/v1/milestone", milestoneRoutes);
 //route for task
 app.use("/api/v1/task", taskRoutes);
 
-// route for all tags 
+// route for all tags
 app.use("/api/v1/tag", tagRouters);
 
-// route for issue 
+// route for issue
 app.use("/api/v1/issue", issueRoutes);
 
 // route for comments
-app.use("/api/v1/comment",commentRoutes)
+app.use("/api/v1/comment", commentRoutes);
 
 //route for report project
 app.use("/api/v1/reportProject", reportProjectRoutes);
@@ -83,22 +83,18 @@ app.use("/api/v1/reportProject", reportProjectRoutes);
 //route for report task
 app.use("/api/v1/taskreport", reportTaskRoutes);
 
+app.use("/api/v1/event", eventRoutes);
 
-
-app.use("/api/v1/leave",applyLeavesRoutes )
+app.use("/api/v1/leave", applyLeavesRoutes);
 
 //route for task report feedback
-app.use("/api/v1/taskReportFeedback", taskReportFeedbackRoutes)
-
+app.use("/api/v1/taskReportFeedback", taskReportFeedbackRoutes);
 
 app.use("/api/v1/training", trainingRoutes);
 
-
-app.use("/api/v1/team", teamRoute)
+app.use("/api/v1/team", teamRoute);
 
 //default route
 app.get("/", (req, res) => {
   res.send("nice working");
 });
-
-
