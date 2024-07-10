@@ -64,7 +64,7 @@ const Team = () => {
     dispatch(fetchProjects());
   }, [dispatch]);
 
-  console.log("all project me kuchh data h ki nii ", allProject);
+  console.log("team k andar data aa raha h ", teams);
 
   const projectOptions = allProject.map((project) => ({
     value: project._id,
@@ -202,8 +202,6 @@ const Team = () => {
     // setDropdown(true);
   };
 
-  console.log("filter team k andar ky data h ", allProject);
-
   return (
     <>
       <div>
@@ -284,20 +282,13 @@ const Team = () => {
         {activeTeamTab === "Our Teams" && (
           <>
             {viewMode === "gallery" && (
-              <div className="grid grid-cols-3 flex-wrap gap-12 p-4 mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 p-4 mx-auto">
                 {teams?.map((team) => (
                   <div key={team?._id}>
                     <div className="max-w-sm mx-auto rounded overflow-hidden shadow-lg dark:bg-slate-950">
                       <div className="dark:bg-slate-950 p-6 mb-6">
                         <div className="flex items-center">
-                          <img
-                            className="w-20 h-20 rounded-full mr-6"
-                            src={
-                              team?.profilePicture ??
-                              "https://via.placeholder.com/150"
-                            }
-                            alt="Profile"
-                          />
+                        
                           <div>
                             <h2 className="text-xl font-bold">
                               <span className="capitalize">
@@ -307,23 +298,41 @@ const Team = () => {
                             <p>{team?.position ?? ""}</p>
                           </div>
                         </div>
-                        <div className="flex mt-2 p-3">
-                          <p className="text-blue-500 text-base">
-                            {team?.email}
+                        <div className="mt-4 flex-grow">
+                          <p className="dark:text-gray-400">
+                            Manager:{" "}
+                            {team.selectedManager?.firstName &&
+                            team.selectedManager?.lastName
+                              ? `${team.selectedManager.firstName} ${team.selectedManager.lastName}`
+                              : "empty"}
                           </p>
-                        </div>
-                        <div className="flex justify-between">
-                          <div className="flex space-x-2">
-                            <span>
-                              {/* <TbBuildingEstate className="text-2xl" /> */}
-                            </span>
-                            <p>{team?.department}</p>
-                          </div>
-                          <div className="flex space-x-2">
-                            <span>
-                              {/* <GoLocation className="text-xl" /> */}
-                            </span>
-                            <p className="capitalize">{team?.currentAddress}</p>
+                          <p className="drak:text-gray-400">
+                            Project:{" "}
+                            {team?.selectedProject
+                              ? team.selectedProject
+                              : "no project assigned"}
+                          </p>
+                          <div className="mt-2 flex space-x-2">
+                            {team.selectedMembers.map((member, memberIndex) => (
+                              <div
+                                key={memberIndex}
+                                className="relative group mx-1 cursor-pointer"
+                              >
+                                <img
+                                  className="w-10 h-10 rounded-full"
+                                  src={
+                                    member?.profilePicture ??
+                                    "https://via.placeholder.com/150"
+                                  }
+                                  alt="Profile"
+                                />
+                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full bg-gray-700 text-white text-xs rounded px-4 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                                  {member?.firstName && member?.lastName
+                                    ? `${member.firstName} ${member.lastName}`
+                                    : "empty"}
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -332,6 +341,7 @@ const Team = () => {
                 ))}
               </div>
             )}
+
             {viewMode === "table" && (
               <div className="w-full">
                 <table className="min-w-full table-auto">
@@ -355,23 +365,40 @@ const Team = () => {
                           {team?.teamName}
                         </td>
                         <td className="py-2 border-r-2 text-center">
-                          {team.selectedManager?.employeeName === ""
-                            ? "empty"
-                            : team.selectedManager?.employeeName}
+                          {team.selectedManager?.firstName &&
+                          team.selectedManager?.lastName
+                            ? `${team.selectedManager.firstName} ${team.selectedManager.lastName}`
+                            : "empty"}
                         </td>
+
                         <td className="py-2 border-r-2 text-center">
-                          {team.selectedProject?.projectName}
+                          {team?.selectedProject
+                            ? team.selectedProject
+                            : "no project assign"}
                         </td>
                         <td className="py-2 mx-auto flex justify-center">
                           {team.selectedMembers.map((member, memberIndex) => (
                             <div
-                              className="px-3 rounded-sm mr-2 font-semibold border-black"
                               key={memberIndex}
+                              className="relative group mx-1 cursor-pointer"
                             >
-                              {member.employeeName}
+                              <img
+                                className="w-10 h-10 rounded-full"
+                                src={
+                                  member?.profilePicture ??
+                                  "https://via.placeholder.com/150"
+                                }
+                                alt="Profile"
+                              />
+                              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full bg-gray-700 text-white text-xs rounded px-4 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                                {member?.firstName && member?.lastName
+                                  ? `${member.firstName} ${member.lastName}`
+                                  : "empty"}
+                              </div>
                             </div>
                           ))}
                         </td>
+
                         <td className="relative border-2">
                           <div className="flex flex-row justify-center">
                             <BsThreeDotsVertical

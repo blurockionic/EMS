@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoBookOutline } from "react-icons/io5";
-import { GoProject, GoTasklist, GoIssueTrackedBy, GoPeople,GoReport } from "react-icons/go";
+import { GoProject, GoTasklist, GoIssueTrackedBy, GoPeople, GoReport } from "react-icons/go";
 import { MdHistory } from "react-icons/md";
 import { RiTeamLine } from "react-icons/ri";
-
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProfile } from "../../Redux/slices/profileSlice";
 import Loader from "./Loader";
 
 const Header = () => {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || "overview");
 
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.profile.data);
@@ -20,12 +19,13 @@ const Header = () => {
     dispatch(fetchProfile());
   }, [dispatch]);
 
-  // Show loader if data is loading
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab);
+  }, [activeTab]);
+
   if (profileStatus === "loading") {
     return <Loader />;
   }
-
-  // console.log("profile me kya aa rha h ", profile);
 
   const tabData = [
     {
@@ -119,13 +119,6 @@ const Header = () => {
       icon: IoBookOutline,
       link: "./managerdashboard",
     },
-    // {
-    //   type: "manager",
-    //   tab: "leaves",
-    //   label: "Leaves",
-    //   icon: IoBookOutline,
-    //   link: "./empleave",
-    // },
     {
       type: "manager",
       tab: "projectreport",
