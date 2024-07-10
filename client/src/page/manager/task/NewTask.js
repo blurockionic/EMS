@@ -35,8 +35,6 @@ const NewTask = () => {
     }
   }, [profileStatus, dispatch]);
 
-  //  fetching all users
-
   const { data: users, status, error } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -45,9 +43,7 @@ const NewTask = () => {
     }
   }, [status, dispatch]);
 
-  // console.log(users);
-
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     title: "",
     description: "",
     tags: [],
@@ -57,7 +53,9 @@ const NewTask = () => {
     project: "",
     assignDate: "",
     dueDate: "",
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleChange = (e) => {
     setFormData({
@@ -75,7 +73,6 @@ const NewTask = () => {
         title,
         description,
         tags,
-
         status,
         assignBy,
         assignTo,
@@ -91,7 +88,6 @@ const NewTask = () => {
           title,
           description,
           tags,
-
           status,
           assignBy,
           assignTo,
@@ -106,7 +102,19 @@ const NewTask = () => {
           withCredentials: true,
         }
       );
-      console.log("response ", response);
+      console.log("response frontend", response);
+      const {success,message} = response.data;
+      if(success){
+        // const assignedUser = users.find(user => user.id === formData.assignTo);
+        // console.log("here we are checking what is inside asignto name");
+        // const assignedUserName = assignedUser ? assignedUser.name : 'navnit';
+        // // console.log(assignedUser.employee.firstName);
+        // alert(`Task has been assigined to" ${assignedUserName}`);
+
+        alert(message);
+        setFormData(initialFormData);
+      }
+
       // const { success, message } = response.data;
     } catch (error) {
       console.log("Unable to process:", error); // Logs any error that occurs during the request
@@ -114,9 +122,6 @@ const NewTask = () => {
   };
 
   return (
-   
-
-
     <form onSubmit={handleSubmit} className="w-full h-[100%] dark:bg-gray-800 rounded shadow-md flex  items-center justify-center ">
       <div className="mainContainer border-2  flex flex-col md:flex-row rounded shadow-md w-4/5 mx-auto">
           <div className="left  md:w-2/3 flex flex-col m-2 p-2 border border-gray-300 rounded shadow-md">
