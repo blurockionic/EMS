@@ -1,47 +1,47 @@
-
-
 import React, { useEffect, useState } from "react";
-import { HiMiniUserGroup } from "react-icons/hi2";
+
+import axios from "axios";
+import { server } from "../../../App";
+import MyEvents from "../../../component/utilities-components/MyEvents";
+
+import { HiUserGroup } from "react-icons/hi";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
 import { GiRecycle } from "react-icons/gi";
 import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
-import axios from "axios";
-import { server } from "../../../App";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProjects } from "../../../Redux/slices/projectSlice";
+import { fetchProfile } from "../../../Redux/slices/profileSlice";
 
 const AdminDashboard = () => {
   const [employeeData, setEmployeeData] = useState([]);
-  const [allProject, setAllProject] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const allEmployee = await axios.get(`${server}/employee/all`, {
-          withCredentials: true,
-        });
-        setEmployeeData(allEmployee.data.data);
-      } catch (error) {
-        console.error("Error fetching employee data:", error.message);
-      }
-    };
+   //fetch all the details of project
+   const dispatch = useDispatch();
 
-    fetchData();
-  }, []);
+   const projectState = useSelector((state) => state.project);
+   const {
+     allProject,
+     status: projectStatus,
+     error: projectError,
+   } = projectState;
+ 
+   useEffect(() => {
+     if (projectStatus === "idle") {
+       dispatch(fetchProjects());
+     }
+   }, [projectStatus, dispatch]);
+ 
+   console.log("all project data me h kuchh ", allProject);
+ 
+   const profile = useSelector((state) => state.profile.data);
+ 
+   useEffect(() => {
+     dispatch(fetchProfile());
+   }, [dispatch]);
+ 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const projectData = await axios.get(`${server}/project/all`, {
-          withCredentials: true,
-        });
-        setAllProject(projectData.data.allProject);
-      } catch (error) {
-        console.error("Error fetching project data:", error.message);
-        alert("idhar h kya issue",error.message);
-      }
-    };
 
-    fetchData();
-  }, []);
+
 
   // filter out isCompleted or not
   const completedProjects = allProject.filter(
@@ -53,56 +53,52 @@ const AdminDashboard = () => {
 
   return (
     <>
-      <div className="grid grid-cols-12">
-        <div className="col-span-3">
-          <div className="flex items-center justify-center mt-5">
-            <div className="rounded-lg shadow-md p-6 text-center w-52 bg-indigo-200">
-              <h2 className="text-md font-semibold uppercase">Employee</h2>
-              <HiMiniUserGroup className="rounded-full w-16 h-16 mx-auto mb-4 text-gray-900" />
-              <p className="text-gray-700 font-bold text-3xl">
-                {employeeData.length}
+      <div className="w-full flex flex-col lg:flex-row justify-between space-y-4 lg:space-y-0 lg:space-x-4 p-4">
+        <div className="mt-4">
+          <div className="flex flex-wrap justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+            <div className="flex-1 min-w-[200px] dark:bg-transparent bg-white border border-gray-200 rounded-lg shadow-md p-6 text-center">
+              <HiUserGroup className="w-12 h-12 mx-auto mb-4 text-indigo-500" />
+              <h2 className=" font-semibold uppercase dark:text-white text-gray-800">
+                Employee
+              </h2>
+              <p className="text-gray-600 dark:text-white font-bold text-2xl">
+                {employeeData?.length}
               </p>
             </div>
-          </div>
-        </div>
-        <div className="col-span-3">
-          <div className="flex items-center justify-center mt-5">
-            <div className="rounded-lg shadow-md p-6 text-center w-52 bg-red-50">
-              <h2 className="text-md font-semibold uppercase text-indigo-900">
-                Project
+            <div className="flex-1 min-w-[200px] bg-white border dark:bg-transparent border-gray-200 rounded-lg shadow-md p-6 text-center">
+              <AiOutlineFundProjectionScreen className="w-12 h-12 mx-auto mb-4 text-red-500" />
+              <h2 className="text-lg font-semibold uppercase dark:text-white text-gray-800">
+                Projects
               </h2>
-              <AiOutlineFundProjectionScreen className="rounded-full w-16 h-16 mx-auto mb-4 text-red-900" />
-              <p className="text-red-900 font-bold text-3xl">
+              <p className="text-gray-600 font-bold text-2xl dark:text-white">
                 {allProject.length}
               </p>
             </div>
-          </div>
-        </div>
-        <div className="col-span-3">
-          <div className="flex items-center justify-center mt-5">
-            <div className="rounded-lg shadow-md p-6 text-center w-52 bg-yellow-200">
-              <h2 className="text-md font-semibold uppercase">
-                Ongoing Project
+            <div className="flex-1 min-w-[200px] bg-white dark:bg-transparent border border-gray-200 rounded-lg shadow-md p-6 text-center">
+              <GiRecycle className="w-12 h-12 mx-auto mb-4 text-yellow-500" />
+              <h2
+                className="text-lg font-semibold uppercase dark:text-white text-gray-800"
+              >
+                Ongoing Projects
               </h2>
-              <GiRecycle className="rounded-full w-16 h-16 mx-auto mb-4 text-yellow-900" />
-              <p className="text-yellow-900 font-bold text-3xl">
-                {inCompletedProjects.length}
+              <p className="text-gray-600 font-bold text-2xl dark:text-white">
+                {inCompletedProjects?.length}
+              </p>
+            </div>
+            <div className="flex-1 min-w-[200px] bg-white dark:bg-transparent border border-gray-200 rounded-lg shadow-md p-6 text-center">
+              <IoCheckmarkDoneCircleOutline className="w-12 h-12 mx-auto mb-4 text-green-500" />
+              <h2 className="text-lg font-semibold uppercase text-gray-800 dark:text-white">
+                Completed Projects
+              </h2>
+              <p className="text-gray-600 font-bold text-2xl dark:text-white">
+                {completedProjects?.length}
               </p>
             </div>
           </div>
         </div>
-        <div className="col-span-3">
-          <div className="flex items-center justify-center mt-5">
-            <div className="rounded-lg shadow-md p-6 text-center w-52 bg-green-200">
-              <h2 className="text-md font-semibold uppercase">
-                Completed Project
-              </h2>
-              <IoCheckmarkDoneCircleOutline className="rounded-full w-16 h-16 mx-auto mb-4 text-green-700" />
-              <p className="text-green-700 font-bold text-3xl">
-                {completedProjects.length}
-              </p>
-            </div>
-          </div>
+
+        <div className="flex justify-center lg:justify-start mt-4 lg:mt-0">
+          <MyEvents />
         </div>
       </div>
     </>

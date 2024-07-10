@@ -10,6 +10,9 @@ import tagReducer from "./slices/tagSlice"
 import specificProjectReducer from "./slices/specificProjectSlice"
 import milestonesReducer from "./slices/milestones/milestoneSlice"
 import fetchMilestonesReducer from "./slices/milestones/fetchMilestonesSlice"
+import teamReducer from "./slices/teamSlice"
+import eventReducer from "./slices/eventSlice"
+
 const store = configureStore({
   reducer: {
     employee: employeeReducer,
@@ -23,6 +26,8 @@ const store = configureStore({
     specificProject: specificProjectReducer,
     milestones: milestonesReducer,
     fetchMilestones: fetchMilestonesReducer,
+    team: teamReducer,
+    events: eventReducer,
   },
 });
 
