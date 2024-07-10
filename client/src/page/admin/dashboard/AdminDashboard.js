@@ -31,7 +31,7 @@ const AdminDashboard = () => {
      }
    }, [projectStatus, dispatch]);
  
-   console.log("all project data me h kuchh ", allProject);
+  //  console.log("all project data me h kuchh ", allProject);
  
    const profile = useSelector((state) => state.profile.data);
  
