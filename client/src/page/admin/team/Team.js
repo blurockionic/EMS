@@ -215,6 +215,7 @@ const Team = () => {
                 onClick={() => handleTabClick("Our Teams")}
               >
                 Our Team
+                
               </button>
               <button
                 className={`p-2 rounded-md text-sm font-medium ${

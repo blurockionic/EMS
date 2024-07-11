@@ -12,7 +12,7 @@ import milestonesReducer from "./slices/milestones/milestoneSlice"
 import fetchMilestonesReducer from "./slices/milestones/fetchMilestonesSlice"
 import teamReducer from "./slices/teamSlice"
 import eventReducer from "./slices/eventSlice"
-
+import socketReducer from "./slices/socketSlice"
 const store = configureStore({
   reducer: {
     employee: employeeReducer,
@@ -28,6 +28,8 @@ const store = configureStore({
     fetchMilestones: fetchMilestonesReducer,
     team: teamReducer,
     events: eventReducer,
+
+    socket: socketReducer,
   },
 });
 
