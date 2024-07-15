@@ -74,7 +74,7 @@ export const task = async (req, res) => {
         message: "Project not found! Please select another project",
       });
     }
-
+  
     // Create entry in the database
     const newTask = await Task.create({
     
@@ -89,13 +89,19 @@ export const task = async (req, res) => {
       assignDate,
       dueDate,
     });
+    const assignId = assignTo;
+    const idName = await User.findById(assignId);
+    console.log(idName);
 
+    const fullName = idName.firstName +" " + idName.lastName;
     // Return success response
+    console.log(fullName);
     return res.status(201).json({
       success: true,
       task: newTask,
-      message: `Task created successfully with ID #`,
+      message: `Task has been assign to ${fullName}`,
     });
+    
   } catch (error) {
     console.error("Error creating task:", error);
     return res.status(500).json({
