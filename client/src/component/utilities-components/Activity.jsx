@@ -5,7 +5,6 @@ import ChatGroupList from "./ChatGroupList";
 import Chat from "./Chat";
 
 const Activity = () => {
-  const [currentGroup, setCurrentGroup] = useState(null);
 
   return (
     // <div className="p-4">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
+import io from "socket.io-client";
 
 import { Tooltip } from "react-tooltip";
 import { ToastContainer, toast } from "react-toastify";
@@ -22,7 +23,11 @@ import { fetchProfile } from "../../../Redux/slices/profileSlice";
 import { fetchUsers } from "../../../Redux/slices/allUserSlice";
 import ErrorPage from "../../../component/utilities-components/ErrorPage";
 import Activity from "../../../component/utilities-components/Activity";
-import { initializeSocket } from "../../../Redux/slices/socketSlice";
+import {
+  socketConnect,
+  socketDisconnect,
+} from "../../../Redux/slices/socketSlice";
+import useSocket from "../../../hooks/useSocket";
 
 const Team = () => {
   const dispatch = useDispatch();
@@ -37,6 +42,7 @@ const Team = () => {
     status: projectStatus,
     error: projectError,
   } = projectState;
+  const userId = profile?._id; // Assuming user id is stored in profile._id
 
   const [viewMode, setViewMode] = useState("gallery");
   const [activeTeamTab, setActiveTeamTab] = useState("Our Teams");
@@ -66,10 +72,12 @@ const Team = () => {
     dispatch(fetchProjects());
   }, [dispatch]);
 
-  // console.log("team k andar data aa raha h ", teams);
+  // Use the custom hook to manage socket connection based on the active tab
+  useSocket(userId, activeTeamTab === "Activity");
 
-
-
+  // Example usage
+  //  const onlineUsers = useSelector((state) => state.socket.onlineUsers);
+  //  const messages = useSelector((state) => state.socket.messages);
 
   const projectOptions = allProject.map((project) => ({
     value: project._id,
@@ -220,7 +228,6 @@ const Team = () => {
                 onClick={() => handleTabClick("Our Teams")}
               >
                 Our Team
-                
               </button>
               <button
                 className={`p-2 rounded-md text-sm font-medium ${
@@ -294,7 +301,6 @@ const Team = () => {
                     <div className="max-w-sm mx-auto rounded overflow-hidden shadow-lg dark:bg-slate-950">
                       <div className="dark:bg-slate-950 p-6 mb-6">
                         <div className="flex items-center">
-                        
                           <div>
                             <h2 className="text-xl font-bold">
                               <span className="capitalize">
@@ -447,11 +453,7 @@ const Team = () => {
           </>
         )}
         {/* Activity Tab */}
-        {activeTeamTab === "Activity" && (
-         
-            <Activity/>
-          
-        )}
+        {activeTeamTab === "Activity" && <Activity />}
         {/* Create Team Tab */}
         {activeTeamTab === "Create Team" && (
           <CreateNewTeam

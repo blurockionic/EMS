@@ -311,3 +311,574 @@ export const newEmployee = async (req, res) => {
 // export const selectMessages = (state) => state.socket.messages;
 
 // export default socketSlice.reducer;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // src/socketHandler.js
+// import { Message } from "./model/MessageSchema.js";
+
+// const socketHandler = (io) => {
+//   io.on("connection", (socket) => {
+//     console.log("A user connected", socket.id);
+
+//     // Join a room named after the user ID to handle private messages
+//     socket.on("join", (recipientId) => {
+//       socket.join(recipientId);
+//       console.log(`User ${socket.id} joined room ${recipientId}`);
+//     });
+
+//     // Handle private messages
+//     socket.on("privateMessage", async ({ senderId, recipientId, content }) => {
+//       try {
+//         const message = new Message({
+//           sender: senderId,
+//           recipient: recipientId,
+//           content,
+//         });
+//         await message.save();
+
+//         // Emit the message to the recipient's room
+//         io.to(recipientId).emit("newPrivateMessage", {
+//           sender: senderId,
+//           recipient: recipientId,
+//           content,
+//         });
+
+//         // Emit the message to the sender's room (for immediate feedback)
+//         io.to(senderId).emit("newPrivateMessage", {
+//           sender: senderId,
+//           recipient: recipientId,
+//           content,
+//         });
+//       } catch (err) {
+//         console.error(
+//           "Error saving message inside the sockethandler file:",
+//           err
+//         );
+//         socket.emit("error", "Failed to send message");
+//       }
+//     });
+
+//     // Handle user disconnect
+//     socket.on("disconnect", () => {
+//       console.log("User disconnected", socket.id);
+//     });
+//   });
+// };
+
+// export default socketHandler;
+
+// src/socketHandler.js
+// src/socketHandler.js
+const socketHandler = (io) => {
+  const userSocketMap = {}; // socket_Id -> user_Id
+
+  io.on("connection", (socket) => {
+    console.log("A user connected", socket.id);
+    const userId = socket.handshake.query.userId;
+    if (userId !== undefined) {
+      userSocketMap[userId] = socket.id;
+    }
+    io.emit("getOnlineUser", Object.keys(userSocketMap));
+    socket.on("disconnect", () => {
+      console.log("User disconnected", socket.id);
+      delete userSocketMap[userId];
+      io.emit("getOnlineUser", Object.keys(userSocketMap));
+    });
+
+    socket.on("join", (userId) => {
+      socket.join(userId);
+      console.log(`User ${socket.id} joined room ${userId}`);
+    });
+
+    socket.on("privateMessage", ({ senderId, recipientId, content }) => {
+      const message = {
+        senderId,
+        recipientId,
+        content,
+      };
+
+      io.to(recipientId).emit("newPrivateMessage", message);
+      io.to(senderId).emit("newPrivateMessage", message);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("User disconnected", socket.id);
+    });
+  });
+};
+
+export default socketHandler;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+// import { io } from "socket.io-client";
+// import axios from "axios";
+// import { server } from "../../App";
+
+// // Thunk to initialize the socket connection
+// export const initializeSocket = createAsyncThunk(
+//   "socket/initializeSocket",
+//   async (_, { dispatch }) => {
+//     try {
+//       const socket = io(`${server}`, {
+//         withCredentials: true,
+//       });
+
+//       socket.on("disconnect", () => {
+//         dispatch(clearSocket());
+//       });
+
+//       socket.on("receiveMessage", (message) => {
+//         const { chatGroup: groupId, ...msg } = message;
+//         dispatch(addMessage({ groupId, message: msg }));
+//       });
+
+//       dispatch(setSocket(socket));
+
+//       return () => {
+//         socket.close();
+//       };
+//     } catch (error) {
+//       console.error("Error initializing socket:", error);
+//     }
+//   }
+// );
+
+// // Thunk to fetch chat groups
+// export const fetchChatGroups = createAsyncThunk(
+//   "socket/fetchChatGroups",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.get(`${server}/chat/groups`);
+//       return response.data;
+//     } catch (error) {
+//       console.error("Error fetching chat groups:", error);
+//       return rejectWithValue(error.response.data);
+//     }
+//   }
+// );
+
+// // Thunk to fetch messages for a group
+// export const fetchMessages = createAsyncThunk(
+//   "socket/fetchMessages",
+//   async (groupId, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.get(`${server}/chat/messages/${groupId}`);
+//       return { groupId, messages: response.data };
+//     } catch (error) {
+//       console.error("Error fetching messages:", error);
+//       return rejectWithValue(error.response.data);
+//     }
+//   }
+// );
+
+// // Thunk to send a message
+// export const sendMessage = createAsyncThunk(
+//   "socket/sendMessage",
+//   async (message, { getState, rejectWithValue, dispatch }) => {
+//     const { socket } = getState().socket;
+//     if (socket) {
+//       const { content, sender, chatGroup } = message;
+//       socket.emit("sendMessage", { room: chatGroup, content, sender });
+//       try {
+//         const response = await axios.post(`${server}/chat/sendMessage`, message);
+//         dispatch(addMessage({ groupId: chatGroup, message: response.data }));
+//       } catch (error) {
+//         console.error("Error sending message:", error);
+//         return rejectWithValue(error.response.data);
+//       }
+//     } else {
+//       console.error("Socket is not connected.");
+//     }
+//   }
+// );
+
+// // Initial state for the socket slice
+// const initialState = {
+//   socket: null,
+//   groups: [],
+//   messages: {},
+//   loading: false,
+//   error: null,
+// };
+
+// const socketSlice = createSlice({
+//   name: "socket",
+//   initialState,
+//   reducers: {
+//     setSocket: (state, action) => {
+//       state.socket = action.payload;
+//     },
+//     clearSocket: (state) => {
+//       state.socket = null;
+//     },
+//     addMessage: (state, action) => {
+//       const { groupId, message } = action.payload;
+//       if (!state.messages[groupId]) {
+//         state.messages[groupId] = [];
+//       }
+//       state.messages[groupId].push(message);
+//     },
+//     setMessages: (state, action) => {
+//       const { groupId, messages } = action.payload;
+//       state.messages[groupId] = messages;
+//     },
+//   },
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase(fetchChatGroups.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(fetchChatGroups.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.groups = action.payload;
+//       })
+//       .addCase(fetchChatGroups.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//       })
+//       .addCase(fetchMessages.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(fetchMessages.fulfilled, (state, action) => {
+//         state.loading = false;
+//         const { groupId, messages } = action.payload;
+//         state.messages[groupId] = messages;
+//       })
+//       .addCase(fetchMessages.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//       })
+//       .addCase(sendMessage.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(sendMessage.fulfilled, (state) => {
+//         state.loading = false;
+//       })
+//       .addCase(sendMessage.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//       });
+//   },
+// });
+
+// export const { setSocket, clearSocket, addMessage, setMessages } =
+//   socketSlice.actions;
+
+// export default socketSlice.reducer;
+
+// src/features/socket/socketSlice.js
+
+// src/features/socket/socketSlice.js
+
+
+
+// import { createSlice } from '@reduxjs/toolkit';
+// import io from 'socket.io-client';
+
+// const initialState = {
+//   socket: null,
+//   messages: [],
+// };
+
+// const socketSlice = createSlice({
+//   name: 'socket',
+//   initialState,
+//   reducers: {
+//     addMessage(state, action) {
+//       state.messages.push(action.payload);
+//     },
+//     clearMessages(state) {
+//       state.messages = [];
+//     },
+//   },
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase('socket/setSocket', (state, action) => {
+//         state.socket = action.payload;
+//       });
+//   },
+// });
+
+// export const { addMessage, clearMessages } = socketSlice.actions;
+
+// // Thunk action to connect to socket
+// export const connectToSocket = (userId) => (dispatch) => {
+//   const newSocket = io('http://localhost:4000');
+//   newSocket.emit('join', userId);
+
+//   dispatch({ type: 'socket/setSocket', payload: newSocket });
+
+//   newSocket.on('newPrivateMessage', (message) => {
+//     dispatch(addMessage(message));
+//   });
+
+//   return () => {
+//     newSocket.close();
+//     dispatch({ type: 'socket/setSocket', payload: null });
+//     dispatch(clearMessages());
+//   };
+// };
+
+// // Selector to get the socket from state
+// export const selectSocket = (state) => state.socket.socket;
+
+// export const selectMessages = (state) => state.socket.messages;
+
+// export default socketSlice.reducer;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // src/slices/chatSlice.js
+// import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+// import io from 'socket.io-client';
+// import axios from 'axios';
+// import { server } from '../../App';
+
+// const initialState = {
+//   socket: null,
+//   messages: [],
+//   users: [],
+//   status: 'idle',
+//   error: null,
+// };
+
+// // Thunk action to connect to socket
+// export const connectToSocket = (userId) => (dispatch) => {
+//   const newSocket = io('http://localhost:4000');
+//   newSocket.emit('join', userId);
+
+//   newSocket.on('newPrivateMessage', (message) => {
+//     dispatch(addMessage(message));
+//   });
+
+//   dispatch(setSocket(newSocket));
+// };
+
+// // Thunk action to fetch messages
+// export const fetchMessages = createAsyncThunk(
+//   'chat/fetchMessages',
+//   async ({ userId, recipientId }) => {
+//     const response = await axios.get(`${server}/chat/messages/${userId}/${recipientId}`);
+//     return response.data;
+//   }
+// );
+
+// // Thunk action to send a message
+// export const sendMessage = createAsyncThunk(
+//   'chat/sendMessage',
+//   async ({ senderId, recipientId, content }) => {
+//     const response = await axios.post(`${server}/chat/send`, {
+//       senderId,
+//       recipientId,
+//       content,
+//     });
+//     return response.data;
+//   }
+// );
+
+// const chatSlice = createSlice({
+//   name: 'chat',
+//   initialState,
+//   reducers: {
+//     addMessage(state, action) {
+//       state.messages.push(action.payload);
+//     },
+//     clearMessages(state) {
+//       state.messages = [];
+//     },
+//     setSocket(state, action) {
+//       state.socket = action.payload;
+//     },
+//   },
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase(fetchMessages.pending, (state) => {
+//         state.status = 'loading';
+//       })
+//       .addCase(fetchMessages.fulfilled, (state, action) => {
+//         state.status = 'succeeded';
+//         state.messages = action.payload;
+//       })
+//       .addCase(fetchMessages.rejected, (state, action) => {
+//         state.status = 'failed';
+//         state.error = action.error.message;
+//       })
+//       .addCase(sendMessage.pending, (state) => {
+//         state.status = 'loading';
+//       })
+//       .addCase(sendMessage.fulfilled, (state, action) => {
+//         state.status = 'succeeded';
+//         state.messages.push(action.payload);
+//       })
+//       .addCase(sendMessage.rejected, (state, action) => {
+//         state.status = 'failed';
+//         state.error = action.error.message;
+//       });
+//   },
+// });
+
+// export const { addMessage, clearMessages, setSocket } = chatSlice.actions;
+
+// export const selectSocket = (state) => state.chat.socket;
+// export const selectMessages = (state) => state.chat.messages;
+
+// export default chatSlice.reducer;
+
+// src/slices/chatSlice.js
+// src/slices/chatSlice.js
+import { createSlice } from "@reduxjs/toolkit";
+import io from "socket.io-client";
+
+const initialState = {
+  socket: null,
+  messages: [],
+  status: "idle",
+  error: null,
+};
+
+export const connectToSocket = (userId) => (dispatch) => {
+  const newSocket = io("http://localhost:4000", {
+    query: { userId },
+    // reconnection: false,
+  });
+  newSocket.emit("join", userId);
+
+  newSocket.on("newPrivateMessage", (message) => {
+    dispatch(addMessage(message));
+  });
+
+  dispatch(setSocket(newSocket));
+};
+
+const chatSlice = createSlice({
+  name: "chat",
+  initialState,
+  reducers: {
+    addMessage(state, action) {
+      state.messages.push(action.payload);
+      localStorage.setItem("messages", JSON.stringify(state.messages));
+    },
+    clearMessages(state) {
+      state.messages = [];
+      localStorage.removeItem("messages");
+    },
+    setSocket(state, action) {
+      state.socket = action.payload;
+    },
+    loadMessages(state, action) {
+      state.messages = action.payload;
+    },
+  },
+});
+
+export const { addMessage, clearMessages, setSocket, loadMessages } =
+  chatSlice.actions;
+
+export const selectSocket = (state) => state.chat.socket;
+export const selectMessages = (state) => state.chat.messages;
+
+export default chatSlice.reducer;
+
+
+
+
+
+
+
+
+
+
+// const socketHandler = (io) => {
+//   const userSocketMap = {}; // Map to store userId -> socket.id
+
+//   io.on("connection", (socket) => {
+//     console.log("A user connected", socket.id);
+
+//     // Handle user connection
+//     const userId = socket.handshake.query.userId;
+//     if (userId) {
+//       userSocketMap[userId] = socket.id;
+//       // Emit updated online users list to all clients
+//       io.emit("getOnlineUser", Object.keys(userSocketMap));
+//     }
+
+//     // Handle user disconnect
+//     socket.on("disconnect", () => {
+//       console.log("User disconnected", socket.id);
+//       if (userId && userSocketMap[userId] === socket.id) {
+//         delete userSocketMap[userId];
+//         io.emit("getOnlineUser", Object.keys(userSocketMap));
+//       }
+//     });
+
+//     // Handle private messages
+//     socket.on("privateMessage", ({ senderId, recipientId, content }) => {
+//       const message = {
+//         senderId,
+//         recipientId,
+//         content,
+//       };
+
+//       // Emit message to recipient's room
+//       if (userSocketMap[recipientId]) {
+//         io.to(userSocketMap[recipientId]).emit("newPrivateMessage", message);
+//       }
+
+//       // Emit message to sender's room for immediate feedback
+//       if (userSocketMap[senderId]) {
+//         io.to(userSocketMap[senderId]).emit("newPrivateMessage", message);
+//       }
+//     });
+//   });
+// };
+
+// export default socketHandler;
