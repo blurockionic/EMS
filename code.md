@@ -239,3 +239,75 @@ export const newEmployee = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { createSlice } from '@reduxjs/toolkit';
+// import io from 'socket.io-client';
+
+// const initialState = {
+//   socket: null,
+//   messages: [],
+// };
+
+// const socketSlice = createSlice({
+//   name: 'socket',
+//   initialState,
+//   reducers: {
+//     addMessage(state, action) {
+//       state.messages.push(action.payload);
+//     },
+//     clearMessages(state) {
+//       state.messages = [];
+//     },
+//   },
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase('socket/setSocket', (state, action) => {
+//         state.socket = action.payload;
+//       });
+//   },
+// });
+
+// export const { addMessage, clearMessages } = socketSlice.actions;
+
+// // Thunk action to connect to socket
+// export const connectToSocket = (userId) => (dispatch) => {
+//   const newSocket = io('http://localhost:4000');
+//   newSocket.emit('join', userId);
+
+//   dispatch({ type: 'socket/setSocket', payload: newSocket });
+
+//   newSocket.on('newPrivateMessage', (message) => {
+//     dispatch(addMessage(message));
+//   });
+
+//   return () => {
+//     newSocket.close();
+//     dispatch({ type: 'socket/setSocket', payload: null });
+//     dispatch(clearMessages());
+//   };
+// };
+
+// // Selector to get the socket from state
+// export const selectSocket = (state) => state.socket.socket;
+
+// export const selectMessages = (state) => state.socket.messages;
+
+// export default socketSlice.reducer;

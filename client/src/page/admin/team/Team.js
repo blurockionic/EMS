@@ -21,6 +21,8 @@ import { fetchEmployees } from "../../../Redux/slices/employeeSlice";
 import { fetchProfile } from "../../../Redux/slices/profileSlice";
 import { fetchUsers } from "../../../Redux/slices/allUserSlice";
 import ErrorPage from "../../../component/utilities-components/ErrorPage";
+import Activity from "../../../component/utilities-components/Activity";
+import { initializeSocket } from "../../../Redux/slices/socketSlice";
 
 const Team = () => {
   const dispatch = useDispatch();
@@ -64,7 +66,10 @@ const Team = () => {
     dispatch(fetchProjects());
   }, [dispatch]);
 
-  console.log("team k andar data aa raha h ", teams);
+  // console.log("team k andar data aa raha h ", teams);
+
+
+
 
   const projectOptions = allProject.map((project) => ({
     value: project._id,
@@ -443,16 +448,9 @@ const Team = () => {
         )}
         {/* Activity Tab */}
         {activeTeamTab === "Activity" && (
-          <div className="p-4">
-            <div className="flex items-center justify-between border-b pb-2">
-              <h1 className="text-2xl font-semibold">Team Activity</h1>
-            </div>
-            <div className="mt-8">
-              <ul className="border-t border-gray-200 divide-y divide-gray-200">
-                {/* Render Activity */}
-              </ul>
-            </div>
-          </div>
+         
+            <Activity/>
+          
         )}
         {/* Create Team Tab */}
         {activeTeamTab === "Create Team" && (

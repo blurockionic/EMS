@@ -13,6 +13,8 @@ import fetchMilestonesReducer from "./slices/milestones/fetchMilestonesSlice"
 import teamReducer from "./slices/teamSlice"
 import eventReducer from "./slices/eventSlice"
 import socketReducer from "./slices/socketSlice"
+
+import chatReducer from "./slices/chatSlice"; // Add the chat reducer
 const store = configureStore({
   reducer: {
     employee: employeeReducer,
@@ -29,7 +31,8 @@ const store = configureStore({
     team: teamReducer,
     events: eventReducer,
 
-    socket: socketReducer,
+    // socket: socketReducer,
+    chat: chatReducer, // add and create chat
   },
 });
 

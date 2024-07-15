@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Activity from "../../component/utilities-components/Activity";
 
 const EmpTeam = () => {
   const [activeTeamTab, setActiveTeamTab] = useState("My Team");
@@ -30,6 +31,7 @@ const EmpTeam = () => {
               </div>
             </div>
           )}
+          <Activity/>
         </div>
     </div>
   );
