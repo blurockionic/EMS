@@ -24,6 +24,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.9",
     "nodemon": "^3.0.2",
-    "react-tooltip": "^5.27.1"
+    "react-tooltip": "^5.27.1",
+    "socket.io": "^4.7.5"
   }
 }

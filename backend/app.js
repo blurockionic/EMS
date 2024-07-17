@@ -28,16 +28,16 @@ import issueRoutes from "./routes/IssueRoutes.js";
 import eventRoutes from "./routes/EventRoutes.js";
 
 import milestoneRoutes from "./routes/milestoneRoutes.js";
-export const app = express();
+
+import chatRoutes from "./routes/chatRoutes.js"
+
+// Import the socket handler
+// import socketHandler from './socketHandler.js';
 
 //configure the dotenv file
 dotenv.config({
   path: "./configuration/.env",
 });
-
-//middleware
-app.use(express.json());
-app.use(cookieParser());
 
 // middleware for recieve request from other device
 // Allow requests from http://localhost:3000
@@ -49,6 +49,14 @@ const corsOptions = {
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
 };
+
+
+export const app = express();
+//middleware
+app.use(express.json());
+app.use(cookieParser());
+
+
 
 //cors
 app.use(cors(corsOptions));
@@ -93,6 +101,9 @@ app.use("/api/v1/taskReportFeedback", taskReportFeedbackRoutes);
 app.use("/api/v1/training", trainingRoutes);
 
 app.use("/api/v1/team", teamRoute);
+
+// Use chat routes
+app.use('/api/v1/chat', chatRoutes);
 
 //default route
 app.get("/", (req, res) => {

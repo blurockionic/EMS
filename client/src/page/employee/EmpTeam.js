@@ -1,12 +1,11 @@
 import React, { useState } from "react";
+import Chat from "../../component/utilities-components/Chat";
 
 const EmpTeam = () => {
   const [activeTeamTab, setActiveTeamTab] = useState("My Team");
- 
+
   return (
     <div>
-
-
       <div className=" flex flex-wrap ">
         <div
           className={`cursor-pointer uppercase py-2 px-4 mr-4 ${
@@ -17,20 +16,11 @@ const EmpTeam = () => {
         >
           My Team
         </div>
-
-       
       </div>
 
       <div className="mt-4">
-          {activeTeamTab === "My Team" && (
-            <div>
-              {/* <h2 className="text-lg font-bold mb-2">All Teams</h2> */}
-              <div className="container mx-auto">
-               {/* team all member card */}
-              </div>
-            </div>
-          )}
-        </div>
+        {activeTeamTab === "Activity" && <Chat activeTeamTab={activeTeamTab} />}
+      </div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./slices/authSlice"
 import employeeReducer from "./slices/employeeSlice";
 import profileReducer from "./slices/profileSlice";
 import themeReducer from "./slices/themeSlice";
@@ -12,9 +13,12 @@ import milestonesReducer from "./slices/milestones/milestoneSlice"
 import fetchMilestonesReducer from "./slices/milestones/fetchMilestonesSlice"
 import teamReducer from "./slices/teamSlice"
 import eventReducer from "./slices/eventSlice"
+import socketReducer from "./slices/socketSlice"
 
+import chatReducer from "./slices/chatSlice"; // Add the chat reducer
 const store = configureStore({
   reducer: {
+    auth: authReducer,
     employee: employeeReducer,
     profile: profileReducer,
     theme: themeReducer, // Add the theme reducer
@@ -28,6 +32,9 @@ const store = configureStore({
     fetchMilestones: fetchMilestonesReducer,
     team: teamReducer,
     events: eventReducer,
+    socket: socketReducer,
+    // socket: socketReducer,
+    chat: chatReducer, // add and create chat
   },
 });
 

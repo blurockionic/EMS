@@ -1,0 +1,100 @@
+/* CalendarStyles.css */
+
+/* Override react-calendar default styles */
+.react-calendar {
+    width: 100%;
+    border: none;
+  
+  }
+  
+  .react-calendar__navigation {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: #f7fafc; /* Tailwind's gray-100 */
+    border-bottom: 1px solid #e2e8f0; /* Tailwind's gray-200 */
+    border-radius: 0.375rem 0.375rem 0 0; /* Tailwind's rounded-t-lg */
+  }
+  
+  .react-calendar__tile {
+    padding: 0.5rem;
+    text-align: center;
+  }
+  
+  .react-calendar__tile--active {
+    background-color: #3182ce; /* Tailwind's blue-600 */
+    color: white;
+  }
+  
+  .react-calendar__tile--now {
+    background-color: #9f7aea; /* Tailwind's purple-500 */
+    color: white;
+  }
+  
+ .react-calendar__tile--now:hover {
+    background-color: #805ad5; /* Tailwind's purple-600 */
+    color: white;
+  }
+  
+
+.dark .react-calendar__tile--now:hover {
+    background-color: #805ad5; /* Tailwind's purple-600 */
+    color: white;
+  }
+
+  
+  
+  .react-calendar__tile--hasActive {
+    background-color: #63b3ed; /* Tailwind's blue-400 */
+  }
+  
+  .react-calendar__month-view__weekdays {
+    background-color: #edf2f7; /* Tailwind's gray-200 */
+    font-weight: 600;
+  }
+  
+  .react-calendar__month-view__days__day--weekend {
+    color: #e53e3e; /* Tailwind's red-600 */
+  }
+  
+  .react-calendar__tile:hover {
+    background-color: #bee3f8; /* Tailwind's blue-200 */
+    color: black;
+  }
+  
+  /* Dark mode styles */
+  .dark .react-calendar__navigation {
+    background-color: #2d3748; /* Tailwind's gray-700 */
+    border-bottom: 1px solid #4a5568; /* Tailwind's gray-600 */
+  }
+  
+  .dark .react-calendar__tile {
+    color: white;
+  }
+  
+  .dark .react-calendar__tile--active {
+    background-color: #2b6cb0; /* Tailwind's blue-700 */
+    color: white;
+  }
+  
+  .dark .react-calendar__tile--now {
+    background-color: #2a4365; /* Tailwind's blue-900 */
+  }
+  
+  .dark .react-calendar__tile--hasActive {
+    background-color: #2c5282; /* Tailwind's blue-800 */
+  }
+  
+  .dark .react-calendar__month-view__weekdays {
+    background-color: #4a5568; /* Tailwind's gray-600 */
+  }
+  
+  .dark .react-calendar__month-view__days__day--weekend {
+    color: #f56565; /* Tailwind's red-400 */
+  }
+  
+  .dark .react-calendar__tile:hover {
+    background-color: #3182ce; /* Tailwind's blue-600 */
+    color: white;
+  }
+  

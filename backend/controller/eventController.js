@@ -1,13 +1,30 @@
 import { Event } from "../model/eventSchema.js";
+
+import { User } from "../model/user.js";
 import mongoose from "mongoose";
 
 // Get all events
 export const getEvents = async (req, res) => {
   try {
-    const events = await Event.find().populate("people");
-    res.status(200).json(events);
+    const events = await Event.find({})
+      .populate({
+        path: "people",
+        select: "profilePicture firstName lastName", // Select fields to populate
+        model: User, // Specify the User model for population
+      })
+      .exec();
+
+    if (!events || events.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Events not found" });
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "Events fetched successfully", events });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

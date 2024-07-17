@@ -2,101 +2,84 @@ import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { server } from "../../App";
 import { useNavigate } from "react-router-dom";
-import NET from 'vanta/dist/vanta.net.min'
+import NET from "vanta/dist/vanta.net.min";
 import logo from "../../assets/employee.png";
+import { login } from "../../Redux/slices/authSlice";
+import { useDispatch } from "react-redux";
 const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [vantaEffect, setVantaEffect] = useState(null)
-  const myRef = useRef(null)
+  const [vantaEffect, setVantaEffect] = useState(null);
+  const myRef = useRef(null);
   useEffect(() => {
     if (!vantaEffect) {
-      setVantaEffect(NET({
-        el: myRef.current,
-        color: 0x0,
-        waveHeight: 20,
-        shininess: 50,
-        waveSpeed: 1.5,
-        zoom: 0.75,
-        backgroundColor: 0xffffff
-      }))
+      setVantaEffect(
+        NET({
+          el: myRef.current,
+          color: 0x0,
+          waveHeight: 20,
+          shininess: 50,
+          waveSpeed: 1.5,
+          zoom: 0.75,
+          backgroundColor: 0xffffff,
+        })
+      );
     }
     return () => {
-      if (vantaEffect) vantaEffect.destroy()
-    }
-  }, [vantaEffect])
+      if (vantaEffect) vantaEffect.destroy();
+    };
+  }, [vantaEffect]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
-      // if (!email || !password) {
-      //   alert("Please enter both email and password.");
-      //   return;
-      // }
-  
-      // LOGIN
-      const response = await axios.post(
-        `${server}/users/login`,
-        {
-          email,
-          password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true
-        }
-      );
-  
-      const { data } = response;
-      const { success, message } = data;
-  
-      if (success) {
-        alert(message);
-        // Navigate to the dashboard
-        navigate("../dashboard");
+      // Dispatch login action from authSlice
+      const actionResult = await dispatch(login({ email, password }));
+
+      // Check if login was successful based on action result
+      console.log(actionResult);
+      if (actionResult.payload && actionResult.payload.success) {
+        // Handle success
+        alert(actionResult.payload.message);
+        navigate("/dashboard"); // Navigate to dashboard on successful login
       } else {
-        // Handle unsuccessful login
-        alert(message);
+        // Handle failure
+        alert(
+          actionResult.error.message ||
+            "Login failed. Please check your credentials."
+        );
       }
     } catch (error) {
-  
+      console.error("Error occurred during login:", error.message);
       // Handle specific error cases if needed
       if (error.response) {
-        // The request was made, but the server responded with a status code outside the 2xx range
-        alert( error.response.data.message);
+        alert(error.response.data.message); // Handle server response error
       } else if (error.request) {
-        // The request was made but no response was received
-        console.error("No response received from the server");
+        console.error("No response received from the server"); // Handle no response error
       } else {
-        // Something happened in setting up the request that triggered an error
-        console.error("Error setting up the request:", error.message);
+        console.error("Error setting up the request:", error.message); // Handle request setup error
       }
     }
   };
 
-
-  
-  
   return (
     <div className="grid grid-cols-12 h-screen">
-      <div
-        className="col-span-4 p-4 flex items-center "
-        ref={myRef}
-      >
+      <div className="col-span-4 p-4 flex items-center " ref={myRef}>
         <div className="mx-auto">
           <img src={logo} alt="brand logo" />
           {/* <span className=" text-8xl font-bold text-slate-100">
             Blurock <br />
           </span> */}
-          <p className="text-slate-900 text-center font-bold">Automate your work with us</p>
+          <p className="text-slate-900 text-center font-bold">
+            Automate your work with us
+          </p>
         </div>
       </div>
-      <div className="col-span-8  flex items-center justify-center border-l-2 border-gray-300 bg-gradient-to-r from-gray-100  to-white" >
+      <div className="col-span-8  flex items-center justify-center border-l-2 border-gray-300 bg-gradient-to-r from-gray-100  to-white">
         {/* log in form  */}
 
         <form
@@ -147,7 +130,9 @@ const Login = () => {
             </button>
           </div>
           <div className="flex items-center justify-between">
-              <span className="w-full text-end mt-1 text-sm cursor-pointer">Forgot Password?</span>
+            <span className="w-full text-end mt-1 text-sm cursor-pointer">
+              Forgot Password?
+            </span>
           </div>
         </form>
       </div>

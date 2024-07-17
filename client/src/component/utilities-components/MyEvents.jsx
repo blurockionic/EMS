@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Calendar from "./Calendar";
+// import Calendar from "./Calendar";
 import {
   MdAdd,
   MdOutlineCalendarMonth,
@@ -8,9 +8,17 @@ import {
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
-import { createEvent } from "../../Redux/slices/eventSlice";
+import {
+  createEvent,
+  fetchEvents,
+  fetchEventsForUser,
+} from "../../Redux/slices/eventSlice";
 import { fetchUsers } from "../../Redux/slices/allUserSlice";
 import { ToastContainer, toast } from "react-toastify";
+
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import './CalendarStyles.css'; // Custom styles
 
 const MyEvents = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -22,12 +30,16 @@ const MyEvents = () => {
   const { data: users } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
+  const eventStatus = useSelector((state) => state.events.status);
+  const error = useSelector((state) => state.events.error);
+
   useEffect(() => {
-    // Fetch users on component mount
+    dispatch(fetchEventsForUser());
+    dispatch(fetchEvents());
     dispatch(fetchUsers());
   }, [dispatch]);
 
-  // create new event handler for each event 
+  // create new event handler for each event
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
@@ -66,12 +78,49 @@ const MyEvents = () => {
     setIsFormVisible(!isFormVisible);
   };
 
+  const { events, event, userEvents, status } = useSelector(
+    (state) => state.events
+  );
+  const [newEvent, setNewEvent] = useState({ title: "", description: "" });
+
+  console.log("new event: ", events.events);
+  // Fetch all events
+  useEffect(() => {
+    dispatch(fetchEvents());
+  }, [dispatch]);
+
+  // Fetch event by ID (example ID used: 'exampleId123')
+  useEffect(() => {
+    const exampleId = "exampleId123"; // Replace with actual ID or use a variable
+    // dispatch(fetchEventById(exampleId));
+  }, [dispatch]);
+
+  // Fetch events for a specific user (example user ID used: 'exampleUserId123')
+  useEffect(() => {
+    const exampleUserId = "exampleUserId123"; // Replace with actual user ID or use a variable
+    // dispatch(fetchEventsForUser(exampleUserId));
+  }, [dispatch]);
+
+  // Update an existing event (example ID used: 'exampleIdToUpdate123')
+  const handleUpdateEvent = () => {
+    const exampleIdToUpdate = "exampleIdToUpdate123"; // Replace with actual ID or use a variable
+    // dispatch(updateEvent({ id: exampleIdToUpdate, event: newEvent }));
+    // Optional: Reset form or state after update
+    setNewEvent({ title: "", description: "" });
+  };
+
+  // Delete an event by ID (example ID used: 'exampleIdToDelete123')
+  const handleDeleteEvent = () => {
+    // const exampleIdToDelete = 'exampleIdToDelete123'; // Replace with actual ID or use a variable
+    // dispatch(deleteEvent(exampleIdToDelete));
+  };
+
   return (
     <>
       <div className="flex flex-col justify-end mr-4">
-        <div>
-          <Calendar />
-        </div>
+      <div className="p-4 max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <Calendar />
+    </div>
 
         <div className="border-2 mt-2 rounded-lg">
           <div className="p-2 flex flex-row justify-between">
@@ -85,26 +134,56 @@ const MyEvents = () => {
           </div>
         </div>
 
-        <div className="border-2 mt-2 rounded-lg mb-6">
-          <div className="p-2 flex flex-wrap flex-col">
-            <h3 className="font-bold text-xl">Events tile</h3>
-            <p>description small (10 words)</p>
-            <div className="flex flex-row space-x-16">
-              <div className="flex space-x-2">
-                <span>
-                  <MdOutlineCalendarMonth className="text-lg mt-1" />
-                </span>
-                <span>26/07/2024</span>
-              </div>
-              <div className="flex space-x-1">
-                <span>
-                  <MdTimer className="text-lg mt-1" />
-                </span>
-                <span>10:30 AM </span>
+        {events?.events?.length > 0 &&
+          events?.events?.map((event) => (
+            <div key={event._id} className="border-2 mt-2 rounded-lg mb-6">
+              <div className="p-2 flex flex-wrap flex-col">
+                <h3 className="font-bold text-xl">{event.eventTitle}</h3>
+
+                <div className="flex flex-row space-x-16">
+                  <div className="flex space-x-2">
+                    <span>
+                      <MdOutlineCalendarMonth className="text-lg mt-1" />
+                    </span>
+                    <span>
+                      {new Date(event.eventDate).toLocaleDateString()}
+                    </span>
+                    {/* <span>
+                
+                      {event.endTime - event.startTime}
+                    </span> */}
+                  </div>
+                  <div className="flex space-x-1">
+                    <span>
+                      <MdTimer className="text-lg mt-1" />
+                    </span>
+                    <span>{event.startTime}</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap">
+                  {event.people.slice(0, 5).map((person, index) => (
+                    <div key={person._id} className="flex items-center">
+                      <img
+                        className={`w-8 h-8 rounded-full ${
+                          index !== 0 ? "" : ""
+                        }`}
+                        src={
+                          person?.profilePicture ??
+                          "https://via.placeholder.com/20"
+                        }
+                        alt="Profile"
+                      />
+                    </div>
+                  ))}
+                  {event.people.length > 5 && (
+                    <div className="flex items-center ml-2">
+                      <span>+{event.people.length - 5}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          ))}
       </div>
 
       {/* Modal */}

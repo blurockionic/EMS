@@ -11,8 +11,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProfile } from "../../Redux/slices/profileSlice";
 import { FaRegBuilding } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { server } from "../../App";
-import axios from "axios";
+
+import { logout, resetState } from "../../Redux/slices/authSlice";
 
 const ProfileSidebarModel = ({ active, setActive }) => {
   const dispatch = useDispatch();
@@ -34,15 +34,22 @@ const ProfileSidebarModel = ({ active, setActive }) => {
   const navigate = useNavigate();
 
   const handleOnLogout = async () => {
-    const response = await axios.get(`${server}/users/logout`, {
-      withCredentials: true,
-    });
+    try {
+      await dispatch(logout());
+      dispatch(resetState()); // Reset Redux state immediately after logout
 
-    const { success, message } = response.data;
-
-    if (success) {
-      alert(message);
-      navigate("../login");
+      alert("Logout successful!");
+      navigate("/login"); // Navigate to login page upon successful logout
+    } catch (error) {
+      console.error("Error occurred during logout:", error.message);
+      // Handle specific error cases if needed
+      if (error.response) {
+        alert(error.response.data.message); // Handle server response error
+      } else if (error.request) {
+        console.error("No response received from the server"); // Handle no response error
+      } else {
+        console.error("Error setting up the request:", error.message); // Handle request setup error
+      }
     }
   };
 
