@@ -38,16 +38,8 @@ const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    addMessage(state, action) {
+    addMessage: (state, action) => {
       state.messages.push(action.payload);
-      localStorage.setItem("messages", JSON.stringify(state.messages));
-    },
-    clearMessages(state) {
-      state.messages = [];
-      localStorage.removeItem("messages");
-    },
-    loadMessages(state, action) {
-      state.messages = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -77,7 +69,7 @@ const chatSlice = createSlice({
   },
 });
 
-export const { addMessage, clearMessages, loadMessages } = chatSlice.actions;
+export const { addMessage } = chatSlice.actions;
 
 export const selectMessages = (state) => state.chat.messages;
 

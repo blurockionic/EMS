@@ -21,13 +21,8 @@ import { fetchProjects } from "../../../Redux/slices/projectSlice";
 import { fetchEmployees } from "../../../Redux/slices/employeeSlice";
 import { fetchProfile } from "../../../Redux/slices/profileSlice";
 import { fetchUsers } from "../../../Redux/slices/allUserSlice";
-import ErrorPage from "../../../component/utilities-components/ErrorPage";
-import Activity from "../../../component/utilities-components/Activity";
-import {
-  socketConnect,
-  socketDisconnect,
-} from "../../../Redux/slices/socketSlice";
 import useSocket from "../../../hooks/useSocket";
+import Chat from "../../../component/utilities-components/Chat";
 
 const Team = () => {
   const dispatch = useDispatch();
@@ -453,7 +448,7 @@ const Team = () => {
           </>
         )}
         {/* Activity Tab */}
-        {activeTeamTab === "Activity" && <Activity />}
+        {activeTeamTab === "Activity" && <Chat activeTeamTab={activeTeamTab} />}
         {/* Create Team Tab */}
         {activeTeamTab === "Create Team" && (
           <CreateNewTeam

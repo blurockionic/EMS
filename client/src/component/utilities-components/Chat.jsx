@@ -6,26 +6,29 @@ import {
   fetchMessages,
   sendMessage,
   selectMessages,
-  clearMessages,
-} from "../../Redux/slices/chatSlice"; // Adjust path as per your project structure
-
+  addMessage,
+} from "../../Redux/slices/chatSlice";
 import { fetchProfile } from "../../Redux/slices/profileSlice";
 import { fetchUsers } from "../../Redux/slices/allUserSlice";
+import useSocket from "../../hooks/useSocket";
 
-const Chat = () => {
+const Chat = ({ activeTeamTab }) => {
   const dispatch = useDispatch();
   const messages = useSelector(selectMessages);
   const [newMessage, setNewMessage] = useState("");
   const profile = useSelector((state) => state.profile.data);
-  const userId = profile?._id; // Assuming user id is stored in profile._id
+  const userId = profile?._id;
   const { data: users } = useSelector((state) => state.user);
-
   const [selectedRecipientId, setSelectedRecipientId] = useState(null);
 
+  const socket = useSocket(userId, activeTeamTab === "Activity");
+
   useEffect(() => {
-    dispatch(fetchProfile());
-    dispatch(fetchUsers());
-  }, [dispatch]);
+    if (userId) {
+      dispatch(fetchProfile());
+      dispatch(fetchUsers());
+    }
+  }, [dispatch, userId]);
 
   useEffect(() => {
     if (selectedRecipientId) {
@@ -33,13 +36,27 @@ const Chat = () => {
     }
   }, [dispatch, userId, selectedRecipientId]);
 
+  useEffect(() => {
+    if (socket) {
+      socket.on("newPrivateMessage", (message) => {
+        console.log("real time message me kya aa rha ",message);
+        dispatch(addMessage(message));
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("newPrivateMessage");
+      }
+    };
+  }, [socket, dispatch]);
+
   const handleUserClick = (recipientId) => {
     setSelectedRecipientId(recipientId);
-    dispatch(clearMessages());
     dispatch(fetchMessages({ userId, recipientId }));
   };
 
-  const sendMessageHandler = () => {
+  const sendMessageHandler = async () => {
     if (newMessage.trim() === "") return;
 
     const message = {
@@ -48,15 +65,37 @@ const Chat = () => {
       content: newMessage,
     };
 
-    dispatch(sendMessage(message));
+    // Optimistically add the message to the local state
+    const localMessage = {
+      ...message,
+      sender: {
+        _id: userId,
+        profilePicture: profile.profilePicture,
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+      },
+      recipient: { _id: selectedRecipientId },
+    };
+
+    dispatch(addMessage(localMessage));
+
+    // Clear the input field
     setNewMessage("");
+
+    // Send the message to the server
+    dispatch(sendMessage(message));
+
+    if (socket) {
+      socket.emit("sendMessage", message);
+    }
   };
 
   const getUserMessages = (recipientId) => {
     return messages.filter(
       (message) =>
-        (message.senderId === userId && message.recipientId === recipientId) ||
-        (message.senderId === recipientId && message.recipientId === userId)
+        (message.sender._id === userId &&
+          message.recipient._id === recipientId) ||
+        (message.sender._id === recipientId && message.recipient._id === userId)
     );
   };
 
@@ -88,13 +127,35 @@ const Chat = () => {
               getUserMessages(selectedRecipientId).map((message, index) => (
                 <div
                   key={index}
-                  className={`p-2 rounded-lg ${
-                    message.senderId === userId
-                      ? "bg-blue-200 self-end"
-                      : "bg-gray-200"
-                  }`}
+                  className={`flex items-start ${
+                    message.sender._id === userId
+                      ? "justify-end"
+                      : "justify-start"
+                  } mb-4`}
                 >
-                  {message.content}
+                  <div className="flex flex-col items-center">
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src={
+                        message.sender._id === userId
+                          ? message.sender.profilePicture
+                          : message.recipient.profilePicture
+                      }
+                      alt="User"
+                    />
+                    <span className="text-xs text-gray-500 mt-1">
+                      {message.sender.firstName} {message.sender.lastName}
+                    </span>
+                  </div>
+                  <div
+                    className={`bg-gray-200 p-2 rounded-lg max-w-xs break-words ${
+                      message.sender._id === userId
+                        ? "bg-blue-500 text-white"
+                        : ""
+                    }`}
+                  >
+                    {message.content}
+                  </div>
                 </div>
               ))
             )

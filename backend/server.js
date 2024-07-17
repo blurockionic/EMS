@@ -1,16 +1,16 @@
 // Import necessary modules
 import { Server } from "socket.io";
 import { app } from "./app.js";
-import { createServer } from 'http';
+import { createServer } from "http";
 import { connectDB } from "./configuration/database.js";
-import socketHandler from "./socketHandler.js"; // Ensure this is correctly imported
+import { socketHandler } from "./socketHandler.js"; // Ensure this is correctly imported
 
 // Define port with default port 5000
 const PORT = process.env.PORT || 5000;
 
 // Connect to the database
 connectDB();
-// 
+//
 // app.listen(PORT, ()=>{
 //     console.log(server is wrking on port ${PORT});
 // })

@@ -1,18 +1,31 @@
 // src/controllers/chatController.js
-
+import { getReceiverSocketId, ioInstance } from "../socketHandler.js";
 import { Message } from "../model/MessageSchema.js";
+import { User } from "../model/user.js";
 
 // Save message to MongoDB
+
 export const sendMessage = async (req, res) => {
   const { senderId, recipientId, content } = req.body;
-console.log("front end hit se kya data a rha h ", senderId, recipientId, content);
+  // console.log("Sending message form frontend", senderId, recipientId, content);
+
   try {
+    // Save the message to the database
     const message = new Message({
       sender: senderId,
       recipient: recipientId,
       content,
     });
     const savedMessage = await message.save();
+
+    // Emit the message to the recipient via Socket.IO
+    const receiverSocketId = getReceiverSocketId(recipientId); // Use the imported function
+    if (receiverSocketId) {
+   
+      ioInstance.to(receiverSocketId).emit("newPrivateMessage", savedMessage);
+    }
+
+    // Respond with the saved message
     res.status(201).json(savedMessage);
   } catch (error) {
     console.error("Error saving message:", error);
@@ -25,7 +38,25 @@ export const getMessages = async (req, res) => {
   const { userId, recipientId } = req.params;
 
   try {
-    const messages = await Message.find({ sender: userId, recipient: recipientId }).sort({ timestamp: "asc" });
+    const messages = await Message.find({
+      $or: [
+        { sender: userId, recipient: recipientId },
+        { sender: recipientId, recipient: userId },
+      ],
+    })
+      .sort({ timestamp: "asc" })
+      .populate({
+        path: "sender",
+        select: "profilePicture firstName lastName",
+        model: User,
+      })
+      .populate({
+        path: "recipient",
+        select: "profilePicture firstName lastName",
+        model: User,
+      })
+      .exec();
+
     res.status(200).json(messages);
   } catch (error) {
     console.error("Error fetching messages:", error);
