@@ -1,6 +1,4 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTasks } from "../../../Redux/slices/taskSlice";
 import TimeAgo from "../../../component/admin/TimeAgo";
@@ -9,18 +7,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
 import { IoMdAdd } from "react-icons/io";
 import { GoIssueClosed, GoIssueOpened } from "react-icons/go";
-import { fetchProfile } from "../../../Redux/slices/profileSlice";
 import { fetchUsers } from "../../../Redux/slices/allUserSlice";
 import { fetchTags } from "../../../Redux/slices/tagSlice";
 
 const AllTask = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [taskType, setTaskType] = useState("Open");
   const [openedTasks, setOpenedTasks] = useState([]);
   const [colseTasks, setCloseTasks] = useState([]);
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const itemsPerPage = 15; // Number of items to display per page
+  const itemsPerPage = 10; // Number of items to display per page
   const [currentPage, setCurrentPage] = useState(1);
 
   const indexOfLastTask = currentPage * itemsPerPage;
@@ -28,47 +27,40 @@ const AllTask = () => {
 
   const currentOpenTasks = openedTasks.slice(indexOfFirstTask, indexOfLastTask);
   const currentCloseTasks = colseTasks.slice(indexOfFirstTask, indexOfLastTask);
-
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [FilterButtonActive, setFilterButtonActive] = useState(false);
-
+  const { tasks} = useSelector((state) => state.tasks);
+  const { data: users, status} = useSelector((state) => state.user);
+  const { tags } = useSelector((state) => state.tags);
+  // toggle dropdown button handler function for filter button
   const toggleDropdown = () => {
     setIsFilterOpen(!isFilterOpen);
   };
-
+// filter selected button handler
   const handleFilterSelect = (status) => {
     setSelectedFilter(status);
     setIsFilterOpen(false);
   };
 
-  const dispatch = useDispatch();
-  const { tasks, loading } = useSelector((state) => state.tasks);
-
-const {tags} = useSelector((state)=> state.tags)
-
-useEffect(()=> {
-  dispatch (fetchTags())
-},[dispatch])
-console.log("tags k andar data kya aa rha h", tags, "loading me kya h " , loading);
-
-
+//  use effects for fetching All tags 
+  useEffect(() => {
+    dispatch(fetchTags());
+  }, [dispatch]);
+ 
+// dispatch for fetch all tasks
   useEffect(() => {
     dispatch(fetchTasks());
   }, [dispatch]);
 
   //  fetching all users
 
-  const { data: users, status, error } = useSelector((state) => state.user);
-
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchUsers());
     }
   }, [status, dispatch]);
-
-  // console.log("all profiel", users);
 
   const filteredTasks = tasks.filter((task) => {
     // Find corresponding user by task.assignBy
@@ -77,8 +69,7 @@ console.log("tags k andar data kya aa rha h", tags, "loading me kya h " , loadin
     return user;
   });
 
-  // console.log("Filtered tasks:", filteredTasks);
-
+// filter all tasks according to open and closed conditions
   useEffect(() => {
     const openTasks = tasks.filter((task) => task.status === "Open");
     const closedTasks = tasks.filter((task) => task.status === "Close");
@@ -86,23 +77,19 @@ console.log("tags k andar data kya aa rha h", tags, "loading me kya h " , loadin
     setOpenedTasks(openTasks);
     setCloseTasks(closedTasks);
   }, [tasks]);
-
+// length of open and closed tasks
   const openTasksCount = openedTasks.length;
   const closeTasksCount = colseTasks.length;
-
+// task type handler 
   const handleTaskType = (type) => {
     setTaskType(type);
   };
-
-  const navigate = useNavigate();
-
+  // hadler for check the details of the single task it redirects to the task details page
   const handlerforTaksdetails = (taskId) => {
     // console.log("task details", taskId);
     navigate(`../singleTaksDetails/${taskId}`);
   };
 
-  // filter button for open and close its model
-  // console.log(tasks);
   return (
     <div className="p-3 bg-gray-50 dark:bg-gray-900 min-h-screen w-[80%] mx-auto">
       {/* <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Task Details</h2> */}
@@ -162,11 +149,16 @@ console.log("tags k andar data kya aa rha h", tags, "loading me kya h " , loadin
             </div>
             {isOpen && (
               <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-lg rounded-md p-2 flex flex-wrap">
-                {/* Dropdown Content Here */}
                 <ul>
-                  <li>Option 1</li>
-                  <li>Option 2</li>
-                  <li>Option 3</li>
+                  {tags.map((tag) => (
+                    <li
+                      key={tag._id}
+                      className="text-sm pl-3 px-2 rounded-lg py-1.5 w-full cursor-pointer hover:bg-slate-100 dark:hover:bg-gray-600"
+                      // onClick={() => handleTagClick(tag._id)}
+                    >
+                      {tag.tagName}
+                    </li>
+                  ))}
                 </ul>
               </div>
             )}
@@ -266,7 +258,7 @@ console.log("tags k andar data kya aa rha h", tags, "loading me kya h " , loadin
               >
                 {/* Task details */}
                 <td className="px-4 py-2 flex ">
-                  <GoIssueOpened className="text-xl text-green-500 mx-2" />
+                  <GoIssueOpened className="text-2xl text-green-500 mx-2 mt-2" />
                   <div className="flex flex-col">
                     <span className="font-bold text-xl hover:text-blue-700 dark:hover:text-blue-500">
                       {task.title}{" "}
@@ -295,6 +287,11 @@ console.log("tags k andar data kya aa rha h", tags, "loading me kya h " , loadin
                   </div>
                   <span></span>
                 </td>
+                <td>
+                  {task?.tags?.map((tag) => (
+                    <span key={tag._id}>{tag.tagName}</span>
+                  ))}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -312,12 +309,12 @@ console.log("tags k andar data kya aa rha h", tags, "loading me kya h " , loadin
               >
                 {/* Task details */}
                 <td className="px-4 py-2 flex ">
-                  <GoIssueOpened className="text-xl text-green-500 mx-2" />
+                  <GoIssueOpened className="text-2xl text-green-500 mx-2 mt-2" />
                   <div className="flex flex-col">
                     <span className="font-bold text-xl hover:text-blue-700 dark:hover:text-blue-500">
                       {task.title}{" "}
                     </span>
-                    <div className="flex flex-row ">
+                    <div className="flex flex-row">
                       <span> #{task.taskId} created by </span>
                       <span className="font-semibold mx-2">
                         {" "}

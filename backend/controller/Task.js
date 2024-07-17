@@ -1,7 +1,7 @@
 import { Employee } from "../model/employee.js";
 import { Project } from "../model/project.js";
 import { Task } from "../model/task.js";
-
+import { Tags } from "../model/tagsSchema.js";
 import { User } from "../model/user.js"; // Example User schema import
 
 export const task = async (req, res) => {
@@ -9,7 +9,7 @@ export const task = async (req, res) => {
     const allTask = await Task.find({});
     // Function to generate new task ID
     // function generateNewTaskId() {
-    
+
     //   let maxTaskId = allTask.reduce(
     //     (max, task) => Math.max(max, task.task_id),
     //     0
@@ -24,9 +24,8 @@ export const task = async (req, res) => {
     // // Example usage:
     // let newTaskId = generateNewTaskId();
     // console.log("New Task ID:", newTaskId);
-  
+
     const {
-    
       title,
       description,
       taskhashId,
@@ -74,14 +73,13 @@ export const task = async (req, res) => {
         message: "Project not found! Please select another project",
       });
     }
-  
+
     // Create entry in the database
     const newTask = await Task.create({
-    
       title,
       description,
       taskhashId,
-      // tags,
+      tags,
       status,
       assignBy,
       assignTo,
@@ -93,7 +91,7 @@ export const task = async (req, res) => {
     const idName = await User.findById(assignId);
     console.log(idName);
 
-    const fullName = idName.firstName +" " + idName.lastName;
+    const fullName = idName.firstName + " " + idName.lastName;
     // Return success response
     console.log(fullName);
     return res.status(201).json({
@@ -101,7 +99,6 @@ export const task = async (req, res) => {
       task: newTask,
       message: `Task has been assign to ${fullName}`,
     });
-    
   } catch (error) {
     console.error("Error creating task:", error);
     return res.status(500).json({
@@ -111,12 +108,14 @@ export const task = async (req, res) => {
   }
 };
 
-
-
 export const allTask = async (req, res) => {
   try {
     //validation
-    const allTask = await Task.find({});
+    const allTask = await Task.find({}).populate({
+      path: "tags",
+      select: "tagName",
+      model: Tags,
+    });
 
     if (!allTask) {
       return res.status(500).json({
