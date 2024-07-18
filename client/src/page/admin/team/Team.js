@@ -21,7 +21,6 @@ import { fetchProjects } from "../../../Redux/slices/projectSlice";
 import { fetchEmployees } from "../../../Redux/slices/employeeSlice";
 import { fetchProfile } from "../../../Redux/slices/profileSlice";
 import { fetchUsers } from "../../../Redux/slices/allUserSlice";
-import useSocket from "../../../hooks/useSocket";
 import Chat from "../../../component/utilities-components/Chat";
 
 const Team = () => {
@@ -67,8 +66,6 @@ const Team = () => {
     dispatch(fetchProjects());
   }, [dispatch]);
 
-  // Use the custom hook to manage socket connection based on the active tab
-  useSocket(userId, activeTeamTab === "Activity");
 
   // Example usage
   //  const onlineUsers = useSelector((state) => state.socket.onlineUsers);
