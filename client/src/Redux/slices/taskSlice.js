@@ -76,11 +76,33 @@ export const reopenTask = createAsyncThunk(
   }
 );
 
+// Thunk for fetching specific project tasks
+export const specificProjectTask = createAsyncThunk(
+  "tasks/specificProjectTask",
+  async (taskId, thunkAPI) => {
+    try {
+      const response = await axios.get(
+        `${server}/task/specific/${taskId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data; // Assuming the response contains specific project task data
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
 // Create the tasks slice
 const taskSlice = createSlice({
   name: "tasks",
   initialState: {
     tasks: [],
+    projectSpecificTasks: [], // Add a new property for project-specific tasks
     loading: false,
     error: null,
   },
@@ -105,7 +127,7 @@ const taskSlice = createSlice({
       })
       .addCase(submitNewTask.fulfilled, (state, action) => {
         state.loading = false;
-        // Handle success logic if needed
+        state.tasks.push(action.payload); // Assuming the new task is added to the state
       })
       .addCase(submitNewTask.rejected, (state, action) => {
         state.loading = false;
@@ -117,8 +139,6 @@ const taskSlice = createSlice({
       })
       .addCase(closeTask.fulfilled, (state, action) => {
         state.loading = false;
-        // Handle success logic if needed
-        // Optionally, you can update the state to reflect the closed task
         state.tasks = state.tasks.map((task) =>
           task._id === action.meta.arg ? { ...task, status: "closed" } : task
         );
@@ -133,13 +153,23 @@ const taskSlice = createSlice({
       })
       .addCase(reopenTask.fulfilled, (state, action) => {
         state.loading = false;
-        // Handle success logic if needed
-        // Optionally, you can update the state to reflect the reopened task
         state.tasks = state.tasks.map((task) =>
           task._id === action.meta.arg ? { ...task, status: "open" } : task
         );
       })
       .addCase(reopenTask.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(specificProjectTask.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(specificProjectTask.fulfilled, (state, action) => {
+        state.loading = false;
+        state.projectSpecificTasks = action.payload; // Update the state with specific project tasks
+      })
+      .addCase(specificProjectTask.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

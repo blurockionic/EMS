@@ -267,38 +267,38 @@ export const deleteTask = async (req, res) => {
 
 //get all task of specific task // tested
 export const specificProjectTask = async (req, res) => {
-  // fetch project id from params
+  // Fetch project id from params
   const { id } = req.params;
   try {
-    // validation
+    // Validation
     if (!id) {
       return res.status(400).json({
         success: false,
-        message: "Invalid request",
+        message: "Invalid request: Project ID is required",
       });
     }
 
-    //check user
+    // Fetch tasks filtered by project ID
 
-    //all task filtered by id
-    const specificProjectTask = await Task.find({ taskOf: id });
+    const specificProjectTasks = await Task.find({ project: id });
 
-    if (!specificProjectTask) {
-      return res.status(400).json({
+    if (!specificProjectTasks || specificProjectTasks.length === 0) {
+      return res.status(404).json({
         success: false,
-        message: "No task Available!",
+        message: "No tasks available for this project",
       });
     }
 
     return res.status(200).json({
       success: true,
-      specificProjectTask,
-      message: "All task fetched successfully!",
+      tasks: specificProjectTasks,
+      message: "Tasks fetched successfully!",
     });
   } catch (error) {
+    console.error("Error fetching tasks:", error);
     return res.status(500).json({
       success: false,
-      message: error,
+      message: "Internal server error",
     });
   }
 };

@@ -11,36 +11,32 @@ import { useNavigate } from "react-router-dom";
 const NewTask = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // Fetching projects
+
   const projectState = useSelector((state) => state.project);
   const { allProject, status: projectStatus } = projectState;
   const { data: users, status } = useSelector((state) => state.user);
   const { tags } = useSelector((state) => state.tags);
-  // use dispatch to fatched all the projects that are use for create tasks
+  const profile = useSelector((state) => state.profile.data);
+  const profileStatus = useSelector((state) => state.profile.status);
+
   useEffect(() => {
     if (projectStatus === "idle") {
       dispatch(fetchProjects());
     }
   }, [projectStatus, dispatch]);
 
-  // Fetching profile
-  const profile = useSelector((state) => state.profile.data);
-  const profileStatus = useSelector((state) => state.profile.status);
-  // use effect to get all the profile which are used for create tasks
   useEffect(() => {
     if (profileStatus === "idle") {
       dispatch(fetchProfile());
     }
   }, [profileStatus, dispatch]);
 
-  // use effect to get all the users for assign tasks to themselves
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchUsers());
     }
   }, [status, dispatch]);
 
-  // form data initialization
   const initialFormData = {
     title: "",
     description: "",
@@ -54,45 +50,75 @@ const NewTask = () => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // handle for set the state  when user change the input value
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
-  // handle for submit the form when user click on submit button
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
+
+    const {
+      title,
+      description,
+      tags,
+      status,
+      assignBy,
+      assignTo,
+      project,
+      assignDate,
+      dueDate,
+    } = formData;
+
+    if (
+      !title ||
+      !description ||
+      !tags.length ||
+      !status ||
+      !assignBy ||
+      !assignTo ||
+      !project ||
+      !assignDate ||
+      !dueDate
+    ) {
+      setErrorMessage("All fields are required");
+      return;
+    }
+
+    setErrorMessage("");
 
     try {
       const response = await dispatch(submitNewTask(formData));
 
       if (response.payload.success) {
         toast.success(response.payload.message);
+        alert(response.payload.message);
         setTimeout(() => {
           navigate(`../alltask`);
         }, 3000);
       }
+
       setFormData(initialFormData);
     } catch (error) {
       console.error("Error creating task:", error);
     }
   };
-  // use effect to get all the tags from use in create new Task
+
   useEffect(() => {
     dispatch(fetchTags());
   }, [dispatch]);
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full h-[100%] dark:bg-gray-800 rounded shadow-md flex  items-center justify-center "
+      className="w-full h-[100%] dark:bg-gray-800 rounded shadow-md flex items-center justify-center "
     >
-      <div className="mainContainer border-2  flex flex-col md:flex-row rounded shadow-md w-4/5 mx-auto">
-        <div className="left  md:w-2/3 flex flex-col m-2 p-2 border border-gray-300 rounded shadow-md">
+      <div className="mainContainer border-2 flex flex-col md:flex-row rounded shadow-md w-4/5 mx-auto">
+        <div className="left md:w-2/3 flex flex-col m-2 p-2 border border-gray-300 rounded shadow-md">
           <div>
             <label className="block mb-2">
               <span className="text-gray-700 dark:text-gray-300 font-semibold">
@@ -126,6 +152,7 @@ const NewTask = () => {
           </div>
         </div>
 
+       
         <div className="right  md:w-1/3 h-full flex flex-col gap-4  m-2 p-2 border border-gray-300 rounded shadow-md">
           <div>
             <label className="block mb-2">
@@ -160,12 +187,12 @@ const NewTask = () => {
                 name="assignBy"
                 value={formData.assignBy}
                 onChange={handleChange}
-                className="form-select mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded "
+                className="form-select mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
               >
                 <option value="" disabled>
                   Select an assigner
                 </option>
-                <option key={profile._Id} value={`${profile._id}`}>
+                <option key={profile._id} value={profile._id}>
                   {`${profile.firstName} ${profile.lastName}`}
                 </option>
               </select>
@@ -189,7 +216,7 @@ const NewTask = () => {
                 {users
                   ?.filter((employee) => employee?.role === "employee")
                   .map((employee) => (
-                    <option key={employee._id} value={`${employee._id}`}>
+                    <option key={employee._id} value={employee._id}>
                       {`${employee.firstName} ${employee.lastName}`}
                     </option>
                   ))}
@@ -258,6 +285,10 @@ const NewTask = () => {
               Submit
             </button>
           </div>
+
+          {errorMessage && (
+            <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
+          )}
         </div>
       </div>
     </form>
