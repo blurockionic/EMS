@@ -302,3 +302,86 @@ export const specificProjectTask = async (req, res) => {
     });
   }
 };
+
+export const closeTask = async (req, res) => {
+  // fetch id from params
+  const { id } = req.params;
+  // fetch all data from req  body
+  try {
+    //VALIDATION
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "ID is invalid or null",
+      });
+    }
+
+    //find task
+    const foundTask = await Task.findById(id);
+
+    if (!foundTask) {
+      return res.status(400).json({
+        success: false,
+        message: "Task is not found!",
+      });
+    }
+
+    //udate with new value
+    foundTask.status = "Close";
+
+    //    save the new value
+    const closeTask = await foundTask.save();
+
+    return res.status(200).json({
+      success: true,
+      closeTask,
+      message: "task closed successfully!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
+};
+export const reopenTask = async (req, res) => {
+  // fetch id from params
+  const { id } = req.params;
+  // fetch all data from req  body
+  try {
+    //VALIDATION
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "ID is invalid or null",
+      });
+    }
+
+    //find task
+    const foundTask = await Task.findById(id);
+
+    if (!foundTask) {
+      return res.status(400).json({
+        success: false,
+        message: "Task is not found!",
+      });
+    }
+
+    //udate with new value
+    foundTask.status = "Open";
+
+    //    save the new value
+    const closeTask = await foundTask.save();
+
+    return res.status(200).json({
+      success: true,
+      closeTask,
+      message: "task closed successfully!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
+};

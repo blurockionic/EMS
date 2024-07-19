@@ -35,6 +35,47 @@ export const submitNewTask = createAsyncThunk(
   }
 );
 
+// Thunk for closing a task
+export const closeTask = createAsyncThunk(
+  "tasks/closeTask",
+  async (taskId, thunkAPI) => {
+    try {
+      const response = await axios.put(
+        `${server}/task/close/${taskId}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data; // Assuming the response contains success and message
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+// Thunk for reopening a task
+export const reopenTask = createAsyncThunk(
+  "tasks/reopenTask",
+  async (taskId, thunkAPI) => {
+    try {
+      const response = await axios.put(
+        `${server}/task/reopen/${taskId}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data; // Assuming the response contains success and message
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
 // Create the tasks slice
 const taskSlice = createSlice({
   name: "tasks",
@@ -65,12 +106,42 @@ const taskSlice = createSlice({
       .addCase(submitNewTask.fulfilled, (state, action) => {
         state.loading = false;
         // Handle success logic if needed
-        console.log("Task created successfully:", action.payload);
       })
       .addCase(submitNewTask.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        console.error("Failed to create task:", action.payload);
+      })
+      .addCase(closeTask.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(closeTask.fulfilled, (state, action) => {
+        state.loading = false;
+        // Handle success logic if needed
+        // Optionally, you can update the state to reflect the closed task
+        state.tasks = state.tasks.map((task) =>
+          task._id === action.meta.arg ? { ...task, status: "closed" } : task
+        );
+      })
+      .addCase(closeTask.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(reopenTask.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(reopenTask.fulfilled, (state, action) => {
+        state.loading = false;
+        // Handle success logic if needed
+        // Optionally, you can update the state to reflect the reopened task
+        state.tasks = state.tasks.map((task) =>
+          task._id === action.meta.arg ? { ...task, status: "open" } : task
+        );
+      })
+      .addCase(reopenTask.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

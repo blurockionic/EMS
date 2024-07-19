@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoBookOutline } from "react-icons/io5";
-import { GoProject, GoTasklist, GoIssueTrackedBy, GoPeople, GoReport } from "react-icons/go";
+import {
+  GoProject,
+  GoTasklist,
+  GoIssueTrackedBy,
+  GoPeople,
+  GoReport,
+} from "react-icons/go";
 import { MdHistory } from "react-icons/md";
 import { RiTeamLine } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +15,9 @@ import { fetchProfile } from "../../Redux/slices/profileSlice";
 import Loader from "./Loader";
 
 const Header = () => {
-  const [activeTab, setActiveTab] = useState(localStorage.getItem('activeTab') || "overview");
+  const [activeTab, setActiveTab] = useState(
+    localStorage.getItem("activeTab") || "overview"
+  );
 
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.profile.data);
@@ -20,7 +28,7 @@ const Header = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    localStorage.setItem('activeTab', activeTab);
+    localStorage.setItem("activeTab", activeTab);
   }, [activeTab]);
 
   if (profileStatus === "loading") {
@@ -169,8 +177,8 @@ const Header = () => {
     <>
       {profile?.role && (
         <div className="w-full border-b">
-          <div className="w-full flex flex-row justify-between items-end px-4 h-16">
-            <div className="flex w-full h-full items-end relative space-x-1">
+          <div className="w-full flex flex-col sm:flex-row justify-between items-end px-4 h-16">
+            <div className="flex w-full sm:w-auto h-full items-end relative space-x-1 overflow-x-auto sm:overflow-x-hidden">
               {filteredTabs.map(({ tab, label, icon: Icon, link }) => (
                 <div
                   key={tab}
