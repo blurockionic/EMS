@@ -8,18 +8,20 @@ import { MdAttractions } from "react-icons/md";
 import { RxPerson } from "react-icons/rx";
 import { GrOverview, GrTechnology } from "react-icons/gr";
 import { CgCalendarNext } from "react-icons/cg";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Milestones from "../utilities-components/Milestones";
-import { specificProjectTask } from "../../Redux/slices/taskSlice";
+import Task from "./Task";
 
-const ProjectDetails = ({ projectId }) => {
+const ProjectDetails = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { specificProjectId } = location.state;
+  // Initialize specificProjectId as null or undefined
+  const projectId = location.state?.projectId;
+
   const { specificProject, status, error } = useSelector(
     (state) => state.specificProject
   );
-  console.log("project ", specificProjectId);
+
   useEffect(() => {
     if (projectId) {
       dispatch(fetchProjectById(projectId));
@@ -43,22 +45,13 @@ const ProjectDetails = ({ projectId }) => {
   }, [specificProject]);
 
   useEffect(() => {
-    if (specificProjectId) {
-      dispatch(specificProjectTask(specificProjectId));
-    }
-  }, [specificProjectId, dispatch]);
-
-  const { projectSpecificTasks, loading } = useSelector((state) => state.tasks);
-
-  console.log("project k task", projectSpecificTasks);
-  useEffect(() => {
     if (projectId) {
       dispatch(fetchProjectById(projectId));
     }
   }, [dispatch, projectId]);
 
-  if (loading) return <p>Loading tasks...</p>;
-  if (error) return <p>Error: {error}</p>;
+
+
 
   const handleInputChange = (e, field) => {
     setEditableProject({
@@ -215,8 +208,8 @@ const ProjectDetails = ({ projectId }) => {
                 <Milestones projectId={projectId} />
               )}
               {toggleTabButton === "All task" && (
-                <div className="text-white">
-                  {/* Content for All task tab */}
+                <div>
+                  <Task projectId={projectId} />
                 </div>
               )}
               {toggleTabButton === "Other" && (

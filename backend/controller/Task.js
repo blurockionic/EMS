@@ -280,7 +280,11 @@ export const specificProjectTask = async (req, res) => {
 
     // Fetch tasks filtered by project ID
 
-    const specificProjectTasks = await Task.find({ project: id });
+    const specificProjectTasks = await Task.find({ project: id }).populate({
+      path: "tags",
+      select: "tagName",
+      model: Tags,
+    });
 
     if (!specificProjectTasks || specificProjectTasks.length === 0) {
       return res.status(404).json({
