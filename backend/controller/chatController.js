@@ -1,13 +1,9 @@
-// src/controllers/chatController.js
-import { getReceiverSocketId, ioInstance } from "../socketHandler.js";
 import { Message } from "../model/MessageSchema.js";
 import { User } from "../model/user.js";
 
 // Save message to MongoDB
-
 export const sendMessage = async (req, res) => {
   const { senderId, recipientId, content } = req.body;
-  // console.log("Sending message form frontend", senderId, recipientId, content);
 
   try {
     // Save the message to the database
@@ -17,13 +13,6 @@ export const sendMessage = async (req, res) => {
       content,
     });
     const savedMessage = await message.save();
-
-    // Emit the message to the recipient via Socket.IO
-    const receiverSocketId = getReceiverSocketId(recipientId); // Use the imported function
-    if (receiverSocketId) {
-   
-      ioInstance.to(receiverSocketId).emit("newPrivateMessage", savedMessage);
-    }
 
     // Respond with the saved message
     res.status(201).json(savedMessage);

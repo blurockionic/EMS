@@ -1079,3 +1079,97 @@ const Chat = ({ activeTeamTab }) => {
 };
 
 export default Chat;
+
+
+
+  return (
+    <div className="flex h-screen">
+      {/* Sidebar with user list */}
+      <div className="w-1/4 border-r">
+        <h2 className="text-lg font-bold mb-2">All Users</h2>
+        <ul>
+          {users?.map((user) => (
+            <li
+              key={user._id}
+              className={`cursor-pointer p-2 ${
+                selectedRecipientId === user._id ? "bg-gray-200" : ""
+              }`}
+              onClick={() => handleUserClick(user._id)}
+            >
+              <span>{user.firstName} </span>
+              <span>{user.lastName}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Main chat area */}
+      <div className="flex-1 p-4">
+        <div className="messages h-5/6 overflow-y-auto">
+          {selectedRecipientId ? (
+            getUserMessages(selectedRecipientId).length === 0 ? (
+              <div className="text-center">No messages yet.</div>
+            ) : (
+              getUserMessages(selectedRecipientId).map((message, index) => (
+                <div
+                  key={index}
+                  className={`flex items-start ${
+                    message.sender._id === userId
+                      ? "justify-end"
+                      : "justify-start"
+                  } mb-4`}
+                >
+                  <div className="flex flex-col items-center">
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src={
+                        message.sender._id === userId
+                          ? message.sender.profilePicture
+                          : message.recipient.profilePicture
+                      }
+                      alt="User"
+                    />
+                    <span className="text-xs text-gray-500 mt-1">
+                      {message.sender.firstName} {message.sender.lastName}
+                    </span>
+                  </div>
+                  <div
+                    className={`bg-gray-200 p-2 rounded-lg max-w-xs break-words ${
+                      message.sender._id === userId
+                        ? "bg-blue-500 text-white"
+                        : ""
+                    }`}
+                  >
+                    {message.content}
+                  </div>
+                </div>
+              ))
+            )
+          ) : (
+            <div className="text-center">
+              Select a user to start a conversation.
+            </div>
+          )}
+        </div>
+
+        {/* Message input area */}
+        {selectedRecipientId && (
+          <div className="mt-4 flex">
+            <input
+              type="text"
+              className="flex-1 border rounded p-2"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type your message..."
+            />
+            <button
+              className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+              onClick={sendMessageHandler}
+            >
+              Send
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );

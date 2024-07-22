@@ -1,32 +1,16 @@
-// socketHandler.js
-
-const userSocketMap = {}; // Map to store userId -> socketId
-let ioInstance = null;
 const socketHandler = (io) => {
-  ioInstance = io;
   io.on("connection", (socket) => {
     console.log("A user connected", socket.id);
 
-    const userId = socket.handshake.query.userId;
-    if (userId !== undefined) {
-      userSocketMap[userId] = socket.id;
-    }
-
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    socket.on("sendMessage", (message) => {
+      // Emit the message back to the sender and to all other clients
+      io.emit("receiveMessage", message); // Use io.emit to send to all clients
+    });
 
     socket.on("disconnect", () => {
       console.log("User disconnected", socket.id);
-      if (userSocketMap[userId]) {
-        delete userSocketMap[userId];
-        io.emit("getOnlineUsers", Object.keys(userSocketMap));
-      }
     });
   });
 };
 
-// Function to get receiver's socket ID
-const getReceiverSocketId = (receiverId) => {
-  return userSocketMap[receiverId];
-};
-
-export { socketHandler, getReceiverSocketId, ioInstance }; // Export both socketHandler and getReceiverSocketId
+export { socketHandler };

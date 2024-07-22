@@ -1,59 +1,68 @@
-// src/components/utilities-components/Chat.jsx
-
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchMessages,
   sendMessage,
   selectMessages,
-  addMessage,
 } from "../../Redux/slices/chatSlice";
-import { fetchProfile } from "../../Redux/slices/profileSlice";
-import { fetchUsers } from "../../Redux/slices/allUserSlice";
-import useSocket from "../../hooks/useSocket";
+import io from "socket.io-client";
+import { IoSend } from "react-icons/io5";
 
 const Chat = ({ activeTeamTab }) => {
   const dispatch = useDispatch();
   const messages = useSelector(selectMessages);
   const [newMessage, setNewMessage] = useState("");
+  const [socket, setSocket] = useState(null);
+  const [realTimeMessages, setRealTimeMessages] = useState([]);
   const profile = useSelector((state) => state.profile.data);
   const userId = profile?._id;
   const { data: users } = useSelector((state) => state.user);
   const [selectedRecipientId, setSelectedRecipientId] = useState(null);
 
-  const socket = useSocket(userId, activeTeamTab === "Activity");
-
   useEffect(() => {
-    if (userId) {
-      dispatch(fetchProfile());
-      dispatch(fetchUsers());
-    }
-  }, [dispatch, userId]);
+
+    if (activeTeamTab !== "Activity") return;
+
+    const socketServerUrl = "http://localhost:4000"; // Replace with your actual socket server URL
+    const newSocket = io(socketServerUrl);
+
+    newSocket.on("connect", () => {
+      console.log("Connected to socket server");
+      setSocket(newSocket);
+    });
+
+    newSocket.on("disconnect", () => {
+      console.log("Disconnected from socket server");
+      setSocket(null);
+    });
+
+    newSocket.on("receiveMessage", (message) => {
+      console.log("real time received", message);
+      if (
+        message.senderId === selectedRecipientId ||
+        message.recipientId === userId
+      ) {
+        setRealTimeMessages((prevMessages) => [...prevMessages, message]);
+      }
+    });
+
+    return () => {
+      if (newSocket) {
+        newSocket.disconnect();
+        console.log("Socket connection closed");
+      }
+    };
+  }, [activeTeamTab, userId, selectedRecipientId]);
+
 
   useEffect(() => {
     if (selectedRecipientId) {
       dispatch(fetchMessages({ userId, recipientId: selectedRecipientId }));
     }
-  }, [dispatch, userId, selectedRecipientId]);
+  }, [selectedRecipientId, userId, dispatch]);
 
-  useEffect(() => {
-    if (socket) {
-      socket.on("newPrivateMessage", (message) => {
-        console.log("real time message me kya aa rha ", message );
-        dispatch(addMessage([...messages,message]) );
-      });
-    }
-
-    
-  }, [socket, dispatch]);
-
-  const handleUserClick = (recipientId) => {
-    setSelectedRecipientId(recipientId);
-    dispatch(fetchMessages({ userId, recipientId }));
-  };
-
-  const sendMessageHandler = async () => {
-    if (newMessage.trim() === "") return;
+  const sendMessageHandler = () => {
+    if (newMessage.trim() === "" || !selectedRecipientId) return;
 
     const message = {
       senderId: userId,
@@ -61,108 +70,87 @@ const Chat = ({ activeTeamTab }) => {
       content: newMessage,
     };
 
-    // Optimistically add the message to the local state
-    const localMessage = {
-      ...message,
-      sender: {
-        _id: userId,
-        profilePicture: profile.profilePicture,
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-      },
-      recipient: { _id: selectedRecipientId },
-    };
-
-    dispatch(addMessage(localMessage));
-
-    // Clear the input field
-    setNewMessage("");
-
-    // Send the message to the server
-    dispatch(sendMessage(message));
-
     if (socket) {
       socket.emit("sendMessage", message);
     }
+
+    dispatch(sendMessage(message));
+    setNewMessage("");
   };
 
-  const getUserMessages = (recipientId) => {
-    return messages.filter(
-      (message) =>
-        (message.sender._id === userId &&
-          message.recipient._id === recipientId) ||
-        (message.sender._id === recipientId && message.recipient._id === userId)
-    );
+  const handleUserClick = (recipientId) => {
+    setSelectedRecipientId(recipientId);
+    setRealTimeMessages([]); // Reset real-time messages for the new recipient
   };
+
+  const combinedMessages = [...realTimeMessages, ...messages].filter(
+    (message) =>
+      (message.senderId === userId &&
+        message.recipientId === selectedRecipientId) ||
+      (message.senderId === selectedRecipientId &&
+        message.recipientId === userId)
+  );
 
   return (
     <div className="flex h-screen">
-      <div className="w-1/4 border-r">
+      <div className="w-1/4 border-r p-4">
         <h2 className="text-lg font-bold mb-2">All Users</h2>
         <ul>
-          {users?.map((user) => (
-            <li
-              key={user._id}
-              className={`cursor-pointer p-2 ${
-                selectedRecipientId === user._id ? "bg-gray-200" : ""
-              }`}
-              onClick={() => handleUserClick(user._id)}
-            >
-              <span>{user.firstName} </span>
-              <span>{user.lastName}</span>
-            </li>
-          ))}
+          {users
+            ?.filter((user) => user._id !== userId)
+            .map((user) => (
+              <li
+                key={user._id}
+                className={`cursor-pointer p-2 ${
+                  selectedRecipientId === user._id ? "bg-gray-200" : ""
+                }`}
+                onClick={() => handleUserClick(user._id)}
+              >
+                <span>
+                  {user.firstName} {user.lastName}
+                </span>
+              </li>
+            ))}
         </ul>
       </div>
-      <div className="flex-1 p-4">
-        <div className="messages h-5/6 overflow-y-auto">
-          {selectedRecipientId ? (
-            getUserMessages(selectedRecipientId).length === 0 ? (
-              <div className="text-center">No messages yet.</div>
-            ) : (
-              getUserMessages(selectedRecipientId).map((message, index) => (
+      <div className="flex-1 p-4 flex flex-col">
+        <div className="messages flex-1 overflow-y-auto mb-4">
+          {combinedMessages.length === 0 ? (
+            <div className="text-center">No messages yet.</div>
+          ) : (
+            combinedMessages.map((message, index) => {
+              const sender =
+                message.senderId === userId
+                  ? profile
+                  : users.find((user) => user._id === message.senderId);
+              const isSender = message.senderId === userId;
+              return (
                 <div
                   key={index}
-                  className={`flex items-start ${
-                    message.sender._id === userId
-                      ? "justify-end"
-                      : "justify-start"
-                  } mb-4`}
+                  className={`chat ${isSender ? "chat-end" : "chat-start"}`}
                 >
-                  <div className="flex flex-col items-center">
-                    <img
-                      className="w-10 h-10 rounded-full"
-                      src={
-                        message.sender._id === userId
-                          ? message.sender.profilePicture
-                          : message.recipient.profilePicture
-                      }
-                      alt="User"
-                    />
-                    <span className="text-xs text-gray-500 mt-1">
-                      {message.sender.firstName} {message.sender.lastName}
-                    </span>
+                  <div className="chat-image avatar">
+                    <div className="w-10 rounded-full">
+                      <img src={sender?.profilePicture} alt="User" />
+                    </div>
                   </div>
                   <div
-                    className={`bg-gray-200 p-2 rounded-lg max-w-xs break-words ${
-                      message.sender._id === userId
-                        ? "bg-blue-500 text-white"
-                        : ""
+                    className={`chat-bubble ${
+                      isSender ? "chat-bubble-primary" : "chat-bubble-secondary"
                     }`}
                   >
                     {message.content}
                   </div>
+                  <div className="chat-footer opacity-50">
+                    {sender?.firstName} {sender?.lastName}
+                  </div>
                 </div>
-              ))
-            )
-          ) : (
-            <div className="text-center">
-              Select a user to start a conversation.
-            </div>
+              );
+            })
           )}
         </div>
         {selectedRecipientId && (
-          <div className="mt-4 flex">
+          <div className="flex">
             <input
               type="text"
               className="flex-1 border rounded p-2"
@@ -174,7 +162,7 @@ const Chat = ({ activeTeamTab }) => {
               className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
               onClick={sendMessageHandler}
             >
-              Send
+              <IoSend />
             </button>
           </div>
         )}

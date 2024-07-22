@@ -1,10 +1,10 @@
 import { Employee } from "../model/employee.js";
 import { Project } from "../model/project.js";
 import { Task } from "../model/task.js";
-
-
-import { User } from "../model/user.js"; // Example User schema import
 import {uploadOnCloudinary} from "../utilities/cloudinary.js";
+
+
+
 // export const task = async (req, res) => {
 //   try {
 //     const allTask = await Task.find({});
@@ -16,110 +16,16 @@ import {uploadOnCloudinary} from "../utilities/cloudinary.js";
 //     //     0
 //     //   );
 
+import { Tags } from "../model/tagsSchema.js";
+import { User } from "../model/user.js"; // Example User schema import
+
+
+
 //     //   // Increment the maximum taskId by 1 to generate the new taskId
 //     //   let newTaskId = maxTaskId + 1;
 
 //     //   return newTaskId;
 //     // }
-
-//     // // Example usage:
-//     // let newTaskId = generateNewTaskId();
-//     // console.log("New Task ID:", newTaskId);
-  
-//     const {
-    
-//       title,
-//       description,
-//       taskhashId,
-//       tags,
-//       status,
-//       assignBy,
-//       assignTo,
-//       project,
-//       assignDate,
-//       dueDate,
-//     } = req.body;
-
-//     // Validation
-//     if (
-//       !title ||
-//       !description ||
-//       !tags ||
-//       !status ||
-//       !assignBy ||
-//       !assignTo ||
-//       !project ||
-//       !assignDate ||
-//       !dueDate
-//     ) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "All fields are required",
-//       });
-//     }
-
-//     // Check if the employee (assignTo) exists
-//     const isEmployeeExist = await User.findById(assignTo);
-//     if (!isEmployeeExist) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Employee not found! Please select another employee",
-//       });
-//     }
-
-//     // Check if the project exists
-//     const isProjectExist = await Project.findById(project);
-//     if (!isProjectExist) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Project not found! Please select another project",
-//       });
-//     }
-
-//     let cloudinaryUrl = null;
-
-//     if(req.file){
-//       const result = await uploadOnCloudinary(req.file.path);
-//       cloudinaryUrl = result.secure_url;
-//       console.log("cloudinary Url", cloudinaryUrl);
-//     }
-  
-//     // Create entry in the database
-//     const newTask = await Task.create({
-    
-//       title,
-//       description,
-//       taskhashId,
-//       // tags,
-//       status,
-//       assignBy,
-//       assignTo,
-//       project,
-//       assignDate,
-//       dueDate,
-//       file: req.file ? req.file.path : null 
-//     });
-//     const assignId = assignTo;
-//     const idName = await User.findById(assignId);
-//     console.log(idName);
-
-//     const fullName = idName.firstName +" " + idName.lastName;
-//     // Return success response
-//     console.log(fullName);
-//     return res.status(201).json({
-//       success: true,
-//       task: newTask,
-//       message: `Task has been assign to ${fullName}`,
-//     });
-    
-//   } catch (error) {
-//     console.error("Error creating task:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal server error in backend",
-//     });
-//   }
-// };
 
 export const task = async (req, res) => {
   console.log('Inside the /newTask route');
@@ -221,14 +127,14 @@ export const task = async (req, res) => {
         message: "Internal server error",
       });
     }
-
-};
-
-
 export const allTask = async (req, res) => {
   try {
     //validation
-    const allTask = await Task.find({});
+    const allTask = await Task.find({}).populate({
+      path: "tags",
+      select: "tagName",
+      model: Tags,
+    });
 
     if (!allTask) {
       return res.status(500).json({
@@ -380,33 +286,116 @@ export const deleteTask = async (req, res) => {
 
 //get all task of specific task // tested
 export const specificProjectTask = async (req, res) => {
-  // fetch project id from params
+  // Fetch project id from params
   const { id } = req.params;
   try {
-    // validation
+    // Validation
     if (!id) {
       return res.status(400).json({
         success: false,
-        message: "Invalid request",
+        message: "Invalid request: Project ID is required",
       });
     }
 
-    //check user
+    // Fetch tasks filtered by project ID
 
-    //all task filtered by id
-    const specificProjectTask = await Task.find({ taskOf: id });
+    const specificProjectTasks = await Task.find({ project: id });
 
-    if (!specificProjectTask) {
-      return res.status(400).json({
+    if (!specificProjectTasks || specificProjectTasks.length === 0) {
+      return res.status(404).json({
         success: false,
-        message: "No task Available!",
+        message: "No tasks available for this project",
       });
     }
 
     return res.status(200).json({
       success: true,
-      specificProjectTask,
-      message: "All task fetched successfully!",
+      tasks: specificProjectTasks,
+      message: "Tasks fetched successfully!",
+    });
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export const closeTask = async (req, res) => {
+  // fetch id from params
+  const { id } = req.params;
+  // fetch all data from req  body
+  try {
+    //VALIDATION
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "ID is invalid or null",
+      });
+    }
+
+    //find task
+    const foundTask = await Task.findById(id);
+
+    if (!foundTask) {
+      return res.status(400).json({
+        success: false,
+        message: "Task is not found!",
+      });
+    }
+
+    //udate with new value
+    foundTask.status = "Close";
+
+    //    save the new value
+    const closeTask = await foundTask.save();
+
+    return res.status(200).json({
+      success: true,
+      closeTask,
+      message: "task closed successfully!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
+};
+export const reopenTask = async (req, res) => {
+  // fetch id from params
+  const { id } = req.params;
+  // fetch all data from req  body
+  try {
+    //VALIDATION
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "ID is invalid or null",
+      });
+    }
+
+    //find task
+    const foundTask = await Task.findById(id);
+
+    if (!foundTask) {
+      return res.status(400).json({
+        success: false,
+        message: "Task is not found!",
+      });
+    }
+
+    //udate with new value
+    foundTask.status = "Open";
+
+    //    save the new value
+    const closeTask = await foundTask.save();
+
+    return res.status(200).json({
+      success: true,
+      closeTask,
+      message: "task closed successfully!",
     });
   } catch (error) {
     return res.status(500).json({

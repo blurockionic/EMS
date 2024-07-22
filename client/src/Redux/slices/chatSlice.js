@@ -1,5 +1,3 @@
-// src/slices/chatSlice.js
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { server } from "../../App"; // Adjust the import according to your actual server configuration
@@ -14,36 +12,40 @@ const initialState = {
 export const fetchMessages = createAsyncThunk(
   "chat/fetchMessages",
   async ({ userId, recipientId }) => {
-    const response = await axios.get(
-      `${server}/chat/messages/${userId}/${recipientId}`
-    );
-    return response.data;
+    try {
+      const response = await axios.get(
+        `${server}/chat/messages/${userId}/${recipientId}`
+      );
+      return response.data;
+    } catch (error) {
+      throw Error(error.response.data.message);
+    }
   }
 );
 
 // Thunk action to send a message
 export const sendMessage = createAsyncThunk(
   "chat/sendMessage",
-  async ({ senderId, recipientId, content }) => {
-    const response = await axios.post(`${server}/chat/send`, {
-      senderId,
-      recipientId,
-      content,
-    });
-    return response.data;
+  async ({ senderId, recipientId, content }, { dispatch }) => {
+    try {
+      const response = await axios.post(`${server}/chat/send`, {
+        senderId,
+        recipientId,
+        content,
+      });
+      return response.data;
+    } catch (error) {
+      throw Error(error.response.data.message);
+    }
   }
 );
 
 const chatSlice = createSlice({
   name: "chat",
   initialState,
-  reducers: {
-    addMessage: (state, action) => {
-      console.log("check addMessage is working on realtime", action.payload);
-      state.messages.push(action.payload);
-      
-    },
-  },
+
+  reducers: {},
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchMessages.pending, (state) => {
@@ -70,8 +72,6 @@ const chatSlice = createSlice({
       });
   },
 });
-
-export const { addMessage } = chatSlice.actions;
 
 export const selectMessages = (state) => state.chat.messages;
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Titlebar from "../../../component/utilities-components/Titlebar";
 import Card from "../../../component/admin/admin-card/Card";
 import EmployeeTable from "../../../component/utilities-components/EmployeeTable";
 import axios from "axios";
@@ -25,7 +24,7 @@ const HrDashaboard = () => {
   return (
     <div>
       <div>
-        <Titlebar title={"Dashboard"} />
+      
       </div>
       <div className="flex justify-normal gap-20">
         <div className="flex justify-normal gap-10">

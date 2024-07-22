@@ -8,23 +8,23 @@ import { MdAttractions } from "react-icons/md";
 import { RxPerson } from "react-icons/rx";
 import { GrOverview, GrTechnology } from "react-icons/gr";
 import { CgCalendarNext } from "react-icons/cg";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Milestones from "../utilities-components/Milestones";
+import { specificProjectTask } from "../../Redux/slices/taskSlice";
 
 const ProjectDetails = ({ projectId }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { specificProjectId } = location.state;
   const { specificProject, status, error } = useSelector(
     (state) => state.specificProject
   );
-
+  console.log("project ", specificProjectId);
   useEffect(() => {
     if (projectId) {
       dispatch(fetchProjectById(projectId));
     }
   }, [dispatch, projectId]);
-
-
-  
 
   const [activeTab, setActiveTab] = useState(0);
   const [editableProject, setEditableProject] = useState({});
@@ -41,6 +41,24 @@ const ProjectDetails = ({ projectId }) => {
       setEditableProject(specificProject);
     }
   }, [specificProject]);
+
+  useEffect(() => {
+    if (specificProjectId) {
+      dispatch(specificProjectTask(specificProjectId));
+    }
+  }, [specificProjectId, dispatch]);
+
+  const { projectSpecificTasks, loading } = useSelector((state) => state.tasks);
+
+  console.log("project k task", projectSpecificTasks);
+  useEffect(() => {
+    if (projectId) {
+      dispatch(fetchProjectById(projectId));
+    }
+  }, [dispatch, projectId]);
+
+  if (loading) return <p>Loading tasks...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   const handleInputChange = (e, field) => {
     setEditableProject({
@@ -185,8 +203,6 @@ const ProjectDetails = ({ projectId }) => {
                 Other Details
               </span>
             </div>
-
-
           </div>
 
           <div className="flex flex-row space-x-8">
@@ -196,7 +212,7 @@ const ProjectDetails = ({ projectId }) => {
               )}
 
               {toggleTabButton === "Milestone" && (
-               <Milestones projectId={projectId}/>
+                <Milestones projectId={projectId} />
               )}
               {toggleTabButton === "All task" && (
                 <div className="text-white">

@@ -1,5 +1,5 @@
 import express from "express"
-import { allTask, deleteTask, specificProjectTask, task, taskOfEmployee, updateTask } from "../controller/Task.js"
+import { allTask, closeTask, deleteTask, reopenTask, specificProjectTask, task, taskOfEmployee, updateTask } from "../controller/Task.js"
 import { isAuthenticated } from "../middleware/auth.js"
 import upload from "../middleware/multer.middleware.js"
 
@@ -24,6 +24,13 @@ router.get("/:id",isAuthenticated, taskOfEmployee)
 //router for update
 router.put("/:id",isAuthenticated, updateTask)
 
+//route for close and reopen task 
+
+router.put("/close/:id",isAuthenticated, closeTask)
+
+router.put("/reopen/:id",isAuthenticated, reopenTask)
+
+//route for update task status
 
 //route for delete task 
 router.delete("/:id",isAuthenticated, deleteTask)
