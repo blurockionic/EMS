@@ -24,7 +24,7 @@ export const submitNewTask = createAsyncThunk(
     try {
       const response = await axios.post(`${server}/task/new`, formData, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
         withCredentials: true,
       });

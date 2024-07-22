@@ -8,18 +8,22 @@ import { submitNewTask } from "../../../Redux/slices/taskSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
+
 const NewTask = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const projectState = useSelector((state) => state.project);
 
-  const { allProject, status: projectStatus, error: projectError } = projectState;
+  const {
+    allProject,
+    status: projectStatus,
+    error: projectError,
+  } = projectState;
   const { data: users, status } = useSelector((state) => state.user);
   const { tags } = useSelector((state) => state.tags);
   const profile = useSelector((state) => state.profile.data);
   const profileStatus = useSelector((state) => state.profile.status);
-
 
   useEffect(() => {
     if (projectStatus === "idle") {
@@ -86,39 +90,44 @@ const NewTask = () => {
     }
     // Creating FormData to handle file uploads
     const data = new FormData();
-    data.append('title', title);
-    data.append('description', description);
-    data.append('tags', tags);
-    data.append('status', status);
-    data.append('assignBy', assignBy);
-    data.append('assignTo', assignTo);
-    data.append('project', project);
-    data.append('assignDate', assignDate);
-    data.append('dueDate', dueDate);
+    data.append("title", title);
+    data.append("description", description);
+    data.append("tags", tags);
+    data.append("status", status);
+    data.append("assignBy", assignBy);
+    data.append("assignTo", assignTo);
+    data.append("project", project);
+    data.append("assignDate", assignDate);
+    data.append("dueDate", dueDate);
     if (fileUploader) {
-      data.append('fileUploader', fileUploader); // Appending file if present
-      
+      data.append("fileUploader", fileUploader); // Appending file if present
     }
 
     try {
-      const response = await axios.post(
-        `${server}/task/new`,
-        data,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          withCredentials: true,
-        }
-      );
-      console.log("checking response", response);
+      const response = await dispatch(submitNewTask(data));
 
-      const { success, message } = response.data;
-      if (success) {
-        alert(message);
-        setFormData(initialFormData);
+      if (response.payload.success) {
+        toast.success(response.payload.message);
+        alert(response.payload.message);
+        setTimeout(() => {
+          navigate(`../alltask`);
+        }, 3000);
       }
 
+      setFormData(initialFormData);
+      // const response = await axios.post(`${server}/task/new`, data, {
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      //   withCredentials: true,
+      // });
+      // console.log("checking response", response);
+
+      // const { success, message } = response.data;
+      // if (success) {
+      //   alert(message);
+      //   setFormData(initialFormData);
+      // }
     } catch (error) {
       console.error("Error creating task:", error);
     }
@@ -168,7 +177,6 @@ const NewTask = () => {
           </div>
         </div>
 
-       
         <div className="right  md:w-1/3 h-full flex flex-col gap-4  m-2 p-2 border border-gray-300 rounded shadow-md">
           <div>
             <label className="block mb-2">
@@ -177,6 +185,7 @@ const NewTask = () => {
               </span>
               <select
                 name="tags"
+                multiple={false}
                 value={formData.tags}
                 onChange={handleChange}
                 className="form-select mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
@@ -293,35 +302,32 @@ const NewTask = () => {
             </label>
           </div>
 
-
-            <div>
-              <label className="block mb-2">
-                <span className="text-gray-700 dark:text-gray-300 font-semibold">Submission Date:</span>
-                <input
-                  type="file"
-                  name="fileUploader"
-                  
-                  onChange={handleChange}
-                  className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
-                />
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between mt-4">
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                Submit
-              </button>
-            </div>
-
+          <div>
+            <label className="block mb-2">
+              <span className="text-gray-700 dark:text-gray-300 font-semibold">
+                Submission Date:
+              </span>
+              <input
+                type="file"
+                name="fileUploader"
+                onChange={handleChange}
+                className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
+              />
+            </label>
           </div>
 
-          {errorMessage && (
-            <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
-          )}
+          <div className="flex items-center justify-between mt-4">
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Submit
+            </button>
+          </div>
         </div>
+        {errorMessage && (
+          <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
+        )}
       </div>
     </form>
   );
