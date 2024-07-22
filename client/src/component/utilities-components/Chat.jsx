@@ -20,6 +20,7 @@ const Chat = ({ activeTeamTab }) => {
   const [selectedRecipientId, setSelectedRecipientId] = useState(null);
 
   useEffect(() => {
+
     if (activeTeamTab !== "Activity") return;
 
     const socketServerUrl = "http://localhost:4000"; // Replace with your actual socket server URL
@@ -52,6 +53,7 @@ const Chat = ({ activeTeamTab }) => {
       }
     };
   }, [activeTeamTab, userId, selectedRecipientId]);
+
 
   useEffect(() => {
     if (selectedRecipientId) {

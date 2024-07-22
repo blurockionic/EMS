@@ -203,6 +203,9 @@ const SingleTaskDetails = () => {
           </div>
           <div className="flex flex-wrap flex-row justify-between p-4">
             <div>{task.description}</div>
+            <div>
+              <img src={task.fileUploder}/>
+            </div>
           </div>
         </div>
       </div>
