@@ -2,115 +2,227 @@ import { Employee } from "../model/employee.js";
 import { Project } from "../model/project.js";
 import { Task } from "../model/task.js";
 
+
 import { User } from "../model/user.js"; // Example User schema import
+import {uploadOnCloudinary} from "../utilities/cloudinary.js";
+// export const task = async (req, res) => {
+//   try {
+//     const allTask = await Task.find({});
+//     // Function to generate new task ID
+//     // function generateNewTaskId() {
+    
+//     //   let maxTaskId = allTask.reduce(
+//     //     (max, task) => Math.max(max, task.task_id),
+//     //     0
+//     //   );
+
+//     //   // Increment the maximum taskId by 1 to generate the new taskId
+//     //   let newTaskId = maxTaskId + 1;
+
+//     //   return newTaskId;
+//     // }
+
+//     // // Example usage:
+//     // let newTaskId = generateNewTaskId();
+//     // console.log("New Task ID:", newTaskId);
+  
+//     const {
+    
+//       title,
+//       description,
+//       taskhashId,
+//       tags,
+//       status,
+//       assignBy,
+//       assignTo,
+//       project,
+//       assignDate,
+//       dueDate,
+//     } = req.body;
+
+//     // Validation
+//     if (
+//       !title ||
+//       !description ||
+//       !tags ||
+//       !status ||
+//       !assignBy ||
+//       !assignTo ||
+//       !project ||
+//       !assignDate ||
+//       !dueDate
+//     ) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "All fields are required",
+//       });
+//     }
+
+//     // Check if the employee (assignTo) exists
+//     const isEmployeeExist = await User.findById(assignTo);
+//     if (!isEmployeeExist) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Employee not found! Please select another employee",
+//       });
+//     }
+
+//     // Check if the project exists
+//     const isProjectExist = await Project.findById(project);
+//     if (!isProjectExist) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Project not found! Please select another project",
+//       });
+//     }
+
+//     let cloudinaryUrl = null;
+
+//     if(req.file){
+//       const result = await uploadOnCloudinary(req.file.path);
+//       cloudinaryUrl = result.secure_url;
+//       console.log("cloudinary Url", cloudinaryUrl);
+//     }
+  
+//     // Create entry in the database
+//     const newTask = await Task.create({
+    
+//       title,
+//       description,
+//       taskhashId,
+//       // tags,
+//       status,
+//       assignBy,
+//       assignTo,
+//       project,
+//       assignDate,
+//       dueDate,
+//       file: req.file ? req.file.path : null 
+//     });
+//     const assignId = assignTo;
+//     const idName = await User.findById(assignId);
+//     console.log(idName);
+
+//     const fullName = idName.firstName +" " + idName.lastName;
+//     // Return success response
+//     console.log(fullName);
+//     return res.status(201).json({
+//       success: true,
+//       task: newTask,
+//       message: `Task has been assign to ${fullName}`,
+//     });
+    
+//   } catch (error) {
+//     console.error("Error creating task:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal server error in backend",
+//     });
+//   }
+// };
 
 export const task = async (req, res) => {
-  try {
-    const allTask = await Task.find({});
-    // Function to generate new task ID
-    // function generateNewTaskId() {
-    
-    //   let maxTaskId = allTask.reduce(
-    //     (max, task) => Math.max(max, task.task_id),
-    //     0
-    //   );
-
-    //   // Increment the maximum taskId by 1 to generate the new taskId
-    //   let newTaskId = maxTaskId + 1;
-
-    //   return newTaskId;
-    // }
-
-    // // Example usage:
-    // let newTaskId = generateNewTaskId();
-    // console.log("New Task ID:", newTaskId);
+  console.log('Inside the /newTask route');
+  console.log(req.file); // Log the uploaded file info
+  console.log(req.body); // Log the form data
   
-    const {
-    
-      title,
-      description,
-      taskhashId,
-      tags,
-      status,
-      assignBy,
-      assignTo,
-      project,
-      assignDate,
-      dueDate,
-    } = req.body;
+    try {
+      const {
+        title,
+        description,
+        taskhashId,
+        tags,
+        status,
+        assignBy,
+        assignTo,
+        project,
+        assignDate,
+        dueDate,
+      } = req.body;
 
-    // Validation
-    if (
-      !title ||
-      !description ||
-      !tags ||
-      !status ||
-      !assignBy ||
-      !assignTo ||
-      !project ||
-      !assignDate ||
-      !dueDate
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
+      // Validation
+      if (
+        !title ||
+        !description ||
+        !tags ||
+        !status ||
+        !assignBy ||
+        !assignTo ||
+        !project ||
+        !assignDate ||
+        !dueDate
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "All fields are required",
+        });
+      }
 
-    // Check if the employee (assignTo) exists
-    const isEmployeeExist = await User.findById(assignTo);
-    if (!isEmployeeExist) {
-      return res.status(404).json({
-        success: false,
-        message: "Employee not found! Please select another employee",
-      });
-    }
+      // Check if the employee (assignTo) exists
+      const isEmployeeExist = await User.findById(assignTo);
+      if (!isEmployeeExist) {
+        return res.status(404).json({
+          success: false,
+          message: "Employee not found! Please select another employee",
+        });
+      }
 
-    // Check if the project exists
-    const isProjectExist = await Project.findById(project);
-    if (!isProjectExist) {
-      return res.status(404).json({
-        success: false,
-        message: "Project not found! Please select another project",
-      });
-    }
+      // Check if the project exists
+      const isProjectExist = await Project.findById(project);
+      if (!isProjectExist) {
+        return res.status(404).json({
+          success: false,
+          message: "Project not found! Please select another project",
+        });
+      }
+
+      // Handle file upload to Cloudinary
+      let cloudinaryUrl = null;
+      console.log("checking what is inside req.path", req.file);
+      if (req.file) {
+        const result = await uploadOnCloudinary(req.file.path);
+        if (result) {
+          cloudinaryUrl = result.secure_url;
+          console.log("Cloudinary URL:", cloudinaryUrl);
+        }
+
   
-    // Create entry in the database
-    const newTask = await Task.create({
-    
-      title,
-      description,
-      taskhashId,
-      // tags,
-      status,
-      assignBy,
-      assignTo,
-      project,
-      assignDate,
-      dueDate,
-    });
-    const assignId = assignTo;
-    const idName = await User.findById(assignId);
-    console.log(idName);
+      }
 
-    const fullName = idName.firstName +" " + idName.lastName;
-    // Return success response
-    console.log(fullName);
-    return res.status(201).json({
-      success: true,
-      task: newTask,
-      message: `Task has been assign to ${fullName}`,
-    });
-    
-  } catch (error) {
-    console.error("Error creating task:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error in backend",
-    });
-  }
+      // Create entry in the database
+      const newTask = await Task.create({
+        title,
+        description,
+        taskhashId,
+        tags,
+        status,
+        assignBy,
+        assignTo,
+        project,
+        assignDate,
+        dueDate,
+        fileUpload: cloudinaryUrl
+      });
+
+      const assignId = assignTo;
+      const idName = await User.findById(assignId);
+      const fullName = `${idName.firstName} ${idName.lastName}`;
+
+      // Return success response
+      return res.status(201).json({
+        success: true,
+        task: newTask,
+        message: `Task has been assigned to ${fullName}`,
+      });
+    } catch (error) {
+      console.error("Error creating task:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      });
+    }
+
 };
-
 
 
 export const allTask = async (req, res) => {

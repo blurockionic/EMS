@@ -39,16 +39,12 @@ const Chat = ({ activeTeamTab }) => {
   useEffect(() => {
     if (socket) {
       socket.on("newPrivateMessage", (message) => {
-        console.log("real time message me kya aa rha ",message);
-        dispatch(addMessage(message));
+        console.log("real time message me kya aa rha ", message );
+        dispatch(addMessage([...messages,message]) );
       });
     }
 
-    return () => {
-      if (socket) {
-        socket.off("newPrivateMessage");
-      }
-    };
+    
   }, [socket, dispatch]);
 
   const handleUserClick = (recipientId) => {

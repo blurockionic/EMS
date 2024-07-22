@@ -13,11 +13,7 @@ const NewTask = () => {
 
   // Fetching projects
   const projectState = useSelector((state) => state.project);
-  const {
-    allProject,
-    status: projectStatus,
-    error: projectError,
-  } = projectState;
+  const { allProject, status: projectStatus, error: projectError } = projectState;
 
   useEffect(() => {
     if (projectStatus === "idle") {
@@ -53,69 +49,73 @@ const NewTask = () => {
     project: "",
     assignDate: "",
     dueDate: "",
+    fileUploader: null, // Added to handle file upload
   };
 
   const [formData, setFormData] = useState(initialFormData);
 
   const handleChange = (e) => {
+    const { name, value, files } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: files ? files[0] : value, // Handle file input separately
     });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
+
+    const {
+      title,
+      description,
+      tags,
+      status,
+      assignBy,
+      assignTo,
+      project,
+      assignDate,
+      dueDate,
+      fileUploader,
+    } = formData;
+
+    console.log("let see formData", formData);
+    if (fileUploader) {
+      console.log("File Path:", fileUploader);
+    }
+    // Creating FormData to handle file uploads
+    const data = new FormData();
+    data.append('title', title);
+    data.append('description', description);
+    data.append('tags', tags);
+    data.append('status', status);
+    data.append('assignBy', assignBy);
+    data.append('assignTo', assignTo);
+    data.append('project', project);
+    data.append('assignDate', assignDate);
+    data.append('dueDate', dueDate);
+    if (fileUploader) {
+      data.append('fileUploader', fileUploader); // Appending file if present
+      
+    }
 
     try {
-      const {
-        title,
-        description,
-        tags,
-        status,
-        assignBy,
-        assignTo,
-        project,
-        assignDate,
-        dueDate,
-      } = formData;
-
       const response = await axios.post(
         `${server}/task/new`,
-
-        {
-          title,
-          description,
-          tags,
-          status,
-          assignBy,
-          assignTo,
-          project,
-          assignDate,
-          dueDate,
-        },
+        data,
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'multipart/form-data',
           },
           withCredentials: true,
         }
       );
-      console.log("response frontend", response);
-      const {success,message} = response.data;
-      if(success){
-        // const assignedUser = users.find(user => user.id === formData.assignTo);
-        // console.log("here we are checking what is inside asignto name");
-        // const assignedUserName = assignedUser ? assignedUser.name : 'navnit';
-        // // console.log(assignedUser.employee.firstName);
-        // alert(`Task has been assigined to" ${assignedUserName}`);
+      console.log("checking response", response);
 
+      const { success, message } = response.data;
+      if (success) {
         alert(message);
         setFormData(initialFormData);
       }
-
-      // const { success, message } = response.data;
     } catch (error) {
       console.log("Unable to process:", error); // Logs any error that occurs during the request
     }
@@ -252,6 +252,19 @@ const NewTask = () => {
                   type="date"
                   name="dueDate"
                   value={formData.dueDate}
+                  onChange={handleChange}
+                  className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
+                />
+              </label>
+            </div>
+
+            <div>
+              <label className="block mb-2">
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">Submission Date:</span>
+                <input
+                  type="file"
+                  name="fileUploader"
+                  
                   onChange={handleChange}
                   className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
                 />

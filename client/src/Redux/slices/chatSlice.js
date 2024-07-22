@@ -39,7 +39,9 @@ const chatSlice = createSlice({
   initialState,
   reducers: {
     addMessage: (state, action) => {
+      console.log("check addMessage is working on realtime", action.payload);
       state.messages.push(action.payload);
+      
     },
   },
   extraReducers: (builder) => {

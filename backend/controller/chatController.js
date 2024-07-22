@@ -68,7 +68,7 @@ export const getMessages = async (req, res) => {
 export const getChatGroups = async (req, res) => {
   // Implement logic to fetch chat groups
   res.status(501).json({ error: "Not implemented" });
-};
+}; 
 
 // Create a new chat group
 export const createGroup = async (req, res) => {
