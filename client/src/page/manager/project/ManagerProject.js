@@ -1,10 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { server } from "../../../App";
-import Titlebar from "../../../component/utilities-components/Titlebar";
+
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProjects } from "../../../Redux/slices/projectSlice";
+import { LuGalleryVerticalEnd, LuLayoutList } from "react-icons/lu";
+import { IoMdAdd } from "react-icons/io";
+import { fetchProfile } from "../../../Redux/slices/profileSlice";
+import { fetchTeams } from "../../../Redux/slices/teamSlice";
 
 const ManagerProject = () => {
   const navigate = useNavigate();
@@ -19,62 +23,60 @@ const ManagerProject = () => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-  const [formTaskData, setFormTaskData] = useState({
-    taskTitle: "",
-    taskDescription: "",
-    assignTo: "",
-    taskOf: "",
-    taskAssignDate: "",
-    taskEndDate: "",
-    isTaskCompleted: false,
-  });
+
 
   const [employeeData, setEmployeeData] = useState([]);
   // const [allProject, setAllProject] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
-  const [profile, setProfile] = useState({});
-
-  const [allProjectForSearch, setAllProjectForSearch] = useState([]);
-  const [teamInfoData, setTeamInfoData] = useState([]);
-
+  // const [teamInfoData, setTeamInfoData] = useState([]);
+  const [viewMode, setViewMode] = useState("table");
   const [selectedProject, setSelectedProject] = useState({});
+  const { teams} = useSelector((state) => state.team);
 
   // geting all the details of team
+  // useEffect(() => {
+  //   const teamData = async () => {
+  //     try {
+  //       const team = await axios.get(`${server}/team/allTeams`, {
+  //         withCredentials: true,
+  //       });
+  //       console.log("team ka data aa raha h kya", team.data.allTeamsData);
+  //       setTeamInfoData(team.data.allTeamsData);
+  //     } catch (error) {
+  //       console.log("error to geting all the team data from data");
+  //     }
+  //   };
+  //   teamData();
+  // }, []);
+
+  //fetch all the details of project
+  const dispatch = useDispatch();
+  // Fetching projects
+  const projectState = useSelector((state) => state.project);
+  const {
+    allProject,
+    status: projectStatus,
+    error: projectError,
+  } = projectState;
+
   useEffect(() => {
-    const teamData = async () => {
-      try {
-        const team = await axios.get(`${server}/team/allTeams`, {
-          withCredentials: true,
-        });
-        console.log("team ka data aa raha h kya", team.data.allTeamsData);
-        setTeamInfoData(team.data.allTeamsData);
-      } catch (error) {
-        console.log("error to geting all the team data from data");
-      }
-    };
-    teamData();
-  }, []);
-;
+    if (projectStatus === "idle") {
+      dispatch(fetchProjects());
+    }
+  }, [projectStatus, dispatch]);
 
-      //fetch all the details of project
-const dispatch = useDispatch()
-// Fetching projects
-const projectState = useSelector((state) => state.project);
-const {
-  allProject,
-  status: projectStatus,
-  error: projectError,
-} = projectState;
+  console.log("all project data me h kuchh ", allProject);
 
-useEffect(() => {
-  if (projectStatus === "idle") {
-    dispatch(fetchProjects());
-  }
-}, [projectStatus, dispatch]);
+  const profile = useSelector((state) => state.profile.data);
 
-console.log("all project data me h kuchh ",allProject);
+  useEffect(() => {
+    dispatch(fetchTeams());
+    dispatch(fetchProfile());
+  }, [dispatch]);
+
+
+  console.log(allProject);
 
   // handle search
   // const handleSearch = (e) => {
@@ -90,24 +92,6 @@ console.log("all project data me h kuchh ",allProject);
   //     setAllProject(tempVar); // Update the array state with the filtered results
   //   }
   // };
-
-  //profile data
-  useEffect(() => {
-    const myProfile = async () => {
-      try {
-        const response = await axios.get(`${server}/users/me`, {
-          withCredentials: true,
-        });
-
-        setProfile(response.data.user);
-      } catch (error) {
-        console.error("Error fetching user profile:", error.message);
-      }
-    };
-
-    myProfile();
-  }, []);
-  // console.log(profile.employeeId);
 
   // handle for report button
   const handleReportClick = (project) => {
@@ -129,7 +113,7 @@ console.log("all project data me h kuchh ",allProject);
   // control for show the modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setIsNewTaskModalOpen(false);
+   
   };
 
   // handle for the change in value
@@ -192,16 +176,11 @@ console.log("all project data me h kuchh ",allProject);
     }
   };
 
-  //handle for assign task to user
+
   const handleAssignTask = (project) => {
-    setIsNewTaskModalOpen(true);
-
-    setFormTaskData((prevData) => ({
-      ...prevData,
-      taskOf: project.projectName,
-    }));
-
-    // navigate("../task");
+    navigate("../newTask", {
+      state: { project },
+    });
   };
 
   // all employees data
@@ -222,64 +201,12 @@ console.log("all project data me h kuchh ",allProject);
     fetchData();
   }, [setEmployeeData]);
 
-  //handle for change
-  const handleOnTaskChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
-    setFormTaskData((prevData) => ({
-      ...prevData,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  //handle for submit
-  const handleOnTaskSubmit = async (e) => {
-    e.preventDefault();
-    // Handle form submission here, for example, send the formData to the server
-    const {
-      taskTitle,
-      taskDescription,
-      taskAssignDate,
-      taskEndDate,
-      taskOf,
-      assignTo,
-    } = formTaskData;
-
-    try {
-      const response = await axios.post(
-        `${server}/task/new`,
-        {
-          taskTitle,
-          taskDescription,
-          taskAssignDate,
-          taskEndDate,
-          taskOf,
-          assignTo,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-
-      console.log(response);
-      const { success, message } = response.data;
-      if (success) {
-        alert(message);
-        setIsNewTaskModalOpen(false);
-      }
-    } catch (error) {
-      alert(error.response.data.message);
-    }
-  };
-
   //hnadle for show mare
   const handleOnShowMore = (projectId) => {
-    localStorage.setItem("projectId", projectId);
-
-    navigate("../projectdetails");
+    navigate("../projectdetails", {
+      state: { projectId },
+    });
+   
   };
 
   console.log(allProject);
@@ -291,131 +218,153 @@ console.log("all project data me h kuchh ",allProject);
   const tempData = [...empData];
   console.log("temp data", tempData);
 
-
-
   return (
     <>
-      <div className="flex justify-between">
-        <div>
-          <Titlebar title={"Project Details"} />
-        </div>
-        <div>
-          {/* handle search  */}
-          <div className="w-96 flex items-center border border-slate-300 rounded-md p-1 mx-1">
-            <span className="text-xl mx-1"></span>
-            <input
-              type="text"
-              // onChange={(e) => handleSearch(e)}
-              placeholder="Search project name..."
-              className="w-96 p-1 rounded-lg outline-none"
-            />
+      <div>
+        <nav>
+          <div>
+            <div className="flex flex-row justify-between border-b border-gray-300 dark:border-gray-700">
+              <div className="flex flex-row">
+                <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
+                  <div className="flex items-center font-semibold bg-slate-800 dark:bg-gray-600 text-white px-4 py-1.5 rounded-md shadow-inner hover:bg-gray-600 dark:hover:bg-gray-500 cursor-pointer mx-1">
+                    All Project
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-row">
+                <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
+                  <button
+                    className={`tooltip-class p-2 rounded ${
+                      viewMode === "table"
+                        ? "bg-slate-900 dark:bg-gray-800"
+                        : "bg-gray-500 dark:bg-gray-700"
+                    }`}
+                    onClick={() => setViewMode("table")}
+                    data-tip="Switch to Table View"
+                  >
+                    <LuLayoutList className="text-white dark:text-gray-300" />
+                  </button>
+                  <button
+                    className={`tooltip-2-class p-2 rounded ${
+                      viewMode === "gallery"
+                        ? "bg-slate-900 dark:bg-gray-800"
+                        : "bg-gray-500 dark:bg-gray-700"
+                    }`}
+                    onClick={() => setViewMode("gallery")}
+                    data-tip="Switch to Gallery View"
+                  >
+                    <LuGalleryVerticalEnd className="text-white dark:text-gray-300" />
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-          {/* end handle search  */}
-        </div>
+        </nav>
       </div>
-      {allProject.length > 0 ? (
-        <div className="overflow-x-auto mt-5">
-          <table className="min-w-full table-auto">
-            <thead className="bg-slate-400">
-              <tr>
-                <th className="border px-4 py-2">S.No</th>
-                <th className="border px-4 py-2">Project Name</th>
-                <th className="border px-4 py-2">Start Date</th>
-                <th className="border px-4 py-2">Submission Date</th>
-                <th className="border px-4 py-2">Team Name</th>
+      <div>
+        {viewMode === "table" ? (
+          <>
+            {allProject.length > 0 ? (
+              <div className="overflow-x-auto mt-5">
+                <table className="min-w-full table-auto">
+                  <thead className="bg-slate-400">
+                    <tr>
+                      <th className="border px-4 py-2">S.No</th>
+                      <th className="border px-4 py-2">Project Name</th>
+                      <th className="border px-4 py-2">Start Date</th>
+                      <th className="border px-4 py-2">Submission Date</th>
+                      <th className="border px-4 py-2">Team Name</th>
+                      <th className="border px-4 py-2">Status</th>
+                      <th className="border px-4 py-2">Assign Task</th>
+                      <th className="border px-4 py-2">Action</th>
+                      <th className="border px-4 py-2">Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allProject.map((project, index) => (
+                      <tr key={project._id} className="text-center">
+                        <td className="border px-4 py-2">{index + 1}</td>
+                        <td className="border px-4 py-2">
+                          {project.projectName}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {project.projectStartDate}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {project.projectEndDate}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {teams
+                            .filter((team) => team._id === project.teamId)
+                            .map((filteredTeam) => (
+                              <div key={filteredTeam._id}>
+                                {filteredTeam.teamName}
+                              </div>
+                            ))}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {project.isCompleted ? (
+                            <span className="text-green-800">Completed</span>
+                          ) : (
+                            <span className="text-red-800">Not Completed</span>
+                          )}
+                        </td>
+                        <td className="border px-4 py-2">
+                          <button
+                            className={`mx-auto font-bold py-2 px-4 rounded ${
+                              project.isCompleted
+                                ? "bg-red-300 cursor-not-allowed text-white"
+                                : "text-blue-500"
+                            }`}
+                            onClick={() =>
+                              !project.isCompleted && handleAssignTask(project)
+                            }
+                            disabled={project.isCompleted}
+                          >
+                            Assign Task
+                          </button>
+                        </td>
+                        <td className="border px-4 py-2">
+                          <button
+                            className={`mx-auto font-bold py-2 px-4 rounded ${
+                              project.isCompleted
+                                ? "bg-red-300 cursor-not-allowed text-white"
+                                : "text-blue-500"
+                            }`}
+                            onClick={() =>
+                              !project.isCompleted && handleReportClick(project)
+                            }
+                            disabled={project.isCompleted}
+                          >
+                            Report
+                          </button>
+                        </td>
+                        <td className="border px-4 py-2">
+                          <button
+                            className="mx-auto text-blue-500 font-bold py-2 px-4 rounded"
+                            onClick={() => handleOnShowMore(project._id)}
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center mt-5 p-4 bg-slate-200">
+                <h1 className="uppercase font-bold">
+                  Sorry! Data not available!
+                </h1>
+              </div>
+            )}
+          </>
+        ) : null }
 
-                <th className="border px-4 py-2">Status</th>
-                <th className="border px-4 py-2">Assign Task</th>
-                <th className="border px-4 py-2">Action</th>
-                <th className="border px-4 py-2">Details</th>
-                {/* <th className="border px-4 py-2">Team</th> */}
-
-                {/* Add more columns as needed */}
-              </tr>
-            </thead>
-            <tbody>
-              {allProject.map((project, index) => (
-                  <tr key={project._id} className="text-center">
-                    <td className="border px-4 py-2">{index + 1}</td>
-                    <td className="border px-4 py-2">{project.projectName}</td>
-                    <td className="border px-4 py-2">
-                      {project.projectStartDate}
-                    </td>
-                    <td className="border px-4 py-2">
-                      {project.projectEndDate}
-                    </td>
-                    <td className="border px-4 py-2">
-                      {teamInfoData
-                        .filter((team) => team._id === project.teamId)
-                        .map((filteredTeam) => (
-                          <div key={filteredTeam._id}>
-                            {filteredTeam.teamName}
-                          </div>
-                        ))}
-                    </td>
-                    <td className="border px-4 py-2">
-                      {project.isCompleted ? (
-                        <span className="text-green-800">Completed</span>
-                      ) : (
-                        <span className="text-red-800">Not Completed</span>
-                      )}
-                    </td>
-                    <td className="border px-4 py-2">
-                      {project.isCompleted ? (
-                        <button
-                          disabled
-                          className="mx-auto bg-red-300 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
-                          onClick={() => handleAssignTask(project)}
-                        >
-                          Assign Task
-                        </button>
-                      ) : (
-                        <button
-                          className="mx-auto text-blue-500 font-bold py-2 px-4 rounded"
-                          onClick={() => handleAssignTask(project)}
-                        >
-                          Assign Task
-                        </button>
-                      )}
-                    </td>
-                    <td className="border px-4 py-2">
-                      {project.isCompleted ? (
-                        <button
-                          disabled
-                          className="mx-auto bg-red-300  cursor-not-allowed text-white font-bold py-2 px-4 rounded"
-                          onClick={() => handleReportClick(project)}
-                        >
-                          Report
-                        </button>
-                      ) : (
-                        <button
-                          className="mx-auto text-blue-500 font-bold py-2 px-4 rounded"
-                          onClick={() => handleReportClick(project)}
-                        >
-                          Report
-                        </button>
-                      )}
-                    </td>
-                    <td className="border px-4 py-2">
-                      <button
-                        className="mx-auto text-blue-500 font-bold py-2 px-4 rounded"
-                        onClick={() => handleOnShowMore(project._id)}
-                      >
-                        View
-                      </button>
-                    </td>
-
-                    {/* Add more cells as needed */}
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="text-center mt-5 p-4 bg-slate-200">
-          <h1 className="uppercase font-bold">Sorry! Data not available!</h1>
-        </div>
-      )}
+        {viewMode === "gallery" ? (<> <div> gallery view comming soon.... </div> </> ) : null }
+      </div>
 
       {/* show modal for report the project  */}
 
@@ -503,149 +452,6 @@ console.log("all project data me h kuchh ",allProject);
                   <button
                     type="submit"
                     className="w-full  uppercase bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* show model for assign the task  */}
-      {isNewTaskModalOpen && (
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen">
-            <div
-              className="fixed inset-0 transition-opacity"
-              onClick={handleCloseModal}
-            >
-              <div className="absolute inset-0 bg-black opacity-50"></div>
-            </div>
-
-            <div className="relative bg-white rounded-lg p-6 w-[500px] mx-auto">
-              <div className="flex justify-between">
-                <div>
-                  <h1 className="ml-40 uppercase font-bold text-xl text-blue-500">
-                    Assign Task
-                  </h1>
-                </div>
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded absolute -top-10 right-0"
-                  onClick={handleCloseModal}
-                >
-                  X
-                </button>
-              </div>
-              {/* Your modal content goes here */}
-
-              <form
-                onSubmit={handleOnTaskSubmit}
-                className="max-w-md mx-auto mt-8 "
-              >
-                <label className="block mb-2">
-                  <span className="text-gray-700">Task Title</span>
-                  <input
-                    type="text"
-                    name="taskTitle"
-                    value={formTaskData.taskTitle}
-                    onChange={handleOnTaskChange}
-                    placeholder="Enter task title"
-                    className="form-input mt-1 p-2 block w-full rounded-sm border outline-none "
-                  />
-                </label>
-                <label className="block mb-2">
-                  <span className="text-gray-700">Project</span>
-                  <select
-                    name="taskOf"
-                    value={formTaskData.taskOf}
-                    disabled
-                    onChange={handleOnTaskChange}
-                    className="form-select mt-1 p-2 block w-full rounded-sm border outline-none capitalize"
-                  >
-                    {allProject.map((project) => (
-                      <option
-                        key={project._id}
-                        value={project.projectName}
-                        disabled
-                      >
-                        {project.projectName}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="block mb-2">
-                  <span className="text-gray-700">Task Description:</span>
-                  <textarea
-                    name="taskDescription"
-                    rows={2}
-                    value={formTaskData.taskDescription}
-                    onChange={handleOnTaskChange}
-                    placeholder="Enter task description"
-                    className="form-input mt-1 p-2 block w-full rounded-sm border outline-none"
-                  />
-                </label>
-
-                <label className="block mb-2">
-                  <span className="text-gray-700">Assign To</span>
-                  <select
-                    name="assignTo"
-                    value={formTaskData.assignTo}
-                    onChange={handleOnTaskChange}
-                    className="form-select mt-1 p-2 block w-full rounded-sm border outline-none"
-                  >
-                    <option value="" disabled>
-                      Select an employee
-                    </option>
-                    {employeeData
-                      .filter(
-                        (employee) => employee.designationType === "employee"
-                      )
-                      .map((employee) => (
-                        <option
-                          key={employee.employeeId}
-                          value={employee.employeeName}
-                        >
-                          {employee.employeeName}
-                        </option>
-                      ))}
-                  </select>
-                </label>
-
-                <div className="flex justify-center items-center">
-                  <div className="w-full">
-                    <label className="block mb-2">
-                      <span className="text-gray-700">Assign Date</span>
-                    </label>
-                    <input
-                      type="date"
-                      name="taskAssignDate"
-                      value={formTaskData.taskAssignDate}
-                      onChange={handleOnTaskChange}
-                      className="form-input mt-1 p-2 block w-full rounded-sm border outline-none"
-                    />
-                  </div>
-                  <div className="mx-2"></div>
-                  <div className="w-full">
-                    <label className="block mb-2">
-                      <span className="text-gray-700">Submission Date</span>
-                    </label>
-                    <input
-                      type="date"
-                      name="taskEndDate"
-                      value={formTaskData.taskEndDate}
-                      onChange={handleOnTaskChange}
-                      className="form-input mt-1 p-2 block w-full rounded-sm border outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between mt-4">
-                  <button
-                    type="submit"
-                    className="w-full uppercase bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
                   >
                     Submit
                   </button>

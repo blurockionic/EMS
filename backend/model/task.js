@@ -17,7 +17,7 @@ const taskSchema = new mongoose.Schema(
       type: Date,
     },
 
-    // tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tags" }],
+    tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tags" }],
 
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
     status: {
