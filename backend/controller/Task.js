@@ -127,6 +127,7 @@ export const task = async (req, res) => {
         message: "Internal server error",
       });
     }
+  }
 export const allTask = async (req, res) => {
   try {
     //validation
