@@ -13,11 +13,13 @@ const NewTask = () => {
   const navigate = useNavigate();
 
   const projectState = useSelector((state) => state.project);
-  const { allProject, status: projectStatus } = projectState;
+
+  const { allProject, status: projectStatus, error: projectError } = projectState;
   const { data: users, status } = useSelector((state) => state.user);
   const { tags } = useSelector((state) => state.tags);
   const profile = useSelector((state) => state.profile.data);
   const profileStatus = useSelector((state) => state.profile.status);
+
 
   useEffect(() => {
     if (projectStatus === "idle") {
@@ -47,15 +49,17 @@ const NewTask = () => {
     project: "",
     assignDate: "",
     dueDate: "",
+    fileUploader: null, // Added to handle file upload
   };
 
   const [formData, setFormData] = useState(initialFormData);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
+    const { name, value, files } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: files ? files[0] : value, // Handle file input separately
     });
   };
 
@@ -72,37 +76,49 @@ const NewTask = () => {
       project,
       assignDate,
       dueDate,
+
+      fileUploader,
     } = formData;
 
-    if (
-      !title ||
-      !description ||
-      !tags.length ||
-      !status ||
-      !assignBy ||
-      !assignTo ||
-      !project ||
-      !assignDate ||
-      !dueDate
-    ) {
-      setErrorMessage("All fields are required");
-      return;
+    console.log("let see formData", formData);
+    if (fileUploader) {
+      console.log("File Path:", fileUploader);
+    }
+    // Creating FormData to handle file uploads
+    const data = new FormData();
+    data.append('title', title);
+    data.append('description', description);
+    data.append('tags', tags);
+    data.append('status', status);
+    data.append('assignBy', assignBy);
+    data.append('assignTo', assignTo);
+    data.append('project', project);
+    data.append('assignDate', assignDate);
+    data.append('dueDate', dueDate);
+    if (fileUploader) {
+      data.append('fileUploader', fileUploader); // Appending file if present
+      
     }
 
-    setErrorMessage("");
-
     try {
-      const response = await dispatch(submitNewTask(formData));
+      const response = await axios.post(
+        `${server}/task/new`,
+        data,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          withCredentials: true,
+        }
+      );
+      console.log("checking response", response);
 
-      if (response.payload.success) {
-        toast.success(response.payload.message);
-        alert(response.payload.message);
-        setTimeout(() => {
-          navigate(`../alltask`);
-        }, 3000);
+      const { success, message } = response.data;
+      if (success) {
+        alert(message);
+        setFormData(initialFormData);
       }
 
-      setFormData(initialFormData);
     } catch (error) {
       console.error("Error creating task:", error);
     }
@@ -277,13 +293,29 @@ const NewTask = () => {
             </label>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Submit
-            </button>
+
+            <div>
+              <label className="block mb-2">
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">Submission Date:</span>
+                <input
+                  type="file"
+                  name="fileUploader"
+                  
+                  onChange={handleChange}
+                  className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded"
+                />
+              </label>
+            </div>
+
+            <div className="flex items-center justify-between mt-4">
+              <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Submit
+              </button>
+            </div>
+
           </div>
 
           {errorMessage && (

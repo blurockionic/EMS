@@ -1,12 +1,18 @@
 import express from "express"
 import { allTask, closeTask, deleteTask, reopenTask, specificProjectTask, task, taskOfEmployee, updateTask } from "../controller/Task.js"
 import { isAuthenticated } from "../middleware/auth.js"
+import upload from "../middleware/multer.middleware.js"
 
 const router =  express.Router()
 
-
+const logRequestDetails = (req, next) => {
+    console.log("Request Body:", req.body);
+    console.log("Uploaded File:", req.file);
+    console.log("Authenticated User:", req.user); // Assuming `req.user` is set by `isAuthenticated` middleware
+    next();
+};
 //routes for new task
-router.post("/new",isAuthenticated, task)
+router.post("/new",isAuthenticated,upload.single('fileUploader'), task)
 
 
 //router for get all task 

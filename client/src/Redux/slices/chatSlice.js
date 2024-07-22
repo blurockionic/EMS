@@ -43,7 +43,9 @@ export const sendMessage = createAsyncThunk(
 const chatSlice = createSlice({
   name: "chat",
   initialState,
+
   reducers: {},
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchMessages.pending, (state) => {

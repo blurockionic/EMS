@@ -16,6 +16,9 @@ const taskSchema = new mongoose.Schema(
     dueDate: {
       type: Date,
     },
+    fileUpload: {
+      type: String
+    },
 
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tags" }],
 
@@ -28,6 +31,7 @@ const taskSchema = new mongoose.Schema(
     assignBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     assignTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     project: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
+    
 
     createdAt: { type: Date, default: Date.now },
   },
