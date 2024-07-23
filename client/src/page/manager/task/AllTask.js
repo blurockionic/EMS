@@ -74,7 +74,7 @@ const AllTask = () => {
   const handlerforTaksdetails = (taskId) => {
     navigate(`../singleTaksDetails/${taskId}`);
   };
-
+  console.log(tasks);
   const renderTasks = (tasks) => (
     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
       <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -84,7 +84,7 @@ const AllTask = () => {
             className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-150 cursor-pointer h-16"
             onClick={() => handlerforTaksdetails(task._id)}
           >
-            <td className="px-4 py-2 flex flex-col md:flex-row">
+            <td className="px-4 py-2 flex flex-col md:flex-row flex-grow-4">
               <GoIssueOpened className="text-2xl text-green-500 mx-2 mt-2" />
               <div className="flex flex-col">
                 <span className="font-bold text-xl hover:text-blue-700 dark:hover:text-blue-500">
@@ -108,13 +108,23 @@ const AllTask = () => {
                 </div>
               </div>
             </td>
-            <td className="px-4 py-2">
+            <td className="px-4 py-2 flex-grow-1">
               {task?.tags?.map((tag) => (
                 <span
                   key={tag._id}
                   className="inline-block bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded-full mr-2 mb-1"
                 >
                   {tag.tagName}
+                </span>
+              ))}
+            </td>
+            <td className="px-4 py-2 flex-grow-1">
+              {task?.assignTo?.map((user) => (
+                <span
+                  key={user._id}
+                  className="inline-block bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded-full mr-2 mb-1"
+                >
+                  {user.firstName} {user.lastName}
                 </span>
               ))}
             </td>
@@ -125,7 +135,7 @@ const AllTask = () => {
   );
 
   return (
-    <div className="p-3 bg-gray-50 dark:bg-gray-900 min-h-screen w-full mx-auto lg:w-4/5 xl:w-3/5">
+    <div className="p-3 bg-gray-50 dark:bg-gray-900 min-h-screen w-full mx-auto lg:w-4/5 xl:w-[80%] ">
       <div className="flex flex-row md:flex-row justify-between border p-2 bg-white dark:bg-gray-800 dark:text-gray-100 shadow-sm rounded-md space-x-4">
         <div className="relative">
           <button
