@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProjects } from "../../../Redux/slices/projectSlice";
 import { fetchProfile } from "../../../Redux/slices/profileSlice";
@@ -7,7 +7,14 @@ import { fetchTags } from "../../../Redux/slices/tagSlice";
 import { submitNewTask } from "../../../Redux/slices/taskSlice";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { IoSettingsOutline, IoClose, IoCheckmarkSharp } from "react-icons/io5";
+import {
+  IoSettingsOutline,
+  IoClose,
+  IoCheckmarkSharp,
+  IoCalendarNumberOutline,
+} from "react-icons/io5";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const NewTask = () => {
   const dispatch = useDispatch();
@@ -30,13 +37,17 @@ const NewTask = () => {
   const [tagDropdown, setTagDropdown] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [activeTab, setActiveTab] = useState("Create Task");
   useEffect(() => {
     dispatch(fetchUsers());
     dispatch(fetchProjects());
     dispatch(fetchProfile());
     dispatch(fetchTags());
   }, [dispatch]);
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
 
   const handleTagSelection = (tagId) => {
     setSelectedTags((prevTags) =>
@@ -54,7 +65,7 @@ const NewTask = () => {
     );
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const data = new FormData();
@@ -74,19 +85,19 @@ const handleSubmit = async (e) => {
     // }
 
     try {
-        const response = await dispatch(submitNewTask(data));
-        if (response.payload.success) {
-            toast.success(response.payload.message);
-            setTimeout(() => navigate("../alltask"), 3000);
-            resetForm();
-        } else {
-            setErrorMessage(response.payload.message || "Error creating task.");
-        }
+      const response = await dispatch(submitNewTask(data));
+      if (response.payload.success) {
+        toast.success(response.payload.message);
+        setTimeout(() => navigate("../alltask"), 3000);
+        resetForm();
+      } else {
+        setErrorMessage(response.payload.message || "Error creating task.");
+      }
     } catch (error) {
-        console.error("Error creating task:", error);
-        setErrorMessage("Error creating task.");
+      console.error("Error creating task:", error);
+      setErrorMessage("Error creating task.");
     }
-};
+  };
 
   const resetForm = () => {
     // setTitle("");
@@ -103,181 +114,245 @@ const handleSubmit = async (e) => {
 
   const toggleTagDropdown = () => setTagDropdown((prev) => !prev);
 
+  const assignDateRef = useRef(null);
+  const dueDateRef = useRef(null);
+
+  const handleIconClick = (label) => {
+    if (label === "Assign Date" && assignDateRef.current) {
+      assignDateRef.current.setOpen(true); // Open the date picker
+    } else if (label === "Due Date" && dueDateRef.current) {
+      dueDateRef.current.setOpen(true); // Open the date picker
+    }
+  };
+
   return (
-    <div className="w-full dark:bg-gray-800 rounded shadow-md flex items-center justify-center">
-      <ToastContainer/>
-      <div className="border-2 flex flex-col md:flex-row rounded shadow-md w-[80%] py-2 mt-5 mx-auto">
-        <div className="left md:w-[90%] flex flex-col m-2 p-2 border border-gray-300 rounded shadow-md">
-          <div>
-            <label className="block mb-2">
-              <span className="text-gray-700 dark:text-gray-300 font-semibold">
-                Task Title:
-              </span>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter task title"
-              />
-            </label>
-          </div>
-          <div className="w-full rounded-lg flex-grow">
-            <label className="block mb-2">
-              <span className="text-gray-700 dark:text-gray-300 font-semibold">
-                Description:
-              </span>
-              <textarea
-                rows="17"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter task description"
-              />
-            </label>
+    <>
+      <div className="flex flex-row justify-between border-b">
+        <div className="flex flex-row">
+          <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
+            <button
+              className={`px-3 py-2 rounded-md text-sm font-medium ${
+                activeTab === "Create Task" ? "bg-gray-900 text-white" : ""
+              } hover:bg-gray-700 dark:hover:bg-gray-900 dark:hover:text-white cursor-pointer`}
+              onClick={() => handleTabClick("Create Task")}
+            >
+              Create Task
+            </button>
           </div>
         </div>
+      </div>
 
-        <div className="right md:w-1/4 h-full flex flex-col gap-4 m-2 p-2 border border-gray-300 rounded shadow-md">
-          <div className="relative flex flex-col">
-            <div className="flex flex-row justify-between text-gray-600 hover:text-blue-600 font-bold">
-              Tags
-              <IoSettingsOutline
-                className="text-xl cursor-pointer"
-                onClick={toggleTagDropdown}
-              />
-            </div>
-            {tagDropdown && (
-              <div className="absolute z-10 flex-wrap bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-md p-2 mt-2 w-full">
-                <div
-                  className="flex justify-end cursor-pointer"
-                  onClick={toggleTagDropdown}
-                >
-                  <IoClose className="text-xl hover:text-red-700" />
-                </div>
-                {tags.map((tag) => (
-                  <div
-                    key={tag._id}
-                    onClick={() => handleTagSelection(tag._id)}
-                    className="flex flex-wrap flex-row justify-between border-b py-1.5 mb-1 cursor-pointer"
-                  >
-                    {selectedTags.includes(tag._id) && (
-                      <IoCheckmarkSharp className="mr-2 text-blue-600" />
-                    )}
-                    <span
-                      className={`font-semibold ${
-                        selectedTags.includes(tag._id)
-                          ? "text-blue-600 font-bold"
-                          : "text-gray-700 dark:text-gray-300"
-                      }`}
-                    >
-                      {tag.tagName}
-                    </span>
-                    {selectedTags.includes(tag._id) && (
-                      <IoClose className="text-xl hover:text-red-700 ml-2" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-            <div className="flex flex-wrap mt-2">
-              {selectedTags.length === 0 ? (
-                <span className="text-gray-500 text-sm font-semibold">
-                  None yet
-                </span>
-              ) : (
-                selectedTags.map((tagId) => {
-                  const tag = tags.find((t) => t._id === tagId);
-                  return (
-                    <div
-                      key={tagId}
-                      className="flex items-center bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded mr-2 mb-2"
-                    >
-                      {tag.tagName}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-
-          {["Assign By", "Assign To", "Project"].map((label, index) => (
-            <Dropdown
-              key={index}
-              label={label}
-              data={
-                label === "Assign By"
-                  ? users.filter((user) => user.role === "manager")
-                  : label === "Assign To"
-                  ? users.filter((user) => user.role === "employee")
-                  : allProject
-              }
-              selected={
-                label === "Assign By"
-                  ? assignBy
-                  : label === "Assign To"
-                  ? assignTo
-                  : project
-              }
-              onChange={
-                label === "Assign By"
-                  ? setAssignBy
-                  : label === "Assign To"
-                  ? handleAssignToSelection
-                  : setProject
-              }
-              multiple={label === "Assign To"}
+      <div className="w-full dark:bg-gray-800 rounded shadow-md flex items-center justify-center">
+        <ToastContainer />
+        <div className=" flex flex-col md:flex-row rounded shadow-md w-[80%] py-2 mx-auto">
+          <div className="pl-1 flex-shrink-0">
+            <img
+              className="w-10 h-10 rounded-full"
+              src={profile?.profilePicture ?? "https://via.placeholder.com/150"}
+              alt="https://via.placeholder.com/150"
             />
-          ))}
-
-          {["Assign Date", "Due Date"].map((label, index) => (
-            <div key={index}>
+          </div>
+          <div className="left md:w-[90%] flex flex-col m-2 p-2 rounded shadow-md">
+            <div>
               <label className="block mb-2">
-                <span className="text-gray-700 dark:text-gray-300 font-semibold">
-                  {label}:
+                <span className="text-gray-600 dark:text-white font-bold ">
+                  Add a task title
                 </span>
                 <input
-                  type="date"
-                  value={label === "Assign Date" ? assignDate : dueDate}
-                  onChange={(e) =>
-                    label === "Assign Date"
-                      ? setAssignDate(e.target.value)
-                      : setDueDate(e.target.value)
-                  }
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="form-input p-2 mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter task title"
+                />
+              </label>
+            </div>
+            <div className="">
+              <label className="block mb-2">
+                <span className="text-gray-600 dark:text-white font-bold">
+                  Add a description
+                </span>
+                <textarea
+                  rows="10"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="form-input mt-1 p-2 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter task description"
+                />
+              </label>
+            </div>
+            <div>
+              <label className="block mb-2">
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">
+                  Upload File:
+                </span>
+                <input
+                  type="file"
+                  onChange={(e) => setFileUploader(e.target.files[0])}
                   className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
                 />
               </label>
             </div>
-          ))}
+          </div>
 
-          <div>
-            <label className="block mb-2">
-              <span className="text-gray-700 dark:text-gray-300 font-semibold">
-                Upload File:
-              </span>
-              <input
-                type="file"
-                onChange={(e) => setFileUploader(e.target.files[0])}
-                className="form-input mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+          <div className="right md:w-1/4 h-full flex flex-col gap-4 m-2 p-2 rounded shadow-md">
+            <div className="relative flex flex-col pb-4 border-b ">
+              <div className="flex flex-row justify-between text-gray-600 dark:text-white dark:hover:text-blue-600 hover:text-blue-600 font-bold">
+                Tags
+                <IoSettingsOutline
+                  className="text-xl cursor-pointer"
+                  onClick={toggleTagDropdown}
+                />
+              </div>
+              {tagDropdown && (
+                <div className="absolute z-10 flex-wrap bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-md p-2 mt-2 w-full">
+                  <div
+                    className="flex justify-end cursor-pointer"
+                    onClick={toggleTagDropdown}
+                  >
+                    <IoClose className="text-xl hover:text-red-700" />
+                  </div>
+                  {tags.map((tag) => (
+                    <div
+                      key={tag._id}
+                      onClick={() => handleTagSelection(tag._id)}
+                      className="flex flex-wrap flex-row justify-between border-b py-1.5 mb-1 cursor-pointer"
+                    >
+                      {selectedTags.includes(tag._id) && (
+                        <IoCheckmarkSharp className="mr-2 text-blue-600" />
+                      )}
+                      <span
+                        className={`font-semibold ${
+                          selectedTags.includes(tag._id)
+                            ? "text-blue-600 font-bold"
+                            : "text-gray-700 dark:text-gray-300"
+                        }`}
+                      >
+                        {tag.tagName}
+                      </span>
+                      {selectedTags.includes(tag._id) && (
+                        <IoClose className="text-xl hover:text-red-700 ml-2" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex flex-wrap mt-2">
+                {selectedTags.length === 0 ? (
+                  <span className="text-gray-500 dark:text-white text-sm ">
+                    None yet
+                  </span>
+                ) : (
+                  selectedTags.map((tagId) => {
+                    const tag = tags.find((t) => t._id === tagId);
+                    return (
+                      <div
+                        key={tagId}
+                        className="flex items-center bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded mr-2 mb-2"
+                      >
+                        {tag.tagName}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {["Assign By", "Assign To", "Project"].map((label, index) => (
+              <Dropdown
+                key={index}
+                label={label}
+                data={
+                  label === "Assign By"
+                    ? users.filter((user) => user.role === "manager")
+                    : label === "Assign To"
+                    ? users.filter((user) => user.role === "employee")
+                    : allProject
+                }
+                selected={
+                  label === "Assign By"
+                    ? assignBy
+                    : label === "Assign To"
+                    ? assignTo
+                    : project
+                }
+                onChange={
+                  label === "Assign By"
+                    ? setAssignBy
+                    : label === "Assign To"
+                    ? handleAssignToSelection
+                    : setProject
+                }
+                multiple={label === "Assign To"}
               />
-            </label>
-          </div>
+            ))}
 
-          <div className="flex items-center justify-between mt-4">
-            <button
-              onClick={handleSubmit}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Submit
-            </button>
+            {["Assign Date", "Due Date"].map((label, index) => (
+              <div key={index} className="relative pb-4 border-b">
+                <div className="flex flex-row justify-between items-center text-gray-600 dark:text-white dark:hover:text-blue-600 hover:text-blue-600 font-bold">
+                  {label}
+                  <IoCalendarNumberOutline
+                    className="text-xl cursor-pointer"
+                    onClick={() => handleIconClick(label)}
+                  />
+                </div>
+
+                <DatePicker
+                  selected={label === "Assign Date" ? assignDate : dueDate}
+                  onChange={(date) =>
+                    label === "Assign Date"
+                      ? setAssignDate(date)
+                      : setDueDate(date)
+                  }
+                  ref={label === "Assign Date" ? assignDateRef : dueDateRef}
+                  customInput={<input style={{ display: "none" }} />} // Custom input is hidden
+                  popperPlacement="bottom-start"
+                />
+
+                <div className="text-gray-700 dark:text-gray-400">
+                  {label === "Assign Date" ? (
+                    assignDate ? (
+                      <span className="text-gray-500 dark:text-white text-sm font-semibold">
+                        {assignDate.toLocaleDateString()}{" "}
+                      </span>
+                    ) : (
+                      <span
+                        className="text-gray-500 
+                     dark:text-white text-sm "
+                      >
+                        None yet
+                      </span>
+                    )
+                  ) : label === "Due Date" ? (
+                    dueDate ? (
+                      <span className="text-gray-500 dark:text-white text-sm">
+                        {dueDate.toLocaleDateString()}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 dark:text-white text-sm">
+                        None yet
+                      </span>
+                    )
+                  ) : null}
+                </div>
+              </div>
+            ))}
+
+            <div className="flex items-center justify-between mt-4">
+              <button
+                onClick={handleSubmit}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Submit
+              </button>
+            </div>
+            {errorMessage && (
+              <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
+            )}
           </div>
-          {errorMessage && (
-            <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
-          )}
         </div>
       </div>
-  
-    </div>
+    </>
   );
 };
 
@@ -297,8 +372,8 @@ const Dropdown = ({ label, data, selected, onChange, multiple = false }) => {
   );
 
   return (
-    <div className="relative flex flex-col">
-      <div className="flex flex-row justify-between text-gray-600 hover:text-blue-600 font-bold">
+    <div className="relative flex flex-col pb-4 border-b">
+      <div className="flex flex-row justify-between text-gray-600 dark:text-white dark:hover:text-blue-600 hover:text-blue-600 font-bold">
         {label}
         <IoSettingsOutline
           className="text-xl cursor-pointer"
@@ -367,18 +442,24 @@ const Dropdown = ({ label, data, selected, onChange, multiple = false }) => {
       )}
       <div className="flex flex-wrap mt-2">
         {multiple ? (
-          selected.map((id) => (
-            <div
-              key={id}
-              className="flex items-center bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded mr-2 mb-2"
-            >
-              {data.find((item) => item._id === id)?.firstName
-                ? `${data.find((item) => item._id === id).firstName} ${
-                    data.find((item) => item._id === id).lastName
-                  }`
-                : data.find((item) => item._id === id).projectName}
-            </div>
-          ))
+          selected.length > 0 ? (
+            selected.map((id) => (
+              <div
+                key={id}
+                className="flex items-center bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded mr-2 mb-2"
+              >
+                {data.find((item) => item._id === id)?.firstName
+                  ? `${data.find((item) => item._id === id).firstName} ${
+                      data.find((item) => item._id === id).lastName
+                    }`
+                  : data.find((item) => item._id === id).projectName}
+              </div>
+            ))
+          ) : (
+            <span className="text-gray-500 dark:text-white text-sm ">
+              None yet
+            </span>
+          )
         ) : selected ? (
           <div className="flex items-center bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded mr-2 mb-2">
             {data.find((item) => item._id === selected)?.firstName
@@ -388,7 +469,9 @@ const Dropdown = ({ label, data, selected, onChange, multiple = false }) => {
               : data.find((item) => item._id === selected).projectName}
           </div>
         ) : (
-          <span className="text-gray-500 text-sm font-semibold">None yet</span>
+          <span className="text-gray-500 dark:text-white text-sm">
+            None yet
+          </span>
         )}
       </div>
     </div>
