@@ -31,7 +31,7 @@ import EmpLeave from "./page/manager/empleaves/EmpLeave";
 import Team from "./page/admin/team/Team";
 import EmpTeam from "./page/employee/EmpTeam";
 import AppVersion from "./page/admin/AppVersion/AppVersion";
-import EmpTasksDetails from "./component/admin/EmpTasksDetails";
+import EmpTasksDetails from "./page/employee/EmpTasksDetails";
 import SingleTaskDetails from "./component/admin/SingleTaskDetails";
 import { fetchProfile } from "./Redux/slices/profileSlice";
 import { useEffect } from "react";
