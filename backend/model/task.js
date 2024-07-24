@@ -29,7 +29,7 @@ const taskSchema = new mongoose.Schema(
       default: "Open",
     },
     assignBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    assignTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    assignTo: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     project: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
     
 
