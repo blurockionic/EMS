@@ -1,46 +1,53 @@
 import React, { useEffect, useState } from "react";
-
-import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
-import { IoMdAdd } from "react-icons/io";
+import { IoMdArrowDropdown } from "react-icons/io";
 import { GoIssueClosed, GoIssueOpened } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import TimeAgo from "../../component/admin/TimeAgo";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTasks } from "../../Redux/slices/taskSlice";
-import { GoDotFill } from "react-icons/go";
+import {
+  fetchTasks,
+  specificEmployeeTasks,
+} from "../../Redux/slices/taskSlice";
 import { fetchUsers } from "../../Redux/slices/allUserSlice";
+import { fetchProfile } from "../../Redux/slices/profileSlice";
 import { fetchTags } from "../../Redux/slices/tagSlice";
+
+import { GoDotFill } from "react-icons/go";
 
 const EmpTasksDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [taskType, setTaskType] = useState("Open");
-  const [openedTasks, setOpenedTasks] = useState([]);
-  const [closedTasks, setCloseTasks] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  const indexOfLastTask = currentPage * itemsPerPage;
-  const indexOfFirstTask = indexOfLastTask - itemsPerPage;
-
-  const currentOpenTasks = openedTasks.slice(indexOfFirstTask, indexOfLastTask);
-  const currentCloseTasks = closedTasks.slice(
-    indexOfFirstTask,
-    indexOfLastTask
-  );
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState("all");
-  const [FilterButtonActive, setFilterButtonActive] = useState(false);
-  const { tasks } = useSelector((state) => state.tasks);
-  const { data: users, status } = useSelector((state) => state.user);
+  const { tasks, employeeSpecificTasks } = useSelector((state) => state.tasks);
+  const { data: users } = useSelector((state) => state.user);
   const { tags } = useSelector((state) => state.tags);
+  const profile = useSelector((state) => state.profile.data);
 
   const [activeTab, setActiveTab] = useState("All Task");
+  const [selectedFilter, setSelectedFilter] = useState("all");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchProfile());
+    dispatch(fetchTags());
+    dispatch(fetchTasks());
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (profile?.role === "employee") {
+      dispatch(specificEmployeeTasks(profile._id));
+    }
+  }, [profile, dispatch]);
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+    if (tab === "My Task" && profile?.role === "employee") {
+      dispatch(specificEmployeeTasks(profile._id));
+    }
   };
 
   const toggleDropdown = () => {
@@ -52,94 +59,106 @@ const EmpTasksDetails = () => {
     setIsFilterOpen(false);
   };
 
-  useEffect(() => {
-    dispatch(fetchTags());
-  }, [dispatch]);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  useEffect(() => {
-    dispatch(fetchTasks());
-  }, [dispatch]);
+  const indexOfLastTask = currentPage * itemsPerPage;
+  const indexOfFirstTask = indexOfLastTask - itemsPerPage;
 
-  useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchUsers());
+  const currentTasks = (tasks) =>
+    tasks.slice(indexOfFirstTask, indexOfLastTask);
+
+  const filteredTasks = (tasks) => {
+    if (selectedFilter === "all") return tasks;
+    return tasks.filter((task) => task.status === selectedFilter);
+  };
+
+  const renderTasks = (tasks) => {
+    if (tasks.length === 0) {
+      return <p>No tasks available.</p>;
     }
-  }, [status, dispatch]);
 
-  useEffect(() => {
-    const openTasks = tasks.filter((task) => task.status === "Open");
-    const closedTasks = tasks.filter((task) => task.status === "Close");
-
-    setOpenedTasks(openTasks);
-    setCloseTasks(closedTasks);
-  }, [tasks]);
-
-  const handleTaskType = (type) => {
-    setTaskType(type);
-  };
-
-  const handlerforTaksdetails = (taskId) => {
-    navigate(`../singleTaksDetails/${taskId}`);
-  };
-  console.log(tasks);
-  const renderTasks = (tasks) => (
-    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-      <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-        {tasks.map((task) => (
-          <tr
-            key={task._id}
-            className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-150 cursor-pointer h-16"
-            onClick={() => handlerforTaksdetails(task._id)}
-          >
-            <td className="px-4 py-2 flex flex-col md:flex-row flex-grow-4">
-              <GoIssueOpened className="text-2xl text-green-500 mx-2 mt-2" />
-              <div className="flex flex-col">
-                <span className="font-bold text-xl hover:text-blue-700 dark:hover:text-blue-500">
-                  {task.title}
-                </span>
-                <div className="flex flex-col md:flex-row">
-                  <span> #{task.taskId} created by </span>
-                  <span className="font-semibold mx-2">
-                    {
-                      users.find((user) => user._id === task.assignBy)
-                        ?.firstName
-                    }{" "}
-                    {users.find((user) => user._id === task.assignBy)?.lastName}
+    return (
+      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          {tasks.map((task) => (
+            <tr
+              key={task._id}
+              className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-150 cursor-pointer h-16"
+              onClick={() => navigate(`../singleTaksDetails/${task._id}`)}
+            >
+              <td className="px-4 py-2 flex flex-col md:flex-row flex-grow-4">
+                <GoIssueOpened className="text-2xl text-green-500 mx-2 mt-2" />
+                <div className="flex flex-col">
+                  <span className="font-bold text-xl hover:text-blue-700 dark:hover:text-blue-500">
+                    {task.title}
                   </span>
-                  <span className="mt-1">
-                    <GoDotFill />
-                  </span>
-                  <span>
-                    Assigned: <TimeAgo date={task.createdAt || new Date()} />
-                  </span>
+                  <div className="flex flex-col md:flex-row">
+                    <span> #{task.taskId} created by </span>
+                    <span className="font-semibold mx-2">
+                      {
+                        users.find((user) => user._id === task.assignBy)
+                          ?.firstName
+                      }{" "}
+                      {
+                        users.find((user) => user._id === task.assignBy)
+                          ?.lastName
+                      }
+                    </span>
+                    <span className="mt-1">
+                      <GoDotFill />
+                    </span>
+                    <span>
+                      Assigned: <TimeAgo date={task.createdAt || new Date()} />
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td className="px-4 py-2 flex-grow-1">
-              {task?.tags?.map((tag) => (
-                <span
-                  key={tag._id}
-                  className="inline-block bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded-full mr-2 mb-1"
-                >
-                  {tag.tagName}
-                </span>
-              ))}
-            </td>
-            <td className="px-4 py-2 flex-grow-1">
-              {task?.assignTo?.map((user) => (
-                <span
-                  key={user._id}
-                  className="inline-block bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded-full mr-2 mb-1"
-                >
-                  {user.firstName} {user.lastName}
-                </span>
-              ))}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
+              </td>
+              <td className="px-4 py-2 flex-grow-1">
+                {(task.tags && task.tags.length > 0 ? task.tags : []).map(
+                  (tag) => (
+                    <span
+                      key={tag._id}
+                      className="inline-block bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded-full mr-2 mb-1"
+                    >
+                      {tag.tagName}
+                    </span>
+                  )
+                )}
+                {(!task.tags || task.tags.length === 0) && (
+                  <>
+                    {tags
+                      .filter((tag) =>
+                        task.tags
+                          ?.map((taskTag) => taskTag._id)
+                          .includes(tag._id)
+                      )
+                      .map((tag) => (
+                        <span
+                          key={tag._id}
+                          className="inline-block bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded-full mr-2 mb-1"
+                        >
+                          {tag.tagName}
+                        </span>
+                      ))}
+                  </>
+                )}
+              </td>
+              <td className="px-4 py-2 flex-grow-1">
+                {task?.assignTo?.map((user) => (
+                  <span
+                    key={user._id}
+                    className="inline-block bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded-full mr-2 mb-1"
+                  >
+                    {user.firstName} {user.lastName}
+                  </span>
+                ))}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
 
   return (
     <>
@@ -162,16 +181,6 @@ const EmpTasksDetails = () => {
             My Task
           </button>
         </div>
-        <div className="flex flex-row">
-          <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
-            {/* <Link to={"../newTask"}>
-              <div className="flex items-center font-semibold text-white bg-gray-900 hover:bg-gray-700 dark:hover:bg-gray-900 dark:hover:text-white  px-4 py-1.5 rounded-md shadow-inner cursor-pointer ">
-                <IoMdAdd className="mr-2 text-xl" />
-                <span>New Task</span>
-              </div>
-            </Link> */}
-          </div>
-        </div>
       </div>
       {activeTab === "All Task" && (
         <div className="p-3 dark:bg-gray-900 min-h-screen w-full mx-auto lg:w-4/5 xl:w-[80%] ">
@@ -183,13 +192,13 @@ const EmpTasksDetails = () => {
                     ? "font-bold bg-slate-800 dark:bg-gray-700 text-white border-2 border-slate-200 dark:border-gray-500"
                     : ""
                 }`}
-                onClick={() => handleTaskType("Open")}
+                onClick={() => setTaskType("Open")}
               >
                 <GoIssueOpened className="text-xl text-green-500" />
                 <span
                   className={`mx-2 ${taskType === "Open" ? "font-bold" : ""}`}
                 >
-                  {openedTasks.length}
+                  {tasks.filter((task) => task.status === "Open").length}
                 </span>
                 <span className={`${taskType === "Open" ? "font-bold" : ""}`}>
                   Open
@@ -201,13 +210,13 @@ const EmpTasksDetails = () => {
                     ? "font-bold bg-slate-800 dark:bg-gray-700 text-white border-2 border-slate-200 dark:border-gray-500"
                     : ""
                 }`}
-                onClick={() => handleTaskType("Close")}
+                onClick={() => setTaskType("Close")}
               >
                 <GoIssueClosed className="text-xl text-purple-500" />
                 <span
                   className={`mx-2 ${taskType === "Close" ? "font-bold" : ""}`}
                 >
-                  {closedTasks.length}
+                  {tasks.filter((task) => task.status === "Close").length}
                 </span>
                 <span className={`${taskType === "Close" ? "font-bold" : ""}`}>
                   Closed
@@ -230,16 +239,12 @@ const EmpTasksDetails = () => {
                 </button>
                 <button
                   className={`${
-                    (taskType === "Open" ? currentOpenTasks : currentCloseTasks)
-                      .length < itemsPerPage
+                    filteredTasks(tasks).length < itemsPerPage
                       ? "bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
                       : "bg-slate-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 hover:bg-slate-300 dark:hover:bg-gray-500"
                   } px-3 py-1.5 rounded-md shadow-inner`}
                   onClick={() => paginate(currentPage + 1)}
-                  disabled={
-                    (taskType === "Open" ? currentOpenTasks : currentCloseTasks)
-                      .length < itemsPerPage
-                  }
+                  disabled={filteredTasks(tasks).length < itemsPerPage}
                 >
                   Next
                 </button>
@@ -248,7 +253,7 @@ const EmpTasksDetails = () => {
               <div className="relative flex items-center">
                 <button
                   className={`font-semibold px-4 py-1.5 rounded-md shadow-inner flex items-center cursor-pointer ${
-                    FilterButtonActive
+                    isFilterOpen
                       ? "bg-white dark:bg-gray-700 border"
                       : "bg-slate-200 dark:bg-gray-600"
                   } border`}
@@ -287,8 +292,18 @@ const EmpTasksDetails = () => {
               </div>
             </div>
           </div>
-          {taskType === "Open" && renderTasks(currentOpenTasks)}
-          {taskType === "Close" && renderTasks(currentCloseTasks)}
+          {taskType === "Open" &&
+            renderTasks(
+              currentTasks(
+                filteredTasks(tasks.filter((task) => task.status === "Open"))
+              )
+            )}
+          {taskType === "Close" &&
+            renderTasks(
+              currentTasks(
+                filteredTasks(tasks.filter((task) => task.status === "Close"))
+              )
+            )}
         </div>
       )}
 
@@ -302,13 +317,17 @@ const EmpTasksDetails = () => {
                     ? "font-bold bg-slate-800 dark:bg-gray-700 text-white border-2 border-slate-200 dark:border-gray-500"
                     : ""
                 }`}
-                onClick={() => handleTaskType("Open")}
+                onClick={() => setTaskType("Open")}
               >
                 <GoIssueOpened className="text-xl text-green-500" />
                 <span
                   className={`mx-2 ${taskType === "Open" ? "font-bold" : ""}`}
                 >
-                  {openedTasks.length}
+                  {
+                    employeeSpecificTasks.filter(
+                      (task) => task.status === "Open"
+                    ).length
+                  }
                 </span>
                 <span className={`${taskType === "Open" ? "font-bold" : ""}`}>
                   Open
@@ -320,13 +339,17 @@ const EmpTasksDetails = () => {
                     ? "font-bold bg-slate-800 dark:bg-gray-700 text-white border-2 border-slate-200 dark:border-gray-500"
                     : ""
                 }`}
-                onClick={() => handleTaskType("Close")}
+                onClick={() => setTaskType("Close")}
               >
                 <GoIssueClosed className="text-xl text-purple-500" />
                 <span
                   className={`mx-2 ${taskType === "Close" ? "font-bold" : ""}`}
                 >
-                  {closedTasks.length}
+                  {
+                    employeeSpecificTasks.filter(
+                      (task) => task.status === "Close"
+                    ).length
+                  }
                 </span>
                 <span className={`${taskType === "Close" ? "font-bold" : ""}`}>
                   Closed
@@ -349,15 +372,13 @@ const EmpTasksDetails = () => {
                 </button>
                 <button
                   className={`${
-                    (taskType === "Open" ? currentOpenTasks : currentCloseTasks)
-                      .length < itemsPerPage
+                    filteredTasks(employeeSpecificTasks).length < itemsPerPage
                       ? "bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
                       : "bg-slate-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 hover:bg-slate-300 dark:hover:bg-gray-500"
                   } px-3 py-1.5 rounded-md shadow-inner`}
                   onClick={() => paginate(currentPage + 1)}
                   disabled={
-                    (taskType === "Open" ? currentOpenTasks : currentCloseTasks)
-                      .length < itemsPerPage
+                    filteredTasks(employeeSpecificTasks).length < itemsPerPage
                   }
                 >
                   Next
@@ -367,7 +388,7 @@ const EmpTasksDetails = () => {
               <div className="relative flex items-center">
                 <button
                   className={`font-semibold px-4 py-1.5 rounded-md shadow-inner flex items-center cursor-pointer ${
-                    FilterButtonActive
+                    isFilterOpen
                       ? "bg-white dark:bg-gray-700 border"
                       : "bg-slate-200 dark:bg-gray-600"
                   } border`}
@@ -406,11 +427,28 @@ const EmpTasksDetails = () => {
               </div>
             </div>
           </div>
-          {taskType === "Open" && renderTasks(currentOpenTasks)}
-          {taskType === "Close" && renderTasks(currentCloseTasks)}
+          {taskType === "Open" &&
+            renderTasks(
+              currentTasks(
+                filteredTasks(
+                  employeeSpecificTasks.filter((task) => task.status === "Open")
+                )
+              )
+            )}
+          {taskType === "Close" &&
+            renderTasks(
+              currentTasks(
+                filteredTasks(
+                  employeeSpecificTasks.filter(
+                    (task) => task.status === "Close"
+                  )
+                )
+              )
+            )}
         </div>
       )}
     </>
   );
 };
+
 export default EmpTasksDetails;

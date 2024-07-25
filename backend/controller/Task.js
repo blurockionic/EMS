@@ -148,7 +148,17 @@ export const taskOfEmployee = async (req, res) => {
     //   }
 
     //validation
-    const allTaskOfEmployee = await Task.find({ assignTo: id });
+    const allTaskOfEmployee = await Task.find({ assignTo: id })
+      .populate({
+        path: "tags",
+        select: "tagName",
+        model: Tags,
+      })
+      .populate({
+        path: "assignTo",
+        select: "firstName lastName",
+        model: User,
+      });
 
     if (!allTaskOfEmployee) {
       return res.status(500).json({
