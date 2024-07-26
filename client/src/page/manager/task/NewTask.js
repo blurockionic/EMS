@@ -305,7 +305,7 @@ const NewTask = () => {
           <div>
             <label className="block mb-2">
               <span className="text-gray-700 dark:text-gray-300 font-semibold">
-                Submission Date:
+                Upload file
               </span>
               <input
                 type="file"

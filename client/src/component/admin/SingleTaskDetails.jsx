@@ -18,9 +18,14 @@ import {
 } from "../../Redux/slices/commentSlice";
 import { toast } from "react-toastify";
 
+import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
+import "@cyntler/react-doc-viewer/dist/index.css";
+
 const SingleTaskDetails = () => {
   const { taskId } = useParams(); // get single task's id from params
   const [task, setTask] = useState(null);
+  console.log("checking whats inside task", task);
+
   const { tasks } = useSelector((state) => state.tasks);
   const [comment, setComment] = useState("");
   const comments = useSelector(selectComments);
@@ -29,6 +34,7 @@ const SingleTaskDetails = () => {
   const profile = useSelector((state) => state.profile.data);
   const profileStatus = useSelector((state) => state.profile.status);
   const [commentSubmitted, setCommentSubmitted] = useState(false);
+
 
   // Fetch tasks, users, and profile on component mount
   useEffect(() => {
@@ -105,6 +111,7 @@ const SingleTaskDetails = () => {
     return user ? `${user.firstName} ${user.lastName}` : "";
   };
 
+  const docs = [{ uri: task.fileUpload }];
   return (
     <div className="p-3 min-h-screen w-full sm:w-[80%] mx-auto">
       <div className="shadow-md rounded-lg p-6 mb-6 bg-white dark:bg-gray-800">
@@ -245,6 +252,9 @@ const SingleTaskDetails = () => {
             className="w-full h-24 border border-gray-800 dark:border-gray-600 rounded-lg p-3 resize-none focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             placeholder="Write details about the task"
           ></textarea>
+        </div>
+        <div className="">
+        <DocViewer documents={docs} pluginRenderers={DocViewerRenderers} />
         </div>
         <div className="flex lg:flex-row justify-end ">
           <div className="flex flex-col sm:flex-row justify-end mb-4">
