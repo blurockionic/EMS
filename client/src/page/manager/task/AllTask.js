@@ -36,7 +36,7 @@ const AllTask = () => {
   const { data: users, status } = useSelector((state) => state.user);
   const { tags } = useSelector((state) => state.tags);
 
-  const [activeTab, setActiveTab] = useState("Create Task");
+  const [activeTab, setActiveTab] = useState("All Task");
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
@@ -145,9 +145,9 @@ const AllTask = () => {
         <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
           <button
             className={`px-3 py-2 rounded-md text-sm font-medium ${
-              activeTab === "Create Task" ? "bg-gray-900 text-white" : ""
+              activeTab === "All Task" ? "bg-gray-900 text-white" : ""
             } hover:bg-gray-700 dark:hover:bg-gray-900 dark:hover:text-white cursor-pointer`}
-            onClick={() => handleTabClick("Our Teams")}
+            onClick={() => handleTabClick("All Task")}
           >
             All Task
           </button>
