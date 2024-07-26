@@ -858,3 +858,25 @@ const Team = () => {
 };
 
 export default Team;
+
+
+
+
+
+
+
+
+  // handle search
+  // const handleSearch = (e) => {
+  //   const searchTerm = e.target.value.trim().toLowerCase(); // Get the trimmed lowercase search term
+
+  //   if (searchTerm === " ") {
+  //     setAllProject(allProject); // If the search term is empty, show the entire original array
+  //   } else {
+  //     // Filter the array based on the search term
+  //     const tempVar = allProjectForSearch?.filter((item) =>
+  //       item.projectName?.trim().toLowerCase().includes(searchTerm)
+  //     );
+  //     setAllProject(tempVar); // Update the array state with the filtered results
+  //   }
+  // };

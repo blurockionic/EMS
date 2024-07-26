@@ -25,19 +25,20 @@ import ReportHistory from "./page/employee/ReportHistory";
 import ManagerProject from "./page/manager/project/ManagerProject";
 import ManagerReport from "./page/manager/report/ManagerReport";
 import AdminReport from "./page/admin/report/AdminReport";
-import ManagerProjectDetails from "./page/manager/project/ManagerProjectDetails";
+
 import TaskReportFeedback from "./page/employee/TaskReportFeedback";
 import EmpLeave from "./page/manager/empleaves/EmpLeave";
 import Team from "./page/admin/team/Team";
 import EmpTeam from "./page/employee/EmpTeam";
 import AppVersion from "./page/admin/AppVersion/AppVersion";
-import EmpTasksDetails from "./component/admin/EmpTasksDetails";
+import EmpTasksDetails from "./page/employee/EmpTasksDetails";
 import SingleTaskDetails from "./component/admin/SingleTaskDetails";
 import { fetchProfile } from "./Redux/slices/profileSlice";
 import { useEffect } from "react";
 import YourProfilePage from "./component/utilities-components/YourProfilePage";
 import YourOrganization from "./component/utilities-components/YourOrganization";
 import CreateMilestone from "./component/utilities-components/CreateMilestone";
+import ProjectDetails from "./component/project/ProjectDetails";
 
 // export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 export const server = "http://localhost:4000/api/v1";
@@ -81,7 +82,7 @@ function App() {
 
             {/* //common  */}
             <Route path="newEmployee" element={<NewEmployee />} />
-
+            <Route path="projectdetails" element={<ProjectDetails />} />
             <Route path="newMilestone/:projectId" element={<CreateMilestone />} />
 
             {/* hr  */}
@@ -93,7 +94,7 @@ function App() {
             <Route path="alltask" element={<AllTask />} />
             <Route path="managerproject" element={<ManagerProject />} />
             <Route path="managerreport" element={<ManagerReport />} />
-            <Route path="projectdetails" element={<ManagerProjectDetails />} />
+            
             <Route path="empleave" element={<EmpLeave />} />
 
             {/* employee  */}

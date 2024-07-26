@@ -1,64 +1,34 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { server } from "../../../App";
-
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProjects } from "../../../Redux/slices/projectSlice";
-import { LuGalleryVerticalEnd, LuLayoutList } from "react-icons/lu";
-import { IoMdAdd } from "react-icons/io";
 import { fetchProfile } from "../../../Redux/slices/profileSlice";
 import { fetchTeams } from "../../../Redux/slices/teamSlice";
-
+import { server } from "../../../App";
+import { LuGalleryVerticalEnd, LuLayoutList } from "react-icons/lu";
 const ManagerProject = () => {
   const navigate = useNavigate();
-  const initialFormData = {
+  const dispatch = useDispatch();
+  const [formData, setFormData] = useState({
     reportTitle: "",
     reportDescription: "",
     isProjectCompleted: false,
     projectId: "",
     managerId: "",
     adminId: "",
-  };
-
-  const [formData, setFormData] = useState(initialFormData);
-
-
-
+  });
   const [employeeData, setEmployeeData] = useState([]);
-  // const [allProject, setAllProject] = useState([]);
-
+  const [managerProject, setManagerProject] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [teamInfoData, setTeamInfoData] = useState([]);
   const [viewMode, setViewMode] = useState("table");
   const [selectedProject, setSelectedProject] = useState({});
-  const { teams} = useSelector((state) => state.team);
 
-  // geting all the details of team
-  // useEffect(() => {
-  //   const teamData = async () => {
-  //     try {
-  //       const team = await axios.get(`${server}/team/allTeams`, {
-  //         withCredentials: true,
-  //       });
-  //       console.log("team ka data aa raha h kya", team.data.allTeamsData);
-  //       setTeamInfoData(team.data.allTeamsData);
-  //     } catch (error) {
-  //       console.log("error to geting all the team data from data");
-  //     }
-  //   };
-  //   teamData();
-  // }, []);
-
-  //fetch all the details of project
-  const dispatch = useDispatch();
-  // Fetching projects
-  const projectState = useSelector((state) => state.project);
-  const {
-    allProject,
-    status: projectStatus,
-    error: projectError,
-  } = projectState;
+  const { teams } = useSelector((state) => state.team);
+  const { allProject, status: projectStatus } = useSelector(
+    (state) => state.project
+  );
+  const profile = useSelector((state) => state.profile.data);
 
   useEffect(() => {
     if (projectStatus === "idle") {
@@ -66,38 +36,33 @@ const ManagerProject = () => {
     }
   }, [projectStatus, dispatch]);
 
-  console.log("all project data me h kuchh ", allProject);
-
-  const profile = useSelector((state) => state.profile.data);
+  useEffect(() => {
+    setManagerProject(
+      allProject.filter((project) => project.projectManager === profile._id)
+    );
+  }, [profile, allProject]);
 
   useEffect(() => {
     dispatch(fetchTeams());
     dispatch(fetchProfile());
   }, [dispatch]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${server}/employee/all`, {
+          withCredentials: true,
+        });
+        setEmployeeData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching employee data:", error.message);
+      }
+    };
+    fetchData();
+  }, []);
 
-  console.log(allProject);
-
-  // handle search
-  // const handleSearch = (e) => {
-  //   const searchTerm = e.target.value.trim().toLowerCase(); // Get the trimmed lowercase search term
-
-  //   if (searchTerm === " ") {
-  //     setAllProject(allProject); // If the search term is empty, show the entire original array
-  //   } else {
-  //     // Filter the array based on the search term
-  //     const tempVar = allProjectForSearch?.filter((item) =>
-  //       item.projectName?.trim().toLowerCase().includes(searchTerm)
-  //     );
-  //     setAllProject(tempVar); // Update the array state with the filtered results
-  //   }
-  // };
-
-  // handle for report button
   const handleReportClick = (project) => {
     setIsModalOpen(true);
-
-    // set values in a single call
     setFormData({
       ...formData,
       managerId: project.managerId,
@@ -105,18 +70,13 @@ const ManagerProject = () => {
       projectId: project._id,
       reportTitle: project.projectName,
     });
-
-    // set project
     setSelectedProject(project);
   };
 
-  // control for show the modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
-   
   };
 
-  // handle for the change in value
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prevData) => ({
@@ -125,98 +85,54 @@ const ManagerProject = () => {
     }));
   };
 
-  // handle for submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add logic to handle form submission, e.g., send data to server
-    // console.log("Form submitted with data:", formData);
-    // You can add additional logic here, such as API calls to submit the data.
-    const {
-      reportTitle,
-      reportDescription,
-      isProjectCompleted,
-      projectId,
-      managerId,
-      adminId,
-    } = formData;
-
     try {
       const response = await axios.post(
         `${server}/reportProject/new`,
+        formData,
         {
-          reportTitle,
-          reportDescription,
-          isProjectCompleted,
-          projectId,
-          managerId,
-          adminId,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
-
-      // console.log(response.data.reportProject.managerId)
-      //when success
-      const { success, message } = response.data;
-      // console.log(message)
-      localStorage.setItem("id", response.data.reportProject.managerId);
+      const { success, message, reportProject } = response.data;
+      localStorage.setItem("id", reportProject.managerId);
       setIsModalOpen(false);
       if (success) {
-        setFormData(initialFormData);
+        setFormData({
+          reportTitle: "",
+          reportDescription: "",
+          isProjectCompleted: false,
+          projectId: "",
+          managerId: "",
+          adminId: "",
+        });
         alert(message);
         navigate("../managerreport");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert(error.response.data.message);
     }
   };
 
-
   const handleAssignTask = (project) => {
-    navigate("../newTask", {
-      state: { project },
-    });
+    navigate("../newTask", { state: { project } });
   };
 
-  // all employees data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const allEmployee = await axios.get(`${server}/employee/all`, {
-          withCredentials: true,
-        });
-        setEmployeeData(allEmployee.data.data);
-
-        // console.log( "emp list h ",employeeData)
-      } catch (error) {
-        console.error("Error fetching employee data:", error.message);
-      }
-    };
-
-    fetchData();
-  }, [setEmployeeData]);
-
-  //hnadle for show mare
   const handleOnShowMore = (projectId) => {
-    navigate("../projectdetails", {
-      state: { projectId },
-    });
-   
+    if (projectId) {
+      console.log("Project ID data:", projectId);
+      navigate("../projectdetails", {
+        state: { projectId: projectId.toString() },
+      });
+    }
   };
-
-  console.log(allProject);
 
   const empData = employeeData.filter(
     (singleUser) => singleUser.designationType === "employee"
   );
-  // console.log(empData);
-  const tempData = [...empData];
-  console.log("temp data", tempData);
 
   return (
     <>
@@ -265,7 +181,7 @@ const ManagerProject = () => {
       <div>
         {viewMode === "table" ? (
           <>
-            {allProject.length > 0 ? (
+            {managerProject?.length > 0 ? (
               <div className="overflow-x-auto mt-5">
                 <table className="min-w-full table-auto">
                   <thead className="bg-slate-400">
@@ -282,7 +198,7 @@ const ManagerProject = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {allProject.map((project, index) => (
+                    {managerProject.map((project, index) => (
                       <tr key={project._id} className="text-center">
                         <td className="border px-4 py-2">{index + 1}</td>
                         <td className="border px-4 py-2">
@@ -361,9 +277,14 @@ const ManagerProject = () => {
               </div>
             )}
           </>
-        ) : null }
+        ) : null}
 
-        {viewMode === "gallery" ? (<> <div> gallery view comming soon.... </div> </> ) : null }
+        {viewMode === "gallery" ? (
+          <>
+            {" "}
+            <div> gallery view comming soon.... </div>{" "}
+          </>
+        ) : null}
       </div>
 
       {/* show modal for report the project  */}

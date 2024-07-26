@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { HiOutlineCalendar } from "react-icons/hi2";
 import { GoGoal } from "react-icons/go";
-import { LuMilestone } from "react-icons/lu";
-import { MdOutlineTaskAlt } from "react-icons/md";
+
 import { SlLocationPin } from "react-icons/sl";
 import { GoPerson, GoLinkExternal } from "react-icons/go";
 
@@ -13,11 +12,13 @@ const ProjectCard = ({ project}) => {
 
  
   const navigate = useNavigate();
-  const projectId = project?._id ?? null;
 
-  const handleCardClick = () => {
-    localStorage.setItem("projectId", projectId);
-    navigate(`../projectdetails`);
+  const handleCardClick = (projectId) => {
+    if (projectId) {
+      navigate("../projectdetails", {
+        state: { projectId: projectId.toString() },
+      });
+    }
   };
 
 
@@ -35,7 +36,7 @@ const ProjectCard = ({ project}) => {
               <h3 className="flex-wrap text-xl font-bold mb-1">
                 {project?.projectName}
               </h3>
-              <span className="" onClick={handleCardClick}>
+              <span className="" onClick={()=>handleCardClick(project._id)}>
                 <GoLinkExternal className="text-xl font-extrabold" />
               </span>
             </div>

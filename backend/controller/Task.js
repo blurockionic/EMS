@@ -1,141 +1,114 @@
 import { Employee } from "../model/employee.js";
 import { Project } from "../model/project.js";
 import { Task } from "../model/task.js";
-import {uploadOnCloudinary} from "../utilities/cloudinary.js";
-
-
-
-// export const task = async (req, res) => {
-//   try {
-//     const allTask = await Task.find({});
-//     // Function to generate new task ID
-//     // function generateNewTaskId() {
-    
-//     //   let maxTaskId = allTask.reduce(
-//     //     (max, task) => Math.max(max, task.task_id),
-//     //     0
-//     //   );
-
+import { uploadOnCloudinary } from "../utilities/cloudinary.js";
+import mongoose from "mongoose";
+const { ObjectId } = mongoose.Types;
 import { Tags } from "../model/tagsSchema.js";
-import { User } from "../model/user.js"; // Example User schema import
-
-
-
-//     //   // Increment the maximum taskId by 1 to generate the new taskId
-//     //   let newTaskId = maxTaskId + 1;
-
-//     //   return newTaskId;
-//     // }
+import { User } from "../model/user.js";
 
 export const task = async (req, res) => {
-  console.log('Inside the /newTask route');
-  console.log(req.file); // Log the uploaded file info
-  console.log(req.body); // Log the form data
-  
-    try {
-      const {
-        title,
-        description,
-        taskhashId,
-        tags,
-        status,
-        assignBy,
-        assignTo,
-        project,
-        assignDate,
-        dueDate,
-      } = req.body;
+  console.log("Inside the /newTask route");
+  console.log(req.file);
+  console.log(req.body);
 
-      // Validation
-      if (
-        !title ||
-        !description ||
-        !tags ||
-        !status ||
-        !assignBy ||
-        !assignTo ||
-        !project ||
-        !assignDate ||
-        !dueDate
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: "All fields are required",
-        });
-      }
+  try {
+    const {
+      title,
+      description,
+      taskhashId,
+      selectedTags,
+      status,
+      assignBy,
+      assignTo,
+      project,
+      assignDate,
+      dueDate,
+    } = req.body;
 
-      // Check if the employee (assignTo) exists
-      const isEmployeeExist = await User.findById(assignTo);
-      if (!isEmployeeExist) {
-        return res.status(404).json({
-          success: false,
-          message: "Employee not found! Please select another employee",
-        });
-      }
+    const assignToArray = JSON.parse(assignTo);
+    const selectedTagsArray = JSON.parse(selectedTags);
 
-      // Check if the project exists
-      const isProjectExist = await Project.findById(project);
-      if (!isProjectExist) {
-        return res.status(404).json({
-          success: false,
-          message: "Project not found! Please select another project",
-        });
-      }
-
-      // Handle file upload to Cloudinary
-      let cloudinaryUrl = null;
-      console.log("checking what is inside req.path", req.file);
-      if (req.file) {
-        const result = await uploadOnCloudinary(req.file.path);
-        if (result) {
-          cloudinaryUrl = result.secure_url;
-          console.log("Cloudinary URL:", cloudinaryUrl);
-        }
-
-  
-      }
-
-      // Create entry in the database
-      const newTask = await Task.create({
-        title,
-        description,
-        taskhashId,
-        tags,
-        status,
-        assignBy,
-        assignTo,
-        project,
-        assignDate,
-        dueDate,
-        fileUpload: cloudinaryUrl
-      });
-
-      const assignId = assignTo;
-      const idName = await User.findById(assignId);
-      const fullName = `${idName.firstName} ${idName.lastName}`;
-
-      // Return success response
-      return res.status(201).json({
-        success: true,
-        task: newTask,
-        message: `Task has been assigned to ${fullName}`,
-      });
-    } catch (error) {
-      console.error("Error creating task:", error);
-      return res.status(500).json({
+    // Validate ObjectIds
+    if (!assignToArray.every((id) => ObjectId.isValid(id))) {
+      return res.status(400).json({
         success: false,
-        message: "Internal server error",
+        message:
+          "Invalid assignTo values. Each value must be a valid ObjectId.",
       });
     }
+
+    if (!selectedTagsArray.every((id) => ObjectId.isValid(id))) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid selectedTags values. Each value must be a valid ObjectId.",
+      });
+    }
+
+    const isProjectExist = await Project.findById(project);
+    if (!isProjectExist) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found! Please select another project",
+      });
+    }
+
+    let cloudinaryUrl = null;
+    if (req.file) {
+      const result = await uploadOnCloudinary(req.file.path);
+      if (result) {
+        cloudinaryUrl = result.secure_url;
+        console.log("Cloudinary URL:", cloudinaryUrl);
+      }
+    }
+
+    const newTask = await Task.create({
+      title,
+      description,
+      taskhashId,
+      tags: selectedTagsArray,
+      status,
+      assignBy,
+      assignTo: assignToArray,
+      project,
+      assignDate,
+      dueDate,
+      fileUpload: cloudinaryUrl,
+    });
+
+    const assignedUsers = await User.find({ _id: { $in: assignToArray } });
+    const fullNames = assignedUsers
+      .map((user) => `${user.firstName} ${user.lastName}`)
+      .join(", ");
+
+    return res.status(201).json({
+      success: true,
+      task: newTask,
+      message: `Task has been assigned to ${fullNames}`,
+    });
+  } catch (error) {
+    console.error("Error creating task:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
+};
 export const allTask = async (req, res) => {
   try {
     //validation
-    const allTask = await Task.find({}).populate({
-      path: "tags",
-      select: "tagName",
-      model: Tags,
-    });
+    const allTask = await Task.find({})
+      .populate({
+        path: "tags",
+        select: "tagName",
+        model: Tags,
+      })
+      .populate({
+        path: "assignTo",
+        select: "firstName lastName",
+        model: User,
+      });
 
     if (!allTask) {
       return res.status(500).json({
@@ -175,7 +148,17 @@ export const taskOfEmployee = async (req, res) => {
     //   }
 
     //validation
-    const allTaskOfEmployee = await Task.find({ assignTo: id });
+    const allTaskOfEmployee = await Task.find({ assignTo: id })
+      .populate({
+        path: "tags",
+        select: "tagName",
+        model: Tags,
+      })
+      .populate({
+        path: "assignTo",
+        select: "firstName lastName",
+        model: User,
+      });
 
     if (!allTaskOfEmployee) {
       return res.status(500).json({
@@ -300,7 +283,11 @@ export const specificProjectTask = async (req, res) => {
 
     // Fetch tasks filtered by project ID
 
-    const specificProjectTasks = await Task.find({ project: id });
+    const specificProjectTasks = await Task.find({ project: id }).populate({
+      path: "tags",
+      select: "tagName",
+      model: Tags,
+    });
 
     if (!specificProjectTasks || specificProjectTasks.length === 0) {
       return res.status(404).json({

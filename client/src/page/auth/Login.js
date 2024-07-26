@@ -6,12 +6,14 @@ import NET from "vanta/dist/vanta.net.min";
 import logo from "../../assets/employee.png";
 import { login } from "../../Redux/slices/authSlice";
 import { useDispatch } from "react-redux";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [showPassword, setShowPassword] = useState(false);
   const [vantaEffect, setVantaEffect] = useState(null);
   const myRef = useRef(null);
   useEffect(() => {
@@ -66,6 +68,10 @@ const Login = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="grid grid-cols-12 h-screen">
       <div className="col-span-4 p-4 flex items-center " ref={myRef}>
@@ -83,7 +89,7 @@ const Login = () => {
         {/* log in form  */}
 
         <form
-          className="bg-white p-4 rounded shadow-lg w-84 mx-auto "
+          className="bg-white p-4 rounded shadow-lg w-2/5 h-2/3 mx-auto "
           onSubmit={handleSubmit}
         >
           <h2 className="text-xl font-semibold mb-4 text-center">LOGIN</h2>
@@ -95,7 +101,7 @@ const Login = () => {
               Email
             </label>
             <input
-              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               type="email"
               id="email"
               placeholder="Enter email"
@@ -104,7 +110,7 @@ const Login = () => {
               required
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label
               className="block text-gray-700 text-sm  mb-2 text-left"
               htmlFor="password"
@@ -112,16 +118,22 @@ const Login = () => {
               Password
             </label>
             <input
-              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              type="password"
+              className="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              type={showPassword ? "text" : "password"}
               id="password"
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <div
+              className="absolute inset-y-0 right-0 pr-3 pt-8 flex items-center cursor-pointer"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? <AiOutlineEyeInvisible className="text-xl" /> : <AiOutlineEye  className="text-xl"/>}
+            </div>
           </div>
-          <div className="flex items-center justify-between">
+          <div className=" mt-32 flex items-center justify-between">
             <button
               className="w-64 bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 hover:from-indigo-400 mx-auto font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"

@@ -96,6 +96,28 @@ export const specificProjectTask = createAsyncThunk(
     }
   }
 );
+// Thunk for fetching specific project tasks
+export const specificEmployeeTasks = createAsyncThunk(
+  "tasks/specificEmployeeTasks",
+  async (employeeId, thunkAPI) => {
+    try {
+      console.log("employeeId",employeeId);
+      
+      const response = await axios.get(
+        `${server}/task/${employeeId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data.allTaskOfEmployee; // Assuming the response contains specific project task data
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
 
 // Create the tasks slice
 const taskSlice = createSlice({
@@ -103,6 +125,7 @@ const taskSlice = createSlice({
   initialState: {
     tasks: [],
     projectSpecificTasks: [], // Add a new property for project-specific tasks
+    employeeSpecificTasks: [], // Add a new property for employee-specific tasks
     loading: false,
     error: null,
   },
@@ -172,6 +195,17 @@ const taskSlice = createSlice({
       .addCase(specificProjectTask.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(specificEmployeeTasks.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(specificEmployeeTasks.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employeeSpecificTasks = action.payload;
+      })
+      .addCase(specificEmployeeTasks.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });
