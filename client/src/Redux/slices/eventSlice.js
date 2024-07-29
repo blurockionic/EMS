@@ -11,7 +11,7 @@ export const fetchEvents = createAsyncThunk("events/fetchEvents", async () => {
     },
     withCredentials: true,
   });
-  return response.data;
+  return response.data.events;
 });
 
 export const fetchEventById = createAsyncThunk(

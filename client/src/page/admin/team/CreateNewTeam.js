@@ -1,23 +1,20 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import Select from "react-select";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import Select from "react-select";
+import { toast, ToastContainer } from "react-toastify";
+import { IoSettingsOutline, IoClose, IoCheckmarkSharp } from "react-icons/io5";
 import { createTeam } from "../../../Redux/slices/teamSlice";
-import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const CreateNewTeam = ({
-  profile,
-  allManagers,
-  allMembers,
-  loading,
-  setLoading,
-}) => {
+const CreateNewTeam = ({ profile, allManagers, allMembers, tags }) => {
   const [teamDescription, setTeamDescription] = useState("");
   const [teamName, setTeamName] = useState("");
   const [adminProfile, setAdminProfile] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);
-  const [selectedProject, setSelectedProject] = useState("");
   const [selectedManager, setSelectedManager] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [tagDropdown, setTagDropdown] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -31,15 +28,31 @@ const CreateNewTeam = ({
     setSelectedMembers(selectedOptions);
   };
 
+  const toggleDropdown = (dropdown) => {
+    setDropdownOpen(dropdownOpen === dropdown ? null : dropdown);
+  };
+
+  const toggleTagDropdown = () => {
+    setTagDropdown(!tagDropdown);
+  };
+
+  const handleTagSelection = (tagId) => {
+    setSelectedTags((prevTags) =>
+      prevTags.includes(tagId)
+        ? prevTags.filter((id) => id !== tagId)
+        : [...prevTags, tagId]
+    );
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!teamName) {
-      alert("Team name is Required");
+      alert("Team name is required");
       return;
     }
 
     if (selectedManager === "") {
-      alert("Please select Manager");
+      alert("Please select a manager");
       return;
     }
 
@@ -49,15 +62,15 @@ const CreateNewTeam = ({
         teamDescription,
         adminProfile,
         selectedManager,
-        selectedProject,
         selectedMembers,
+        selectedTags,
       };
-      const resultAction = dispatch(createTeam(teamData));
+      const resultAction = await dispatch(createTeam(teamData));
       setTeamName("");
       setTeamDescription("");
       setSelectedManager("");
       setSelectedMembers([]);
-      setSelectedProject("");
+      setSelectedTags([]);
       if (createTeam.fulfilled.match(resultAction)) {
         if (resultAction.payload.success) {
           toast.success("Team created successfully");
@@ -78,133 +91,148 @@ const CreateNewTeam = ({
   };
 
   return (
-    <div>
-      <div className="container mx-auto w-[60%] h-auto bg-white shadow-2xl">
-        <div className="m-12">
-          <div>
-            <h1 className="text-2xl uppercase text-center font-bold text-blue-500">
-              Team Details
-            </h1>
-
-            <div className="mt-2">
+    <div className="w-full max-w-4xl mx-auto p-4">
+      <ToastContainer />
+      <form
+        onSubmit={handleFormSubmit}
+        className="bg-white dark:bg-gray-800 shadow-lg rounded p-6"
+      >
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:space-x-6">
+          <div className="flex flex-col w-full lg:w-2/3">
+            <div className="mb-4">
               <label
-                className="text-slate-600 text-sm font-semibold "
+                className="block text-gray-700 dark:text-gray-300 font-bold mb-2"
                 htmlFor="teamName"
               >
                 Team Name
               </label>
               <input
-                className="w-full border-solid border-slate-400 outline-none
-                            border-opacity-100 border
-                            rounded-sm p-2"
                 type="text"
+                id="teamName"
                 value={teamName}
-                required
-                name="teamName"
-                placeholder=" Enter team Name"
                 onChange={(e) => setTeamName(e.target.value)}
+                required
+                className="w-full p-2 border rounded"
+                placeholder="Enter team name"
               />
             </div>
-            {/* team description */}
-            <div className="mt-2">
+            <div className="mb-4">
               <label
-                className="text-slate-600 text-sm font-semibold "
+                className="block text-gray-700 dark:text-gray-300 font-bold mb-2"
                 htmlFor="teamDescription"
               >
                 Description
               </label>
               <textarea
-                className=" resize-none w-full h-[5rem] border-solid border-slate-400 outline-none
-                    border-opacity-100 border
-                    rounded-sm p-2"
-                type="text"
+                id="teamDescription"
                 value={teamDescription}
-                name="teamDescription"
-                placeholder=" Enter team Description"
                 onChange={(e) => setTeamDescription(e.target.value)}
+                className="w-full p-2 border rounded"
+                placeholder="Enter team description"
               />
             </div>
-
-            <div className="mt-3 flex flex-row justify-between ">
-              <div className="flex flex-col w-full">
-                <label
-                  className="text-slate-600 text-sm font-semibold"
-                  htmlFor="selcetManager"
-                >
-                  Manager
-                </label>
-                <select
-                  value={selectedManager}
-                  onChange={(e) => setSelectedManager(e.target.value)}
-                  className="p-2 font-semibold border border-slate-400 outline-none rounded-sm"
-                >
-                  <option className="text-slate-400" value="">
-                    Select Manager
-                  </option>
-                  {allManagers?.map((manager) => (
-                    <option key={manager._id} value={manager._id}>
-                      {manager.firstName} {manager.lastName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className=" mt-4 flex flex-col">
-              <div>
-                <div>
-                  <label
-                    className="text-slate-600 text-sm font-semibold "
-                    htmlFor="teamMember "
-                  >
-                    Members
-                  </label>
-
-                  <div className="flex flex-row justify-between z-auto">
-                    <div className="w-full mx-auto">
-                      <Select
-                        value={selectedMembers}
-                        onChange={handleMembersChange}
-                        isMulti
-                        options={allMembers}
-                        getOptionLabel={(option) =>
-                          `${option.firstName} ${option.lastName}`
-                        }
-                        getOptionValue={(option) => option._id} // Assuming _id is the unique identifier for each user
-                        styles={{
-                          control: (provided) => ({
-                            ...provided,
-                            border: "1px solid #839DB4",
-                            borderRadius: "2px",
-                          }),
-                          menu: (provided) => ({
-                            ...provided,
-                            overflowY: "hidden",
-                          }),
-                          option: (provided) => ({
-                            ...provided,
-                            display: "flex",
-                            alignItems: "center",
-                            padding: "8px",
-                          }),
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={(e) => handleFormSubmit(e)}
-              className="bg-blue-500 font-semibold text-xl py-2 mt-10 rounded-sm   justify-center mx-auto w-[80%] flex flex-row"
-            >
-              Create Team
-            </button>
           </div>
-          <div className="mt-4 h-2 w-full "></div>
+
+          {/* Manager and Members Section */}
+          <div className="flex flex-col w-full lg:w-1/3">
+            {/* Manager Section */}
+            <div className="mb-4 relative flex flex-col pb-4 border-b">
+              <div className="flex flex-row justify-between text-gray-600 dark:text-white dark:hover:text-blue-600 hover:text-blue-600 font-bold">
+                Manager
+                <IoSettingsOutline
+                  className="text-xl cursor-pointer"
+                  onClick={() =>
+                    selectedManager === "" && toggleDropdown("Manager")
+                  }
+                />
+              </div>
+              {selectedManager === "" && dropdownOpen === "Manager" && (
+                <div className="absolute z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-md p-2 mt-2 w-full">
+                  <div
+                    className="flex justify-end cursor-pointer"
+                    onClick={() => toggleDropdown(null)}
+                  >
+                    <IoClose className="text-xl hover:text-red-700" />
+                  </div>
+                  <select
+                    id="selectedManager"
+                    value={selectedManager}
+                    onChange={(e) => setSelectedManager(e.target.value)}
+                    className="w-full p-2 border rounded"
+                  >
+                    <option value="" disabled>
+                      Select Manager
+                    </option>
+                    {allManagers.map((manager) => (
+                      <option key={manager._id} value={manager._id}>
+                        {manager.firstName} {manager.lastName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* Members Section */}
+            <div className= "mt-6  mb-4 relative flex flex-col pb-4 border-b">
+              <div className="flex flex-row justify-between text-gray-600 dark:text-white dark:hover:text-blue-600 hover:text-blue-600 font-bold">
+                Members
+                <IoSettingsOutline
+                  className="text-xl cursor-pointer"
+                  onClick={() => toggleDropdown("Members")}
+                />
+              </div>
+              {dropdownOpen === "Members" && (
+                <div className="absolute z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-md p-2 mt-2 w-full">
+                  <div
+                    className="flex justify-end cursor-pointer"
+                    onClick={() => toggleDropdown(null)}
+                  >
+                    <IoClose className="text-xl hover:text-red-700" />
+                  </div>
+                  <Select
+                    isMulti
+                    options={allMembers}
+                    value={selectedMembers}
+                    onChange={handleMembersChange}
+                    getOptionLabel={(option) =>
+                      `${option.firstName} ${option.lastName}`
+                    }
+                    getOptionValue={(option) => option._id}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                  />
+                </div>
+              )}
+              <div className="flex flex-wrap mt-2">
+                {selectedMembers.length === 0 ? (
+                  <span className="text-gray-500 dark:text-white text-sm">
+                    None yet
+                  </span>
+                ) : (
+                  selectedMembers.map((member) => (
+                    <div
+                      key={member._id}
+                      className="flex items-center bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded mr-2 mb-2"
+                    >
+                      {member.firstName} {member.lastName}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+
+        <div className="flex justify-center mt-6">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700"
+          >
+            Create Team
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

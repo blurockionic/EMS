@@ -47,10 +47,26 @@ export const getEventById = async (req, res) => {
 
 // Create a new event
 export const createEvent = async (req, res) => {
-  const { eventTitle, eventDate, startTime, endTime, people } = req.body;
+  const {
+    createdBy,
+    eventTitle,
+    eventDate,
+    startTime,
+    endTime,
+    people,
+    eventDescription,
+    eventType,
+  } = req.body;
 
   // Basic validation
-  if (!eventTitle || !eventDate || !startTime || !endTime || !people) {
+  if (
+    !eventTitle ||
+    !eventDate ||
+    !startTime ||
+    !endTime ||
+    !people ||
+    !createdBy
+  ) {
     return res
       .status(400)
       .json({ success: false, message: "Missing required fields" });
@@ -69,6 +85,9 @@ export const createEvent = async (req, res) => {
   try {
     // Create a new Event instance
     const newEvent = new Event({
+      createdBy,
+      eventDescription,
+      eventType,
       eventTitle,
       eventDate,
       startTime,
