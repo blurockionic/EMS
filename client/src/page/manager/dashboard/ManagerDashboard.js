@@ -1,94 +1,45 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { server } from "../../../App";
 
+import React, { useEffect, useState } from "react";
 import Card from "../../../component/admin/admin-card/Card";
 import MyEvents from "../../../component/utilities-components/MyEvents";
 
+
 const ManagerDashboard = () => {
-  const [employeeData, setEmployeeData] = useState([]);
-  const [allTask, setAllTask] = useState([]);
+  const [showEvent, setShowEvent] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const allEmployee = await axios.get(`${server}/employee/all`, {
-          withCredentials: true,
-        });
-        setEmployeeData(allEmployee.data.data);
-      } catch (error) {
-        console.error("Error fetching employee data:", error.message);
-      }
-    };
-
-    fetchData();
-  }, [setEmployeeData]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const projectData = await axios.get(`${server}/task/all`, {
-          withCredentials: true,
-        });
-        setAllTask(projectData.data.allTask);
-        // console.log(projectData)
-      } catch (error) {
-        console.error("Error fetching project data:", error.message);
-        alert(error.response.data.message);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // // filter out iscompleted or not
-  const completedTask = allTask.filter((task) => task.isTaskCompleted === true);
-  const inCcompletedtask = allTask.filter(
-    (task) => task.isTaskCompleted === false
-  );
-  // console.log(completedProjects.length)
+  const handelAddEvent = () =>{
+    setShowEvent(true);
+  }
 
   return (
     <>
       {/* card  */}
-      <div className="grid grid-cols-12">
-        <div className="col-span-3">
-          <Card
-            title="Employee"
-            imageUrl="https://placekitten.com/100/100" // Replace with your actual image URL
-            number={employeeData.length}
-            bgColor={`bg-red-200`}
-          />
+      <div className="flex flex-row m-4 ml-9 gap-4">
+        <div>
+        <button type="button" className="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+        onClick={handelAddEvent}> ADD Event +</button>
         </div>
-        <div className="col-span-3">
-          <Card
-            title="task"
-            imageUrl="https://placekitten.com/100/100" // Replace with your actual image URL
-            number={allTask.length}
-            bgColor={`bg-green-200`}
-          />
+
+        <div>
+        <button type="button" className="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Event List</button>
         </div>
-        <div className="col-span-3">
-          <Card
-            title="Completed"
-            imageUrl="https://placekitten.com/100/100" // Replace with your actual image URL
-            number={completedTask.length}
-            bgColor={`bg-yellow-200`}
-          />
-        </div>
-        <div className="col-span-3">
-          <Card
-            title="Incompleted "
-            imageUrl="https://placekitten.com/100/100" // Replace with your actual image URL
-            number={inCcompletedtask.length}
-            bgColor={`bg-blue-200`}
-          />
-        </div>
+        
       </div>
-      {/* card end  */}
-      <div className="flex justify-center lg:justify-start mt-4 lg:mt-0">
-        <MyEvents />
-      </div>
+
+        <div className="flex flex-row justify-between w-full">
+         <div>
+          <Card/>
+         </div>
+
+          
+        </div>
+
+        <div>
+          {showEvent 
+            && 
+            <MyEvents/>
+            }
+          </div>
     </>
   );
 };
