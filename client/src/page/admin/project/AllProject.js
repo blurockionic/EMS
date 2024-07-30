@@ -7,39 +7,30 @@ import { fetchProfile } from "../../../Redux/slices/profileSlice";
 import { Link } from "react-router-dom";
 import { IoMdAdd } from "react-icons/io";
 import { LuGalleryVerticalEnd, LuLayoutList } from "react-icons/lu";
+import Loader from "../../../component/utilities-components/Loader";
 
 const AllProject = () => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [viewMode, setViewMode] = useState("gallery");
+  const dispatch = useDispatch(); // dispatch for all 
+  const [activeTab, setActiveTab] = useState(0); // set active tab for all projects
+  const [viewMode, setViewMode] = useState("gallery"); // view mode for gallery and table
   //fetch all the details of project
-  const dispatch = useDispatch();
+  const projectState = useSelector((state) => state.project); // user selector for project data 
+  const { allProject, status: projectStatus, error: projectError } = projectState; // all project
+  const profile = useSelector((state) => state.profile.data); // profile data use selector 
 
-  const projectState = useSelector((state) => state.project);
-  const {
-    allProject,
-    status: projectStatus,
-    error: projectError,
-  } = projectState;
-
-  useEffect(() => {
-    if (projectStatus === "idle") {
-      dispatch(fetchProjects());
-    }
-  }, [projectStatus, dispatch]);
-
-  console.log("all project data me h kuchh ", allProject);
-
-  const profile = useSelector((state) => state.profile.data);
-
+ 
+// use effect to get profile and project data
   useEffect(() => {
     dispatch(fetchProfile());
+    dispatch(fetchProjects());
   }, [dispatch]);
-
+// tab handler function 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
-  // console.log(allProject);
+  if (projectStatus === 'loading') return <div> <Loader/> </div>;
+  if (projectStatus === 'failed' ) return <div>Error: {projectError}</div>;
   return (
     <>
       {profile.role === "admin" ? (
