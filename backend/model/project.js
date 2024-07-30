@@ -2,57 +2,6 @@ import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 
 const projectSchema = new mongoose.Schema(
-  // {
-  //   projectName: {
-  //     type: String,
-  //     required: true,
-  //     trim: true,
-  //   },
-  //   projectStartDate: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   projectEndDate: {
-  //     type: String,
-  //   },
-  //   priority:{
-  //     type: String,
-  //     required: true
-  //   },
-  //   description: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   managerId: {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref:"employee_details",
-  //     required:true
-  //   },
-  //   adminId:{
-  //     type:mongoose.Schema.Types.ObjectId,
-  //     ref:"users",
-  //     required: true
-  //   },
-  //   teamId: {
-  //     type:mongoose.Schema.Types.ObjectId,
-  //       ref:"Teams_Detail",
-  //       required:true
-  //   },
-  //   websiteUrl: {
-  //     type: String,
-  //   },
-  //   isCompleted:{
-  //     type:Boolean,
-  //     default: false
-  //   },
-  //   isScrap:{
-  //     type:Boolean,
-  //     default: false
-  //   },
-  //   completedPercent:{
-  //     type:Number,
-  //     default: 0
-  //   },
   //   emails: {
   //     type: [{
   //       type: String,
@@ -67,7 +16,6 @@ const projectSchema = new mongoose.Schema(
   //       },
   //     }],
   //   },
-  // },
 
   {
     projectName: { type: String, required: true },
@@ -82,29 +30,33 @@ const projectSchema = new mongoose.Schema(
     estimatedBudget: { type: Number },
     projectManager: { type: mongoose.Schema.Types.ObjectId, ref: "Teams" },
     teamMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: "Teams" }],
-    stakeholders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Teams" }],
-    toolsAndTechnologies: [String],
-    requiredResources: [String],
-    resourceAllocation: { type: String },
-    communicationPlan: { type: String },
-    meetingSchedule: { type: String },
+    // stakeholders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Teams" }],
+    // toolsAndTechnologies: [String],
+    // requiredResources: [String],
+    // resourceAllocation: { type: String },
+    // communicationPlan: { type: String },
+    // meetingSchedule: { type: String },
 
-    documentation: {
-      projectPlan: { type: String },
-      requirements: { type: String },
-      design: { type: String },
-      technicalSpecifications: { type: String },
-      userManuals: { type: String },
-      testPlans: { type: String },
+    // documentation: {
+    //   projectPlan: { type: String },
+    //   requirements: { type: String },
+    //   design: { type: String },
+    //   technicalSpecifications: { type: String },
+    //   userManuals: { type: String },
+    //   testPlans: { type: String },
+    // },
+    // progressTracking: { type: String },
+    // KPIs: [String],
+    // statusReports: { type: String },
+    // timeTracking: { type: String },
+    // budgetTracking: { type: String },
+    // qualityStandards: { type: String },
+    isCompleted: {
+      type: Boolean,
+      default: false,
     },
-    progressTracking: { type: String },
-    KPIs: [String],
-    statusReports: { type: String },
-    timeTracking: { type: String },
-    budgetTracking: { type: String },
-    qualityStandards: { type: String },
 
-     // phases: [String],
+    // phases: [String],
     // projectCategory: { type: String },
     // actualBudget: { type: Number },
     // paymentTerms: { type: String },
