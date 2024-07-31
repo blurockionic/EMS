@@ -62,7 +62,7 @@ const Header = () => {
       tab: "issue",
       label: "Issues",
       icon: GoIssueTrackedBy,
-      link: null,
+      link: "./allIssue",
     },
     {
       type: "employee",
@@ -104,7 +104,7 @@ const Header = () => {
       tab: "issue",
       label: "Issues",
       icon: GoIssueTrackedBy,
-      link: null,
+      link: "./allIssue",
     },
     {
       type: "admin",
@@ -140,6 +140,13 @@ const Header = () => {
       label: "Task",
       icon: GoTasklist,
       link: "./alltask",
+    },
+    {
+      type: "manager",
+      tab: "issue",
+      label: "Issues",
+      icon: GoIssueTrackedBy,
+      link: "./allIssue",
     },
     {
       type: "manager",

@@ -5,8 +5,7 @@ import {
   Routes,
 } from "react-router-dom";
 
-import { Provider, useDispatch, useSelector } from "react-redux";
-import store from "./Redux/store"; // Ensure the casing matches your folder name
+import { useDispatch, useSelector } from "react-redux";
 
 import Login from "./page/auth/Login";
 // import AdminDashboard from "./page/admin/dashboard/AdminDashboard";
@@ -39,12 +38,12 @@ import YourProfilePage from "./component/utilities-components/YourProfilePage";
 import YourOrganization from "./component/utilities-components/YourOrganization";
 import CreateMilestone from "./component/utilities-components/CreateMilestone";
 import ProjectDetails from "./component/project/ProjectDetails";
+import IssuesComp from "./page/admin/issue/IssuesComp";
 
 // export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 export const server = "http://localhost:4000/api/v1";
 
 function App() {
-
   const theme = useSelector((state) => state.theme.mode);
   const dispatch = useDispatch();
 
@@ -57,61 +56,60 @@ function App() {
     // console.log("issme kya value h ", document.body.className );
   }, [theme]);
 
-
   return (
     // <Login/>
- 
-      <Router>
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-          <Route path="/login" element={<Login />} />
-          {/* //protected route  */}
-          <Route path="/dashboard" element={<Home />}>
-            <Route path="" element={<Navigate to="home" />} />
-            <Route path="home" element={<MainDashboard />} />
-            <Route path="employee" element={<Employee />} />
-            <Route path="newProject" element={<NewProject />} />
-            <Route path="allProject" element={<AllProject />} />
-            <Route path="adminreport" element={<AdminReport />} />
-            <Route path="AppVersion" element={<AppVersion />} />
 
-            {/* Team for all  */}
-            <Route path="newTeam" element={<Team />} />
-            <Route path="myprofile" element={<YourProfilePage />} />
-            <Route path="myorganization" element={<YourOrganization />} />
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="/login" element={<Login />} />
+        {/* //protected route  */}
+        <Route path="/dashboard" element={<Home />}>
+          <Route path="" element={<Navigate to="home" />} />
+          <Route path="home" element={<MainDashboard />} />
+          <Route path="employee" element={<Employee />} />
+          <Route path="newProject" element={<NewProject />} />
+          <Route path="allProject" element={<AllProject />} />
+          <Route path="adminreport" element={<AdminReport />} />
+          <Route path="AppVersion" element={<AppVersion />} />
+          <Route path="allIssue" element={<IssuesComp />} />
 
-            {/* //common  */}
-            <Route path="newEmployee" element={<NewEmployee />} />
-            <Route path="projectdetails" element={<ProjectDetails />} />
-            <Route path="newMilestone/:projectId" element={<CreateMilestone />} />
+          {/* Team for all  */}
+          <Route path="newTeam" element={<Team />} />
+          <Route path="myprofile" element={<YourProfilePage />} />
+          <Route path="myorganization" element={<YourOrganization />} />
 
-            {/* hr  */}
-            <Route path="hrdashboard" element={<HrDashaboard />} />
+          {/* //common  */}
+          <Route path="newEmployee" element={<NewEmployee />} />
+          <Route path="projectdetails" element={<ProjectDetails />} />
+          <Route path="newMilestone/:projectId" element={<CreateMilestone />} />
 
-            {/* manager  */}
-            <Route path="managerdashboard" element={<ManagerDashboard />} />
-            <Route path="newTask" element={<NewTask />} />
-            <Route path="alltask" element={<AllTask />} />
-            <Route path="managerproject" element={<ManagerProject />} />
-            <Route path="managerreport" element={<ManagerReport />} />
-            
-            <Route path="empleave" element={<EmpLeave />} />
+          {/* hr  */}
+          <Route path="hrdashboard" element={<HrDashaboard />} />
 
-            {/* employee  */}
-            <Route path="employeeOverview" element={<EmployeeDashboard />} />
-            <Route path="employeetask" element={<EmpTasksDetails />} />
-            <Route
-              path="singleTaksDetails/:taskId"
-              element={<SingleTaskDetails />}
-            />
-            <Route path="reporthistory" element={<ReportHistory />} />
-            <Route path="empteam" element={<EmpTeam />} />
+          {/* manager  */}
+          <Route path="managerdashboard" element={<ManagerDashboard />} />
+          <Route path="newTask" element={<NewTask />} />
+          <Route path="alltask" element={<AllTask />} />
+          <Route path="managerproject" element={<ManagerProject />} />
+          <Route path="managerreport" element={<ManagerReport />} />
 
-            <Route path="taskreportfeedback" element={<TaskReportFeedback />} />
-          </Route>
-        </Routes>
-      </Router>
-    
+          <Route path="empleave" element={<EmpLeave />} />
+
+          {/* employee  */}
+          <Route path="employeeOverview" element={<EmployeeDashboard />} />
+          <Route path="employeetask" element={<EmpTasksDetails />} />
+          <Route
+            path="singleTaksDetails/:taskId"
+            element={<SingleTaskDetails />}
+          />
+          <Route path="reporthistory" element={<ReportHistory />} />
+          <Route path="empteam" element={<EmpTeam />} />
+
+          <Route path="taskreportfeedback" element={<TaskReportFeedback />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
