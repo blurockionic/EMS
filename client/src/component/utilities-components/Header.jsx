@@ -104,7 +104,7 @@ const Header = () => {
       tab: "issue",
       label: "Issues",
       icon: GoIssueTrackedBy,
-      link: null,
+      link: "./adminIssue",
     },
     {
       type: "admin",
