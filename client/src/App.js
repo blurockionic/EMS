@@ -72,7 +72,7 @@ function App() {
           <Route path="allProject" element={<AllProject />} />
           <Route path="adminreport" element={<AdminReport />} />
           <Route path="AppVersion" element={<AppVersion />} />
-          <Route path="adminIssue" element={<IssuesComp />} />
+          <Route path="allIssue" element={<IssuesComp />} />
 
           {/* Team for all  */}
           <Route path="newTeam" element={<Team />} />
