@@ -62,7 +62,7 @@ const Header = () => {
       tab: "issue",
       label: "Issues",
       icon: GoIssueTrackedBy,
-      link: null,
+      link: "./allIssue",
     },
     {
       type: "employee",
