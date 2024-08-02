@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMilestonesByProjectId } from "../../Redux/slices/milestones/fetchMilestonesSlice";
-import TimeAgo from "../admin/TimeAgo";
+import TimeAgo from "./TimeAgo";
 import { GoAlert } from "react-icons/go";
 import { closeMilestone } from "../../Redux/slices/milestones/milestoneSlice";
 

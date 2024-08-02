@@ -6,11 +6,9 @@ import { GoGoal } from "react-icons/go";
 import { SlLocationPin } from "react-icons/sl";
 import { GoPerson, GoLinkExternal } from "react-icons/go";
 
-import Loader from "./Loader"; // Assuming you have a Loader component
+import Loader from "../utilities-components/Loader"; // Assuming you have a Loader component
 
-const ProjectCard = ({ project}) => {
-
- 
+const ProjectCard = ({ project }) => {
   const navigate = useNavigate();
 
   const handleCardClick = (projectId) => {
@@ -21,13 +19,12 @@ const ProjectCard = ({ project}) => {
     }
   };
 
-
   const address = project?.client?.contactInformation?.address ?? "N/A";
   const cityCountry = address.split(",").slice(1).join(",");
 
   return (
     <div className="p-6 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 dark:bg-[#161B22] dark:border-[#30363D] dark:text-slate-400 mb-4">
-      { false ? (
+      {false ? (
         <Loader />
       ) : (
         <>
@@ -36,7 +33,7 @@ const ProjectCard = ({ project}) => {
               <h3 className="flex-wrap text-xl font-bold mb-1">
                 {project?.projectName}
               </h3>
-              <span className="" onClick={()=>handleCardClick(project._id)}>
+              <span className="" onClick={() => handleCardClick(project._id)}>
                 <GoLinkExternal className="text-xl font-extrabold" />
               </span>
             </div>
@@ -103,9 +100,7 @@ const ProjectCard = ({ project}) => {
             </div>
           </div>
 
-          <div className="text-sm text-gray-500 mb-2">
-         
-          </div>
+          <div className="text-sm text-gray-500 mb-2"></div>
 
           <div className="text-sm text-gray-500 mb-2">
             <div className="flex flex-row justify-between mt-4 p-2">

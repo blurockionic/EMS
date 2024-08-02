@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { GoIssueClosed, GoIssueOpened } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
-import TimeAgo from "../../component/admin/TimeAgo";
+import TimeAgo from "../../component/utilities-components/TimeAgo";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchTasks,

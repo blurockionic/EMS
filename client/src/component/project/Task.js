@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { specificProjectTask } from "../../Redux/slices/taskSlice";
-import TimeAgo from "../admin/TimeAgo"; // Ensure this path is correct
+import TimeAgo from "../utilities-components/TimeAgo"; // Ensure this path is correct
 import { GoIssueClosed, GoIssueOpened, GoIssueReopened } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import Loader from "../utilities-components/Loader";
