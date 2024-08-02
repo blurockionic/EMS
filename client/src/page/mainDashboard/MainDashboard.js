@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AdminDashboard from '../admin/dashboard/AdminDashboard';
 import ManagerDashboard from '../manager/dashboard/ManagerDashboard';
-import HrDashboard from '../HR/new/HrDashaboard'; // Ensure correct import path
+import HrDashboard from '../HR/HrDashaboard'; // Ensure correct import path
 import EmployeeDashboard from '../employee/EmployeeDashboard';
 import { fetchProfile } from '../../Redux/slices/profileSlice';
 

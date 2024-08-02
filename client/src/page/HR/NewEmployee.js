@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useRef, useState } from "react";
-import { server } from "../../../App";
+import { server } from "../../App";
 import { ToastContainer, toast } from "react-toastify";
 
 const NewEmployee = () => {

@@ -3,7 +3,7 @@ import React from "react";
 
 import MyEvents from "../../../component/utilities-components/MyEvents";
 
-import Card from "../../../component/admin/admin-card/Card";
+import Card from "../../../component/utilities-components/Card";
 
 const AdminDashboard = () => {
 

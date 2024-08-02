@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Card from "../../../component/admin/admin-card/Card";
-import EmployeeTable from "../../../component/utilities-components/EmployeeTable";
+import Card from "../../component/utilities-components/Card";
+import EmployeeTable from "../../component/utilities-components/EmployeeTable";
 import axios from "axios";
-import { server } from "../../../App";
+import { server } from "../../App";
 
 const HrDashaboard = () => {
   const [employeeData, setEmployeeData] = useState([]);

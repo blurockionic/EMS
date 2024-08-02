@@ -7,11 +7,11 @@ import { AiOutlineFundProjectionScreen } from "react-icons/ai";
 import { GiRecycle } from "react-icons/gi";
 import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProjects } from "../../../Redux/slices/projectSlice";
-import { fetchProfile } from "../../../Redux/slices/profileSlice";
-import { fetchUsers } from "../../../Redux/slices/allUserSlice";
-import { fetchTasks } from "../../../Redux/slices/taskSlice";
-import Loader from "../../utilities-components/Loader";
+import { fetchProjects } from "../../Redux/slices/projectSlice";
+import { fetchProfile } from "../../Redux/slices/profileSlice";
+import { fetchUsers } from "../../Redux/slices/allUserSlice";
+import { fetchTasks } from "../../Redux/slices/taskSlice";
+
 
 
 const Card = () => {

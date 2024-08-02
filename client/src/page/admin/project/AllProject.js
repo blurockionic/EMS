@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import ProjectCard from "../../../component/utilities-components/ProjectCard";
+import ProjectCard from "../../../component/project/ProjectCard";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProjects } from "../../../Redux/slices/projectSlice";
 import { fetchProfile } from "../../../Redux/slices/profileSlice";

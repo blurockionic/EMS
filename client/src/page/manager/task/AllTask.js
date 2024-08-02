@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTasks } from "../../../Redux/slices/taskSlice";
-import TimeAgo from "../../../component/admin/TimeAgo";
+import TimeAgo from "../../../component/utilities-components/TimeAgo";
 import { GoDotFill } from "react-icons/go";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdArrowDropdown, IoMdAdd } from "react-icons/io";
