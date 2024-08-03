@@ -39,6 +39,7 @@ import YourOrganization from "./component/utilities-components/YourOrganization"
 import CreateMilestone from "./component/utilities-components/CreateMilestone";
 import ProjectDetails from "./component/project/ProjectDetails";
 import IssuesComp from "./page/admin/issue/IssuesComp";
+import ComingSoon from "./component/utilities-components/ComingSoon";
 
 // export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 export const server = "http://localhost:4000/api/v1";
@@ -83,6 +84,7 @@ function App() {
           <Route path="newEmployee" element={<NewEmployee />} />
           <Route path="projectdetails" element={<ProjectDetails />} />
           <Route path="newMilestone/:projectId" element={<CreateMilestone />} />
+          <Route path="commingSoon" element={<ComingSoon/>} />
 
           {/* hr  */}
           <Route path="hrdashboard" element={<HrDashaboard />} />
