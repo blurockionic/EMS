@@ -13,6 +13,7 @@ import milestonesReducer from "./slices/milestones/milestoneSlice"
 import fetchMilestonesReducer from "./slices/milestones/fetchMilestonesSlice"
 import teamReducer from "./slices/teamSlice"
 import eventReducer from "./slices/eventSlice"
+import toDoReducer from "./slices/toDoSlice";
 
 
 import chatReducer from "./slices/chatSlice"; // Add the chat reducer
@@ -34,6 +35,7 @@ const store = configureStore({
     events: eventReducer,
     // socket: socketReducer,
     chat: chatReducer, // add and create chat
+    toDo: toDoReducer,
   },
 });
 
