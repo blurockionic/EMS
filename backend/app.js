@@ -9,6 +9,7 @@ import employeeRoutes from "./routes/EmployeeRoutes.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
 import taskRoutes from "./routes/TaskRoutes.js";
 import tagRouters from "./routes/TagsRoutes.js";
+import toDoRoutes from "./routes/toDoRoutes.js"
 
 import commentRoutes from "./routes/CommentRoutes.js";
 
@@ -104,6 +105,8 @@ app.use("/api/v1/team", teamRoute);
 
 // Use chat routes
 app.use('/api/v1/chat', chatRoutes);
+
+app.use("/api/v1/todo", toDoRoutes);
 
 //default route
 app.get("/", (req, res) => {
