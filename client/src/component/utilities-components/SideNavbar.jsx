@@ -73,7 +73,7 @@ const SideNavbar = ({ sidebarClass, setActive }) => {
                 </Link>
               </li>
               <li className="mb-2 w-full">
-                <Link to={"./commingSoon"} className={linkClasses}>
+                <Link to={"./meeting"} className={linkClasses}>
                   <SiGotomeeting className="mr-3" />
                   <span className="font-semibold">Meetings</span>
                 </Link>

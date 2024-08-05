@@ -10,21 +10,19 @@
   border-radius: 4px;
   cursor: pointer;
   font-weight: 200;
-  margin-top: 20px;
+  margin-top: 5px;
 }
 
 /* Hover style for navigation buttons */
 .custom-calendar .rbc-btn-group button:hover {
-
-  background-color: #adb5bd;
-
+  background-color: black;
+  color: white;
+  font-weight: 600;
 }
 
 /* Style for current date background */
 .custom-calendar .rbc-today {
-
   background-color: #edfafc; /* Adjust the color as needed */
-
 }
 
 /* Style for the center heading */
@@ -35,35 +33,27 @@
 }
 
 .custom-sat {
-    color: red; /* Set the desired color for Saturday */
-  }
-  
-  .custom-sun {
-    color: red; /* Set the desired color for Sunday */
-  }
-  
+  color: red; /* Set the desired color for Saturday */
+}
 
+.custom-sun {
+  color: red; /* Set the desired color for Sunday */
+}
 
 /* Custom styles for month view date text color */
-.rbc-month-view .rbc-date-cell .custom-sat{
-    color: red; 
+.rbc-month-view .rbc-date-cell .custom-sat {
+  color: red;
 }
 /* Set the desired text color */
-  
 
-  
-  /* Custom styles for selected view buttons */
-  .custom-calendar .rbc-toolbar button.rbc-active {
+/* Custom styles for selected view buttons */
+.custom-calendar .rbc-toolbar button.rbc-active {
+  background-color: black; /* Set the desired background color */
+  font-weight: 600;
+  color: white; /* Set the text color for selected buttons */
+}
 
-    background-color: #343a40; /* Set the desired background color */
-
-    color: white; /* Set the text color for selected buttons */
-  }
-
-
-
-  /* Custom styles for previous month dates in month view */
+/* Custom styles for previous month dates in month view */
 .rbc-month-view .rbc-off-range {
-    background-color: #f0f0f0; /* Set the desired background color */
-  }
-
+  background-color: #f0f0f0; /* Set the desired background color */
+}
