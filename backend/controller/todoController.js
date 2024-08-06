@@ -16,6 +16,8 @@ export const createToDoList = async(req,res) =>{
             );
         }
 
+        console.log("checking what is inside todo req body");
+        console.log(req.body);
         const toDoList = await todo.create({
             title,
             description
@@ -37,3 +39,29 @@ export const createToDoList = async(req,res) =>{
     }
 }
 
+
+
+export const fetchToDoList = async(req,res) =>{
+    try {
+        const allToDos = await todo.find({});
+        
+        if(allToDos){
+        res.status(201).json({
+            message:"data has been fetch",
+            success: true,
+            allToDos
+        })
+    }
+    else{
+        res.status(404).json({
+            message:"data not found",
+            success:false
+        })
+    }
+    } catch (error) {
+        res.status(501).json({
+            success:false,
+            message:"something went wrong"
+        })
+    }
+}

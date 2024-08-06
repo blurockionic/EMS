@@ -9,7 +9,7 @@ import employeeRoutes from "./routes/EmployeeRoutes.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
 import taskRoutes from "./routes/TaskRoutes.js";
 import tagRouters from "./routes/TagsRoutes.js";
-import toDoRoutes from "./routes/toDoRoutes.js"
+import toDoRoutes from "./routes/toDoRoutes.js";
 
 import commentRoutes from "./routes/CommentRoutes.js";
 
