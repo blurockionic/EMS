@@ -32,6 +32,8 @@ import milestoneRoutes from "./routes/milestoneRoutes.js";
 
 import chatRoutes from "./routes/chatRoutes.js"
 
+import meetingRoutes from "./routes/MeetingRoutes.js"
+
 // Import the socket handler
 // import socketHandler from './socketHandler.js';
 
@@ -106,7 +108,11 @@ app.use("/api/v1/team", teamRoute);
 // Use chat routes
 app.use('/api/v1/chat', chatRoutes);
 
+// use todo router
 app.use("/api/v1/todo", toDoRoutes);
+
+// use meeting router
+app.use("/api/v1/meeting", meetingRoutes)
 
 //default route
 app.get("/", (req, res) => {

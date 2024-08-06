@@ -151,7 +151,10 @@ const Meeting = () => {
       </nav>
 
       <div className="mt-4">
-        {activeTab === "Meetings" && <div>Meetings content goes here...</div>}
+        {activeTab === "Meetings" && <div>Meetings content goes here...
+          {/* <NewMeeting active={active} setActive={setActive} meetingData={existingMeeting} /> */}
+
+          </div>}
         {activeTab === "Calendar" && (
           <div>
             <BigCalendarComponent />
