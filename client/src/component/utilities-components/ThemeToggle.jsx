@@ -21,7 +21,7 @@ const ThemeToggle = () => {
     };
 
     return (
-        <button className="mx-2 pt-1" onClick={handleThemeToggle}>
+        <button className="" onClick={handleThemeToggle}>
             {theme === 'light' ? (
                 <MdDarkMode className="text-2xl" />
             ) : (

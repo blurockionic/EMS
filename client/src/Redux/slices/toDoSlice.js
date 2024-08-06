@@ -1,18 +1,25 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'; //inorder
-import axios from 'axios';
+
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 import { server } from "../../App";
 
-export const createToDoList =  createAsyncThunk("todo/createToDoList", async(formData, {rejectWithValue}) =>{
+export const createToDoList = createAsyncThunk(
+  "todo/createToDoList",
+  async (formData, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${server}/toDo/createToDo`, formData,{headers:{'Content-Type': 'application/json'},withCredentials:true,});
-        return response.data;
+
+      const response = await axios.post(`${server}/todo/createToDo`, formData, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
+      return response.data;
     } catch (error) {
-        if(error.response){
-            return rejectWithValue(error.response.data);
-        }
-        else return rejectWithValue("No response from server");
+      if (error.response) {
+        return rejectWithValue(error.response.data);
+      } else return rejectWithValue("No response from server");
     }
-});
+  }
+);
 
 export const fetchAllToDos =  createAsyncThunk("todo/fetchToDoList", async() =>{
   try {
@@ -68,5 +75,4 @@ const toDoSlice = createSlice({
     },
   });
 
-  export default toDoSlice.reducer;
-
+export default toDoSlice.reducer;
