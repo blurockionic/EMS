@@ -1,11 +1,11 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'; //inorder
 import axios from 'axios';
+import { server } from "../../App";
 
 export const createToDoList =  createAsyncThunk("todo/createToDoList", async(formData, {rejectWithValue}) =>{
     try {
         const response = await axios.post(`${server}/toDo/createToDo`, formData,{headers:{'Content-Type': 'application/json'},withCredentials:true,});
         return response.data;
-        console.log("checking createdtodo response data",response.data);
     } catch (error) {
         if(error.response){
             return rejectWithValue(error.response.data);
@@ -14,10 +14,19 @@ export const createToDoList =  createAsyncThunk("todo/createToDoList", async(for
     }
 });
 
+export const fetchAllToDos =  createAsyncThunk("todo/fetchToDoList", async() =>{
+  try {
+      const response = await axios.get(`${server}/toDo/fetchToDoList`,{withCredentials:true});
+      return response.data;
+  } catch (error) {   
+   return ("No response from server", error);
+  }
+});
+
 const toDoSlice = createSlice({
     name: "toDo",
     initialState: {
-      allToDo: [],
+      allToDos: [],
       status: "idle",
       error: null,
     },
@@ -27,6 +36,7 @@ const toDoSlice = createSlice({
         // Create project cases
         .addCase(createToDoList.pending, (state) => {
           state.status = "loading";
+          console.log("Pending state: loading");
         })
         .addCase(createToDoList.fulfilled, (state, action) => {
           state.status = "succeeded";
@@ -35,6 +45,25 @@ const toDoSlice = createSlice({
         .addCase(createToDoList.rejected, (state, action) => {
           state.status = "failed";
           state.error = action.payload;
+          console.log("Rejected state: failed");
+        console.log("Error payload:", action.payload); 
+        })
+        //fetching 
+        .addCase(fetchAllToDos.pending, (state) => {
+          state.status = "loading";
+          console.log("Pending state: loading");
+        })
+        .addCase(fetchAllToDos.fulfilled, (state, action) => {
+          state.status = "succeeded";
+          // console.log("checking what is inside todo list", action.payload.allToDos)
+          state.allToDos = action.payload.allToDos
+          console.log("i am inside state alltodos",state.allToDos);
+        })
+        .addCase(fetchAllToDos.rejected, (state, action) => {
+          state.status = "failed";
+          state.error = action.payload;
+          console.log("Rejected state: failed");
+        console.log("Error payload:", action.payload); 
         });
     },
   });
