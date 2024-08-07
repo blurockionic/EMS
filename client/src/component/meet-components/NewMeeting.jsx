@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Select from "react-select"
 import {
   MdKeyboardArrowUp,
   MdKeyboardArrowDown,
@@ -14,14 +15,16 @@ import { FaRegUserCircle, FaRegClock } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { IoMdTimer } from "react-icons/io";
 import { PiUsersBold } from "react-icons/pi";
-import { fetchProfile } from "../../../Redux/slices/profileSlice";
-import { fetchUsers } from "../../../Redux/slices/allUserSlice";
+import { fetchProfile } from "../../Redux/slices/profileSlice";
+import { fetchUsers } from "../../Redux/slices/allUserSlice";
 import {
   fetchMeetings,
   createMeeting,
   updateMeeting,
-} from "../../../Redux/slices/meetingSlice";
+} from "../../Redux/slices/meetingSlice";
+import { MdOutlineViewAgenda } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
 
 const NewMeeting = ({ active, setActive, meetingData = null }) => {
   const [modelSize, setModelSize] = useState("small");
@@ -36,6 +39,7 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
     lastEditBy: "",
     lastEditTime: "",
     type: "",
+    agenda: "",
   });
   const [moreRowsShow, setMoreRowsShow] = useState(false);
 
@@ -43,7 +47,15 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
   const profile = useSelector((state) => state.profile.data);
   const { data: users } = useSelector((state) => state.user);
   const meetings = useSelector((state) => state.meetings.data);
-console.log(meetings);
+  const createNewMessageResponse = useSelector(
+    (state) => state.meetings.newMeetingRes
+  );
+  console.log(createNewMessageResponse);
+
+  const updatingMeetingResponse = useSelector(
+    (state) => state.meetings.updateMeetingRes
+  );
+  console.log(meetings);
 
   useEffect(() => {
     dispatch(fetchUsers());
@@ -69,6 +81,7 @@ console.log(meetings);
           lastEditBy: profile._id,
           lastEditTime: new Date().toISOString(),
           type: "",
+          agenda: "",
         });
       }
     }
@@ -83,16 +96,25 @@ console.log(meetings);
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  //function for hadle update an existing meeting and create new meeting
   const handleSubmit = () => {
-    console.log("befor sumit ",formData);
-    
-    
+    console.log("befor sumit ", formData);
+
     if (meetingData) {
-      dispatch(updateMeeting({ id: meetingData._id, meeting: formData }));
+      // if meeting data comes from the parent send as a prop
+      dispatch(updateMeeting({ id: meetingData._id, meeting: formData })); // dispatch for update existing meeting details
     } else {
-      dispatch(createMeeting(formData));
+      dispatch(createMeeting(formData)); // sending data using dispatch to the createmeeting fuction that is inside meeting slice
+
+      if (createNewMessageResponse.success === true) {
+        // checking if the success of api is true or false
+        toast.success(createNewMessageResponse.message); // show message coming form backend after creating new meeting
+      } else {
+        toast.error(createNewMessageResponse.message); // toast for the show the error of creating new meeting
+      }
+      setActive(false); // closing the new meeting create side bar
+      dispatch(fetchMeetings()); // Refresh the list of meetings
     }
-    setActive(false);
   };
 
   const selectDropDownHandler = (menu) => {
@@ -116,6 +138,20 @@ console.log(meetings);
     setDropDownMenu(null);
   };
 
+  const handleAttendeesChange = (selectedOptions) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      attendees: selectedOptions ? selectedOptions.map(option => option.value) : [],
+    }));
+  };
+
+  const attendeesOptions = users.map((user) => ({
+    value: user._id,
+    label: `${user.firstName} ${user.lastName}`,
+  }));
+
+  
+
   const filteredUsers = users.filter((user) =>
     user.firstName.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -134,6 +170,7 @@ console.log(meetings);
 
   return (
     <div>
+      <ToastContainer />
       <div className={sidebarClass}>
         <div
           className={`mx-auto ${modelSize === "large" ? "w-[90%]" : "w-[90%]"}`}
@@ -170,6 +207,7 @@ console.log(meetings);
                 <input
                   type="text"
                   name="title"
+                  required
                   value={formData.title}
                   onChange={handleInputChange}
                   className="outline-none border-b border-gray-300 focus:border-blue-500 focus:ring-0"
@@ -177,6 +215,7 @@ console.log(meetings);
                 />
               </h1>
             </div>
+
             <div
               className={`flex flex-col space-y-4 mx-auto ${
                 modelSize === "large" ? "w-[90%]" : "w-[90%]"
@@ -194,35 +233,20 @@ console.log(meetings);
                     selectDropDownHandler("createdBy");
                   }}
                 >
-                  <div>
-                    {profile.firstName} {profile.lastName}
+                  <div className="font-bold flex space-x-1 ">
+                    <img
+                      className="w-6 h-6 rounded-full mr-2"
+                      src={
+                        profile?.profilePicture ??
+                        "https://via.placeholder.com/150"
+                      }
+                      alt="Profile"
+                    />
+                    {profile?.firstName ?? "no creater foun"}{" "}
+                    {profile?.lastName}
                   </div>
                   {dropDownMenu === "createdBy" && (
-                    <div
-                      className="absolute z-50 bg-white dark:bg-slate-700 w-full top-0 left-0 mt-2 shadow-lg rounded-md"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <input
-                        type="search"
-                        className="w-full p-2 border-b"
-                        placeholder="Search..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                      <div className="max-h-60 overflow-y-auto">
-                        {filteredUsers.map((user) => (
-                          <div
-                            key={user._id}
-                            className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
-                            onClick={(e) =>
-                              handleDropDownSelect("createdBy", user._id, e)
-                            }
-                          >
-                            {user.firstName} {user.lastName}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    <div className="absolute z-50 bg-white dark:bg-slate-700 w-full top-0 left-0 mt-2 shadow-lg rounded-md"></div>
                   )}
                 </div>
               </div>
@@ -283,6 +307,8 @@ console.log(meetings);
                 </div>
               </div>
 
+             
+
               <div className="flex flex-row justify-between w-full">
                 <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
                   <FaRegClock className="text-xl mr-2" />
@@ -330,26 +356,34 @@ console.log(meetings);
                       <div
                         className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
                         onClick={(e) =>
-                          handleDropDownSelect("type", "in-person", e)
+                          handleDropDownSelect("type", "daily Meet", e)
                         }
                       >
-                        In-Person
+                        Daily meet
                       </div>
                       <div
                         className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
                         onClick={(e) =>
-                          handleDropDownSelect("type", "online", e)
+                          handleDropDownSelect("type", "Training", e)
                         }
                       >
-                        Online
+                        Training
                       </div>
                       <div
                         className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
                         onClick={(e) =>
-                          handleDropDownSelect("type", "hybrid", e)
+                          handleDropDownSelect("type", "Brainstorm", e)
                         }
                       >
-                        Hybrid
+                        Brainstorm
+                      </div>
+                      <div
+                        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+                        onClick={(e) =>
+                          handleDropDownSelect("type", "team weekly", e)
+                        }
+                      >
+                        Team weekly
                       </div>
                     </div>
                   )}
@@ -380,6 +414,33 @@ console.log(meetings);
                     <div>
                       {new Date(formData.lastEditTime).toLocaleString()}
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {moreRowsShow && (
+                <div className="flex flex-row justify-between w-full">
+                  <div className="flex items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group w-[40%]">
+                    <MdOutlineViewAgenda className="text-xl mr-2" />
+                    <span className="font-semibold">Agenda</span>
+                  </div>
+                  <div
+                    className="relative w-[60%] p-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      selectDropDownHandler("");
+                    }}
+                  >
+                    <textarea
+                      type="text"
+                      name="agenda"
+                      rows={3}
+                      cols={2}
+                      value={formData.agenda}
+                      onChange={handleInputChange}
+                      className="w-full outline-none"
+                      placeholder="enter meeting agenda...."
+                    />
                   </div>
                 </div>
               )}

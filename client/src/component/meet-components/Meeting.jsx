@@ -6,8 +6,8 @@ import { IoMdAdd } from "react-icons/io";
 import { FaBorderAll, FaTable } from "react-icons/fa";
 import { MdOutlineViewTimeline } from "react-icons/md";
 import { LuGalleryHorizontalEnd } from "react-icons/lu";
-import BigCalendarComponent from "../calendar/BigCalendar";
-import TimelineComponent from "../../TimelineComponent";
+import BigCalendarComponent from "../utilities-components/calendar/BigCalendar";
+import TimelineComponent from "../TimelineComponent";
 import { BsThreeDots } from "react-icons/bs";
 import NewMeeting from "./NewMeeting";
 
