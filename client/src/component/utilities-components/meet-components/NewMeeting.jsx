@@ -1,24 +1,33 @@
-import React, { useState } from "react";
-import { MdKeyboardArrowUp, MdKeyboardArrowDown } from "react-icons/md";
+import React, { useEffect, useState } from "react";
+import {
+  MdKeyboardArrowUp,
+  MdKeyboardArrowDown,
+  MdMoreTime,
+  MdFormatListBulletedAdd,
+} from "react-icons/md";
 import {
   BsArrowsAngleContract,
   BsArrowsAngleExpand,
   BsThreeDots,
 } from "react-icons/bs";
+import { FaRegUserCircle, FaRegClock } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
+import { IoMdTimer } from "react-icons/io";
 import { PiUsersBold } from "react-icons/pi";
+import { fetchProfile } from "../../../Redux/slices/profileSlice";
+import { fetchUsers } from "../../../Redux/slices/allUserSlice";
+import {
+  fetchMeetings,
+  createMeeting,
+  updateMeeting,
+} from "../../../Redux/slices/meetingSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-const userlist = [
-  { id: 1, name: "User 1" },
-  { id: 2, name: "User 2" },
-  { id: 3, name: "User 3" },
-];
-
-const NewMeeting = ({ active, setActive }) => {
+const NewMeeting = ({ active, setActive, meetingData = null }) => {
   const [modelSize, setModelSize] = useState("small");
   const [dropDownMenu, setDropDownMenu] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [meetingData, setMeetingData] = useState({
+  const [formData, setFormData] = useState({
     title: "",
     createdBy: "",
     attendees: [],
@@ -30,39 +39,85 @@ const NewMeeting = ({ active, setActive }) => {
   });
   const [moreRowsShow, setMoreRowsShow] = useState(false);
 
+  const dispatch = useDispatch();
+  const profile = useSelector((state) => state.profile.data);
+  const { data: users } = useSelector((state) => state.user);
+  const meetings = useSelector((state) => state.meetings.data);
+console.log(meetings);
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+    dispatch(fetchProfile());
+    dispatch(fetchMeetings());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (active) {
+      if (meetingData) {
+        setFormData({
+          ...meetingData,
+          lastEditBy: profile._id,
+          lastEditTime: new Date().toISOString(),
+        });
+      } else {
+        setFormData({
+          title: "",
+          createdBy: profile._id,
+          attendees: [],
+          createTime: new Date().toISOString(),
+          eventTime: "",
+          lastEditBy: profile._id,
+          lastEditTime: new Date().toISOString(),
+          type: "",
+        });
+      }
+    }
+  }, [active, meetingData, profile]);
+
   const toggleModelSize = () => {
     setModelSize((prevSize) => (prevSize === "small" ? "large" : "small"));
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setMeetingData((prevData) => ({ ...prevData, [name]: value }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = () => {
-    console.log("Meeting data to save:", meetingData);
+    console.log("befor sumit ",formData);
+    
+    
+    if (meetingData) {
+      dispatch(updateMeeting({ id: meetingData._id, meeting: formData }));
+    } else {
+      dispatch(createMeeting(formData));
+    }
+    setActive(false);
   };
 
   const selectDropDownHandler = (menu) => {
     setDropDownMenu((prevMenu) => (prevMenu === menu ? null : menu));
   };
 
-  const handleDropDownSelect = (field, value) => {
-    if (field === "attendees") {
-      setMeetingData((prevData) => ({
-        ...prevData,
-        attendees: prevData.attendees.includes(value)
-          ? prevData.attendees.filter((attendee) => attendee !== value)
-          : [...prevData.attendees, value],
-      }));
-    } else {
-      setMeetingData((prevData) => ({ ...prevData, [field]: value }));
-    }
+  const handleDropDownSelect = (field, value, e) => {
+    e.stopPropagation();
+    setFormData((prevData) => {
+      if (field === "attendees") {
+        return {
+          ...prevData,
+          attendees: prevData.attendees.includes(value)
+            ? prevData.attendees.filter((attendee) => attendee !== value)
+            : [...prevData.attendees, value],
+        };
+      } else {
+        return { ...prevData, [field]: value };
+      }
+    });
     setDropDownMenu(null);
   };
 
-  const filteredUserlist = userlist.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter((user) =>
+    user.firstName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const sidebarClass = `dark:bg-slate-900 bg-white z-50 h-full fixed top-0 right-0 transition-transform duration-500 ${
@@ -80,7 +135,9 @@ const NewMeeting = ({ active, setActive }) => {
   return (
     <div>
       <div className={sidebarClass}>
-        <div className="w-[90%] mx-auto">
+        <div
+          className={`mx-auto ${modelSize === "large" ? "w-[90%]" : "w-[90%]"}`}
+        >
           <div className="w-full flex justify-between py-2">
             <div className="flex space-x-1">
               <button
@@ -113,212 +170,250 @@ const NewMeeting = ({ active, setActive }) => {
                 <input
                   type="text"
                   name="title"
-                  value={meetingData.title}
+                  value={formData.title}
                   onChange={handleInputChange}
                   className="outline-none border-b border-gray-300 focus:border-blue-500 focus:ring-0"
                   placeholder="Untitled"
                 />
               </h1>
             </div>
+            <div
+              className={`flex flex-col space-y-4 mx-auto ${
+                modelSize === "large" ? "w-[90%]" : "w-[90%]"
+              }`}
+            >
+              <div className="flex flex-row justify-between w-full">
+                <div className="flex items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group w-[40%]">
+                  <FaRegUserCircle className="text-xl mr-2" />
+                  <span className="font-semibold">Created By</span>
+                </div>
+                <div
+                  className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    selectDropDownHandler("createdBy");
+                  }}
+                >
+                  <div>
+                    {profile.firstName} {profile.lastName}
+                  </div>
+                  {dropDownMenu === "createdBy" && (
+                    <div
+                      className="absolute z-50 bg-white dark:bg-slate-700 w-full top-0 left-0 mt-2 shadow-lg rounded-md"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <input
+                        type="search"
+                        className="w-full p-2 border-b"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                      <div className="max-h-60 overflow-y-auto">
+                        {filteredUsers.map((user) => (
+                          <div
+                            key={user._id}
+                            className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+                            onClick={(e) =>
+                              handleDropDownSelect("createdBy", user._id, e)
+                            }
+                          >
+                            {user.firstName} {user.lastName}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-            <div className="flex flex-col space-y-4 w-[30rem]">
-              <Field
-                label="Created By"
-                icon={<PiUsersBold className="text-xl mr-2" />}
-                value={meetingData.createdBy || "Select creator"}
-                onClick={() => selectDropDownHandler("createdBy")}
-                dropDownMenu={dropDownMenu}
-                field="createdBy"
-                handleDropDownSelect={handleDropDownSelect}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filteredUserlist={filteredUserlist}
-              />
+              <div className="flex flex-row justify-between w-full">
+                <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
+                  <PiUsersBold className="text-xl mr-2" />
+                  <span className="font-semibold">Attendees</span>
+                </div>
+                <div
+                  className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    selectDropDownHandler("attendees");
+                  }}
+                >
+                  <div>
+                    {formData.attendees.length > 0
+                      ? formData.attendees
+                          .map((attendee) => {
+                            const user = users.find(
+                              (user) => user._id === attendee
+                            );
+                            return user
+                              ? `${user.firstName} ${user.lastName}`
+                              : "";
+                          })
+                          .join(", ")
+                      : "Select attendees"}
+                  </div>
+                  {dropDownMenu === "attendees" && (
+                    <div
+                      className="absolute z-50 bg-white dark:bg-slate-700 w-full top-0 left-0 mt-2 shadow-lg rounded-md"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <input
+                        type="search"
+                        className="w-full p-2 border-b"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                      <div className="max-h-60 overflow-y-auto">
+                        {filteredUsers.map((user) => (
+                          <div
+                            key={user._id}
+                            className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+                            onClick={(e) =>
+                              handleDropDownSelect("attendees", user._id, e)
+                            }
+                          >
+                            {user.firstName} {user.lastName}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-              <Field
-                label="Attendees"
-                icon={<PiUsersBold className="text-xl mr-2" />}
-                value={
-                  meetingData.attendees.length > 0
-                    ? meetingData.attendees.join(", ")
-                    : "Select attendees"
-                }
-                onClick={() => selectDropDownHandler("attendees")}
-                dropDownMenu={dropDownMenu}
-                field="attendees"
-                handleDropDownSelect={handleDropDownSelect}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filteredUserlist={filteredUserlist}
-              />
+              <div className="flex flex-row justify-between w-full">
+                <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
+                  <FaRegClock className="text-xl mr-2" />
+                  <span className="font-semibold">Create Time</span>
+                </div>
+                <div className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1">
+                  <div>{new Date(formData.createTime).toLocaleString()}</div>
+                </div>
+              </div>
 
-              <Field
-                label="Create Time"
-                icon={<PiUsersBold className="text-xl mr-2" />}
-                value={meetingData.createTime || "Select Create Time"}
-                onClick={() => selectDropDownHandler("createTime")}
-                dropDownMenu={dropDownMenu}
-                field="createTime"
-                handleDropDownSelect={handleDropDownSelect}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filteredUserlist={filteredUserlist}
-              />
+              <div className="flex flex-row justify-between w-full">
+                <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
+                  <MdMoreTime className="text-xl mr-2" />
+                  <span className="font-semibold">Event Time</span>
+                </div>
+                <div className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1">
+                  <input
+                    type="datetime-local"
+                    name="eventTime"
+                    value={formData.eventTime}
+                    onChange={handleInputChange}
+                    className="outline-none w-full bg-transparent"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-row justify-between w-full">
+                <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
+                  <MdFormatListBulletedAdd className="text-xl mr-2" />
+                  <span className="font-semibold">Type</span>
+                </div>
+                <div
+                  className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    selectDropDownHandler("type");
+                  }}
+                >
+                  <div>{formData.type || "Select a type"}</div>
+                  {dropDownMenu === "type" && (
+                    <div
+                      className="absolute z-50 bg-white dark:bg-slate-700 w-full top-0 left-0 mt-2 shadow-lg rounded-md"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div
+                        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+                        onClick={(e) =>
+                          handleDropDownSelect("type", "in-person", e)
+                        }
+                      >
+                        In-Person
+                      </div>
+                      <div
+                        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+                        onClick={(e) =>
+                          handleDropDownSelect("type", "online", e)
+                        }
+                      >
+                        Online
+                      </div>
+                      <div
+                        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+                        onClick={(e) =>
+                          handleDropDownSelect("type", "hybrid", e)
+                        }
+                      >
+                        Hybrid
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {moreRowsShow && (
-                <>
-                  <Field
-                    label="Event Time"
-                    icon={<PiUsersBold className="text-xl mr-2" />}
-                    value={meetingData.eventTime || "Select Event Time"}
-                    onClick={() => selectDropDownHandler("eventTime")}
-                    dropDownMenu={dropDownMenu}
-                    field="eventTime"
-                    handleDropDownSelect={handleDropDownSelect}
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    filteredUserlist={filteredUserlist}
-                  />
-
-                  <Field
-                    label="Last Edit By"
-                    icon={<PiUsersBold className="text-xl mr-2" />}
-                    value={meetingData.lastEditBy || "Select Last Editor"}
-                    onClick={() => selectDropDownHandler("lastEditBy")}
-                    dropDownMenu={dropDownMenu}
-                    field="lastEditBy"
-                    handleDropDownSelect={handleDropDownSelect}
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    filteredUserlist={filteredUserlist}
-                  />
-
-                  <Field
-                    label="Last Edit Time"
-                    icon={<PiUsersBold className="text-xl mr-2" />}
-                    value={meetingData.lastEditTime || "Select Last Edit Time"}
-                    onClick={() => selectDropDownHandler("lastEditTime")}
-                    dropDownMenu={dropDownMenu}
-                    field="lastEditTime"
-                    handleDropDownSelect={handleDropDownSelect}
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    filteredUserlist={filteredUserlist}
-                  />
-
-                  <Field
-                    label="Type"
-                    icon={<PiUsersBold className="text-xl mr-2" />}
-                    value={meetingData.type || "Select Type"}
-                    onClick={() => selectDropDownHandler("type")}
-                    dropDownMenu={dropDownMenu}
-                    field="type"
-                    handleDropDownSelect={handleDropDownSelect}
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    filteredUserlist={filteredUserlist}
-                    options={[
-                      { id: "type1", name: "Type 1" },
-                      { id: "type2", name: "Type 2" },
-                    ]}
-                  />
-                </>
+                <div className="flex flex-row justify-between w-full">
+                  <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
+                    <IoMdTimer className="text-xl mr-2" />
+                    <span className="font-semibold">Last Edit By</span>
+                  </div>
+                  <div className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1">
+                    <div>
+                      {profile.firstName} {profile.lastName}
+                    </div>
+                  </div>
+                </div>
               )}
-            </div>
 
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={() => setMoreRowsShow((prev) => !prev)}
-                className="text-blue-500 hover:underline flex items-center"
-              >
-                {moreRowsShow ? (
-                  <>
-                    <MdKeyboardArrowUp className="mr-1" /> Hide 4 Properties
-                  </>
-                ) : (
-                  <>
-                    <MdKeyboardArrowDown className="mr-1" /> Show 4 More
-                    Properties
-                  </>
-                )}
-              </button>
-            </div>
-            <div className="flex justify-end mt-6">
-              <button
-                onClick={handleSubmit}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-              >
-                Save
-              </button>
+              {moreRowsShow && (
+                <div className="flex flex-row justify-between w-full">
+                  <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
+                    <IoMdTimer className="text-xl mr-2" />
+                    <span className="font-semibold">Last Edit Time</span>
+                  </div>
+                  <div className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1">
+                    <div>
+                      {new Date(formData.lastEditTime).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="w-full flex items-center justify-between cursor-pointer mx-auto px-3 py-2">
+                <div
+                  className="flex hover:bg-gray-200 hover:rounded-md p-2 dark:hover:bg-gray-700 group"
+                  onClick={() => setMoreRowsShow((prev) => !prev)}
+                >
+                  {moreRowsShow ? (
+                    <MdKeyboardArrowUp className="text-2xl mr-2" />
+                  ) : (
+                    <MdKeyboardArrowDown className="text-2xl mr-2" />
+                  )}
+                  <span className="text-md font-semibold">
+                    {moreRowsShow ? "Show less" : "Show more"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex justify-center">
+                <button
+                  className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+                  onClick={handleSubmit}
+                >
+                  {meetingData ? "Update Meeting" : "Create Meeting"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div className={blurEffectClass} onClick={() => setActive(false)}></div>
-    </div>
-  );
-};
-
-
-const Field = ({
-  label,
-  icon,
-  value,
-  onClick,
-  dropDownMenu,
-  field,
-  handleDropDownSelect,
-  searchTerm,
-  setSearchTerm,
-  filteredUserlist,
-  options,
-}) => {
-  return (
-    <div className="flex flex-row justify-between">
-      <div className="flex items-center w-[42%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
-        {icon}
-        <span className="font-semibold">{label}</span>
-      </div>
-      <div className="relative w-[70%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group">
-        <div onClick={onClick}>{value}</div>
-        {dropDownMenu === field && (
-          <div className="absolute z-50 bg-white dark:bg-slate-700 w-full top-0 left-0 mt-2 shadow-lg rounded-md">
-            {options ? (
-              options.map((option) => (
-                <div
-                  key={option.id}
-                  className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
-                  onClick={() => handleDropDownSelect(field, option.name)}
-                >
-                  {option.name}
-                </div>
-              ))
-            ) : (
-              <>
-                <input
-                  type="search"
-                  className="w-full p-2 border-b"
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <div className="max-h-60 overflow-y-auto">
-                  {filteredUserlist.map((user) => (
-                    <div
-                      key={user.id}
-                      className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
-                      onClick={() => handleDropDownSelect(field, user.name)}
-                    >
-                      {user.name}
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        )}
-      </div>
     </div>
   );
 };
