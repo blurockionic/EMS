@@ -45,7 +45,7 @@ const ToDo = () => {
   return (
     <div className="container mx-auto p-4">
       <ToastContainer/>
-      <h1 className="text-4xl font-bold text-center text-white mb-4">My Todos</h1>
+      <h1 className="text-4xl font-bold text-center text-black mb-4">My Todos</h1>
       <form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-center mb-4">
         <input
           type="text"
