@@ -50,13 +50,12 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
   const createNewMessageResponse = useSelector(
     (state) => state.meetings.newMeetingRes
   );
-  console.log(createNewMessageResponse);
+
 
   const updatingMeetingResponse = useSelector(
     (state) => state.meetings.updateMeetingRes
   );
-  console.log(meetings);
-
+ 
   useEffect(() => {
     dispatch(fetchUsers());
     dispatch(fetchProfile());

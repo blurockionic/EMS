@@ -10,7 +10,7 @@ import EventModal from "./EventModel";
 
 const localizer = momentLocalizer(moment);
 
-const BigCalendar = () => {
+const BigCalendar = ({ meetings }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [events, setEvents] = useState([]);
