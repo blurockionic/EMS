@@ -12,7 +12,8 @@ const meetingSchema = new mongoose.Schema({
   eventTime: { type: Date }, // Corrected typo
   lastEditBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   lastEditTime: { type: Date, default: Date.now },
-  type: { type: String, required: true },
+  agenda: { type: String, trim: true },
+  type: { type: String },
   timestamp: { type: Date, default: Date.now },
 });
 
