@@ -65,3 +65,31 @@ export const fetchToDoList = async(req,res) =>{
         })
     }
 }
+
+export const deleteToDo = async(req, res)=>{
+    try {
+        const { id } = req.params;
+        console.log("is inside deleteToDo: ", id);
+        const dataToBeDeleted = await todo.deleteOne({_id: id});
+        console.log("after deletion ",dataToBeDeleted);
+        if(dataToBeDeleted.deletedCount ===0){
+            console.log("id has not been deleted");
+            return res.status(404).json({
+                sucess:false,
+                message: 'Document not found'            })
+        }
+
+        res.status(200).json({
+            sucess:true,
+            message: 'TODo deleted successfully'
+        })
+
+
+    }catch (error) {
+        console.error(error);
+        return res.status(501).json({
+            success:false,
+            message:'something went wrong during deletion'
+        })
+    }
+}

@@ -30,6 +30,16 @@ export const fetchAllToDos =  createAsyncThunk("todo/fetchToDoList", async() =>{
   }
 });
 
+export const deleteToDo = createAsyncThunk("todo/deleteToDo", async(id) =>{
+  try {
+    const response = await axios.delete(`${server}/todo/deleteToDo/${id}`, {withCredentials:true});
+    return response.message;
+  } catch (error) {
+    return("failed to delete",error);
+  }
+});
+
+
 const toDoSlice = createSlice({
     name: "toDo",
     initialState: {
@@ -71,8 +81,15 @@ const toDoSlice = createSlice({
           state.error = action.payload;
           console.log("Rejected state: failed");
         console.log("Error payload:", action.payload); 
-        });
-    },
+        })
+        .addCase(deleteToDo.fulfilled, (state, action) => {
+          state.allToDos = state.allToDos.filter(todo => todo.id !== action.meta.arg);
+          state.status = 'deleted';
+        })
+        .addCase(deleteToDo.rejected, (state, action) => {
+          state.error = action.payload;
+        })
+      }
   });
 
 export default toDoSlice.reducer;
