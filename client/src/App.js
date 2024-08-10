@@ -42,8 +42,8 @@ import IssuesComp from "./page/admin/issue/IssuesComp";
 import ComingSoon from "./component/utilities-components/ComingSoon";
 import Meeting from "./component/meet-components/Meeting";
 
-// export const server = "https://ems-backend-66x8.onrender.com/api/v1"
-export const server = "http://localhost:4000/api/v1";
+export const server = "https://ems-backend-66x8.onrender.com/api/v1"
+// export const server = "http://localhost:4000/api/v1";
 
 function App() {
   const theme = useSelector((state) => state.theme.mode);
