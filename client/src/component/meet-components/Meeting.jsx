@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMeetings } from "../../Redux/slices/meetingSlice";
 import TimeAgo from "../utilities-components/TimeAgo";
 import { GoDotFill } from "react-icons/go";
+import MeetingViewMode from "./MeetingViewMode.jsx";
+
 
 const Meeting = () => {
   const [activeTab, setActiveTab] = useState("Meetings");
@@ -22,7 +24,7 @@ const Meeting = () => {
   const [searchInputBox, setSearchInputBox] = useState(false);
   const [active, setActive] = useState(false);
   const meetings = useSelector((state) => state.meetings.data);
-  console.log(meetings);
+
   const dispatch = useDispatch();
   const addTab = (tab) => {
     if (!tabs.includes(tab)) {
@@ -60,7 +62,7 @@ const Meeting = () => {
   }, [dispatch]);
 
   return (
-    <div className="w-[80%] mx-auto mt-2">
+    <div className="w-[90%] mx-auto mt-2">
       <h1 className="text-4xl font-bold p-2">Meeting</h1>
 
       <nav className="flex flex-row justify-between">
@@ -231,10 +233,18 @@ const Meeting = () => {
         )}
         {activeTab === "All" && <div>All content goes here...</div>}
         {activeTab === "Table View" && (
-          <div>Table View content goes here...</div>
+          <div>
+            {" "}
+            <MeetingViewMode meetings={meetings} viewMode={activeTab} />{" "}
+          </div>
         )}
         {activeTab === "Timeline" && <TimelineComponent />}
-        {activeTab === "Gallery" && <div>Gallery content goes here...</div>}
+        {activeTab === "Gallery" && (
+          <div>
+            {" "}
+            <MeetingViewMode meetings={meetings} viewMode={activeTab} />{" "}
+          </div>
+        )}
       </div>
       <div>
         <NewMeeting active={active} setActive={setActive} />

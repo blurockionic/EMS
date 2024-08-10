@@ -1,5 +1,6 @@
 // File: BigCalendar.js
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -14,7 +15,20 @@ const BigCalendar = ({ meetings }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [events, setEvents] = useState([]);
+
   const navigate = useNavigate();
+
+  // Transform meetings data to the format required by the Calendar
+  useEffect(() => {
+    const transformedEvents = meetings.map((meeting) => ({
+      title: meeting.title || "No Title",
+      start: new Date(meeting.eventTime),
+      end: new Date(meeting.eventTime), // If there's a separate end time, use it; otherwise, the same as start
+      id: meeting._id,
+      color: meeting.color || "#ffd6ff", // Optional: Add color based on some meeting property
+    }));
+    setEvents(transformedEvents);
+  }, [meetings]);
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
