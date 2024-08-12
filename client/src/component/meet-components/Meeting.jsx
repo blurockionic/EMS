@@ -15,17 +15,31 @@ import { fetchMeetings } from "../../Redux/slices/meetingSlice";
 import TimeAgo from "../utilities-components/TimeAgo";
 import { GoDotFill } from "react-icons/go";
 import MeetingViewMode from "./MeetingViewMode.jsx";
-
+import { MdMoreTime } from "react-icons/md";
+import { ToastContainer, toast } from "react-toastify";
+import CompleteMeeting from "./CompleteMeeting.jsx";
 
 const Meeting = () => {
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("Meetings");
   const [tabs, setTabs] = useState(["Meetings", "Calendar", "All"]);
   const [showMoreTabs, setShowMoreTabs] = useState(false);
   const [searchInputBox, setSearchInputBox] = useState(false);
   const [active, setActive] = useState(false);
   const meetings = useSelector((state) => state.meetings.data);
+  const [singleMeetingData, setSingleMeetingData] = useState({});
+  const createNewMessageResponse = useSelector(
+    (state) => state.meetings.newMeetingRes
+  );
 
-  const dispatch = useDispatch();
+  if (createNewMessageResponse.success === true) {
+    // checking if the success of api is true or false
+    toast.success(createNewMessageResponse.message); // show message coming form backend after creating new meeting
+    dispatch(fetchMeetings());
+  } else {
+    toast.error(createNewMessageResponse.message); // toast for the show the error of creating new meeting
+  }
+
   const addTab = (tab) => {
     if (!tabs.includes(tab)) {
       setTabs([...tabs, tab]);
@@ -60,6 +74,24 @@ const Meeting = () => {
   useEffect(() => {
     dispatch(fetchMeetings);
   }, [dispatch]);
+
+  const [currentMeeting, setCurrentMeeting] = useState(null);
+  const handleNewClick = () => {
+    setCurrentMeeting(null); // Reset meeting data for new meeting
+    setActive(true); // Open the NewMeeting component
+  };
+
+  const handleMeetingRowClick = (meetingId) => {
+    // Fetch or find the meeting data by meetingId
+    const meeting = meetings.find((meet) => meet._id === meetingId);
+
+    if (meeting) {
+      setCurrentMeeting(meeting); // Set meeting data for update
+      setActive(true); // Open the NewMeeting component
+    } else {
+      console.error("Meeting not found");
+    }
+  };
 
   return (
     <div className="w-[90%] mx-auto mt-2">
@@ -143,6 +175,7 @@ const Meeting = () => {
               <IoSearchSharp className="text-xl " />
             </span>
           </div>
+
           <div>
             {searchInputBox && (
               <div>
@@ -155,7 +188,7 @@ const Meeting = () => {
             )}
           </div>
 
-          <div className="flex items-center" onClick={() => setActive(true)}>
+          <div className="flex items-center" onClick={handleNewClick}>
             <div className="flex items-center font-semibold text-white bg-gray-900 hover:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white px-2 py-1 rounded-md shadow-inner cursor-pointer transition-colors">
               <IoMdAdd className="text-lg mr-1" />
               <span>New</span>
@@ -166,27 +199,45 @@ const Meeting = () => {
 
       <div className="mt-4">
         {activeTab === "Meetings" && (
-          <div>
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <div className="w-full">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-slate-100 dark:bg-gray-800 w-full flex justify-between">
+                  <th className="px-4 py-2 ">
+                    <div className="flex items-center justify-start hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-2 py-1 group">
+                      <span className="font-semibold">Meeting Title</span>
+                    </div>
+                  </th>
+                  <th className="px-4 py-2 text-end">
+                    <div className="flex items-center justify-start hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-2 py-1 group">
+                      <MdMoreTime className="text-xl mr-2" />
+                      <span className="font-semibold">Event Time</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 {meetings && meetings.length > 0 ? (
                   meetings.map((meeting, index) => (
                     <tr
                       key={index}
-                      className=" hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-150 cursor-pointer h-16 flex justify-between"
+                      className="border-b dark:border-gray-600 w-full flex justify-between hover:bg-slate-100 dark:hover:bg-slate-700"
                     >
-                      <td className="px-4 py-2 flex flex-col md:flex-row flex-grow-4">
+                      <td className="px-4 py-4">
                         <div className="flex flex-col">
-                          <div>
-                            <span className="font-bold text-xl hover:text-blue-700 dark:hover:text-blue-500 capitalize">
-                              {meeting.title}
+                          <span
+                            className="font-bold text-xl hover:text-blue-700 dark:hover:text-blue-500 capitalize"
+                            onClick={() => handleMeetingRowClick(meeting._id)}
+                          >
+                            {meeting.title}
+                          </span>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {meeting.description}
+                          </p>
+                          <div className="mt-2 md:mt-0 flex flex-col md:flex-row">
+                            <span className="text-gray-500 dark:text-gray-400">
+                              Created by
                             </span>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {meeting.description}
-                            </p>
-                          </div>
-                          <div className="flex flex-col md:flex-row">
-                            <span> # Created by </span>
                             <span className="font-semibold mx-2">
                               {meeting.createdBy.firstName}{" "}
                               {meeting.createdBy.lastName}
@@ -194,36 +245,32 @@ const Meeting = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-2 flex flex-col md:flex-row flex-grow-4">
-                        <div className="text-center">
-                          <span className="font-semibold mx-2 inline-block hover:bg-slate-300 px-2 py-1 rounded-md">
-                            {new Date(meeting.eventTime).toLocaleString(
-                              "en-US",
-                              {
-                                month: "long",
-                                day: "numeric",
-                                year: "numeric",
-                                hour: "numeric",
-                                minute: "numeric",
-                                hour12: true,
-                              }
-                            )}
-                          </span>
-                        </div>
+                      <td className="px-4 py-4 ">
+                        <span className="font-semibold inline-block bg-slate-200 dark:bg-gray-700 hover:bg-slate-300 px-2 py-1 rounded-md">
+                          {new Date(meeting.eventTime).toLocaleString("en-US", {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                            hour: "numeric",
+                            minute: "numeric",
+                            hour12: true,
+                          })}
+                        </span>
                       </td>
                     </tr>
                   ))
                 ) : (
-                  <tr>
-                    <td className="px-4 py-2 text-center">
+                  <tr className="w-full">
+                    <td
+                      colSpan="2"
+                      className="px-4 py-4 text-center text-gray-600 dark:text-gray-400"
+                    >
                       No meetings available.
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
-
-            {/* <NewMeeting active={active} setActive={setActive} meetingData={existingMeeting} /> */}
           </div>
         )}
         {activeTab === "Calendar" && (
@@ -247,7 +294,19 @@ const Meeting = () => {
         )}
       </div>
       <div>
-        <NewMeeting active={active} setActive={setActive} />
+        <NewMeeting
+          active={active}
+          setActive={setActive}
+          currentMeeting={currentMeeting}
+          mode={currentMeeting ? "update" : "create"}
+        />
+      </div>
+      <div>
+        <CompleteMeeting
+          active={active}
+          setActive={setActive}
+          meetingData={currentMeeting}
+        />
       </div>
     </div>
   );
