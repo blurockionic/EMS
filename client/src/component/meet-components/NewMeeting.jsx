@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Select from "react-select"
 import {
   MdKeyboardArrowUp,
   MdKeyboardArrowDown,
   MdMoreTime,
   MdFormatListBulletedAdd,
+  MdOutlineViewAgenda,
 } from "react-icons/md";
 import {
   BsArrowsAngleContract,
@@ -22,11 +22,9 @@ import {
   createMeeting,
   updateMeeting,
 } from "../../Redux/slices/meetingSlice";
-import { MdOutlineViewAgenda } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
 
-const NewMeeting = ({ active, setActive, meetingData = null }) => {
+const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
   const [modelSize, setModelSize] = useState("small");
   const [dropDownMenu, setDropDownMenu] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,34 +39,39 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
     type: "",
     agenda: "",
   });
+
   const [moreRowsShow, setMoreRowsShow] = useState(false);
 
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.profile.data);
   const { data: users } = useSelector((state) => state.user);
-  const meetings = useSelector((state) => state.meetings.data);
   const createNewMessageResponse = useSelector(
     (state) => state.meetings.newMeetingRes
   );
 
+  console.log(currentMeeting?.attendees);
 
-  const updatingMeetingResponse = useSelector(
-    (state) => state.meetings.updateMeetingRes
-  );
- 
   useEffect(() => {
     dispatch(fetchUsers());
     dispatch(fetchProfile());
     dispatch(fetchMeetings());
-  }, [dispatch]);
+  }, [dispatch, createNewMessageResponse]);
 
   useEffect(() => {
     if (active) {
-      if (meetingData) {
+      if (mode === "update" && currentMeeting) {
         setFormData({
-          ...meetingData,
+          title: currentMeeting.title || "",
+          createdBy: currentMeeting.createdBy || profile._id,
+          attendees: currentMeeting.attendees || [],
+          createTime: currentMeeting.createTime || new Date().toISOString(),
+          eventTime: currentMeeting.eventTime
+            ? new Date(currentMeeting.eventTime).toISOString().slice(0, 16)
+            : "",
           lastEditBy: profile._id,
           lastEditTime: new Date().toISOString(),
+          type: currentMeeting.type || "",
+          agenda: currentMeeting.agenda || "",
         });
       } else {
         setFormData({
@@ -84,7 +87,7 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
         });
       }
     }
-  }, [active, meetingData, profile]);
+  }, [active, mode, currentMeeting, profile]);
 
   const toggleModelSize = () => {
     setModelSize((prevSize) => (prevSize === "small" ? "large" : "small"));
@@ -95,25 +98,18 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  //function for hadle update an existing meeting and create new meeting
   const handleSubmit = () => {
-    console.log("befor sumit ", formData);
+    if (mode === "create") {
+      console.log(formData);
 
-    if (meetingData) {
-      // if meeting data comes from the parent send as a prop
-      dispatch(updateMeeting({ id: meetingData._id, meeting: formData })); // dispatch for update existing meeting details
-    } else {
-      dispatch(createMeeting(formData)); // sending data using dispatch to the createmeeting fuction that is inside meeting slice
-
-      if (createNewMessageResponse.success === true) {
-        // checking if the success of api is true or false
-        toast.success(createNewMessageResponse.message); // show message coming form backend after creating new meeting
-      } else {
-        toast.error(createNewMessageResponse.message); // toast for the show the error of creating new meeting
-      }
-      setActive(false); // closing the new meeting create side bar
-      dispatch(fetchMeetings()); // Refresh the list of meetings
+      return;
+      dispatch(createMeeting(formData));
+    } else if (mode === "update") {
+      dispatch(updateMeeting({ id: currentMeeting._id, data: formData }));
     }
+
+    setActive(false);
+    dispatch(fetchMeetings());
   };
 
   const selectDropDownHandler = (menu) => {
@@ -137,23 +133,21 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
     setDropDownMenu(null);
   };
 
-  const handleAttendeesChange = (selectedOptions) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      attendees: selectedOptions ? selectedOptions.map(option => option.value) : [],
-    }));
-  };
-
-  const attendeesOptions = users.map((user) => ({
-    value: user._id,
-    label: `${user.firstName} ${user.lastName}`,
-  }));
-
-  
-
   const filteredUsers = users.filter((user) =>
     user.firstName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  console.log(formData.attendees);
+
+  const getAttendeesNames = () => {
+    return formData.attendees
+      .map((attendeeId) => {
+        const user = users.find((user) => user._id === attendeeId);
+        return user ? `${user.firstName} ${user.lastName}` : "";
+      })
+      .filter(Boolean)
+      .join(", ");
+  };
 
   const sidebarClass = `dark:bg-slate-900 bg-white z-50 h-full fixed top-0 right-0 transition-transform duration-500 ${
     active
@@ -169,7 +163,6 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
 
   return (
     <div>
-      <ToastContainer />
       <div className={sidebarClass}>
         <div
           className={`mx-auto ${modelSize === "large" ? "w-[90%]" : "w-[90%]"}`}
@@ -241,7 +234,7 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
                       }
                       alt="Profile"
                     />
-                    {profile?.firstName ?? "no creater foun"}{" "}
+                    {profile?.firstName ?? "no creator found"}{" "}
                     {profile?.lastName}
                   </div>
                   {dropDownMenu === "createdBy" && (
@@ -263,18 +256,13 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
                   }}
                 >
                   <div>
-                    {formData.attendees.length > 0
-                      ? formData.attendees
-                          .map((attendee) => {
-                            const user = users.find(
-                              (user) => user._id === attendee
-                            );
-                            return user
-                              ? `${user.firstName} ${user.lastName}`
-                              : "";
-                          })
-                          .join(", ")
-                      : "Select attendees"}
+                    {getAttendeesNames() ||
+                      formData.attendees.map((attendee) => (
+                        <span>
+                          {attendee.firstName} {attendee.lastName}
+                        </span>
+                      )) ||
+                      "Select attendees"}
                   </div>
                   {dropDownMenu === "attendees" && (
                     <div
@@ -305,8 +293,6 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
                   )}
                 </div>
               </div>
-
-             
 
               <div className="flex flex-row justify-between w-full">
                 <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
@@ -355,10 +341,10 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
                       <div
                         className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
                         onClick={(e) =>
-                          handleDropDownSelect("type", "daily Meet", e)
+                          handleDropDownSelect("type", "Daily Meet", e)
                         }
                       >
-                        Daily meet
+                        Daily Meet
                       </div>
                       <div
                         className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
@@ -379,10 +365,10 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
                       <div
                         className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
                         onClick={(e) =>
-                          handleDropDownSelect("type", "team weekly", e)
+                          handleDropDownSelect("type", "Team Weekly", e)
                         }
                       >
-                        Team weekly
+                        Team Weekly
                       </div>
                     </div>
                   )}
@@ -438,7 +424,7 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
                       value={formData.agenda}
                       onChange={handleInputChange}
                       className="w-full outline-none"
-                      placeholder="enter meeting agenda...."
+                      placeholder="Enter meeting agenda..."
                     />
                   </div>
                 </div>
@@ -465,7 +451,7 @@ const NewMeeting = ({ active, setActive, meetingData = null }) => {
                   className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
                   onClick={handleSubmit}
                 >
-                  {meetingData ? "Update Meeting" : "Create Meeting"}
+                  {mode === "create" ? "Create Meeting" : "Update Meeting"}
                 </button>
               </div>
             </div>
