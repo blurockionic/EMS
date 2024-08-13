@@ -7,6 +7,7 @@ const commentSchema = new mongoose.Schema(
     relatedTaskId: { type: mongoose.Schema.Types.ObjectId, ref: "Task" },
     relatedIssueId: { type: mongoose.Schema.Types.ObjectId, ref: "Issue" },
     createdAt: { type: Date, default: Date.now },
+    documentFile: { type: String },
   },
   {
     timestamps: true,
