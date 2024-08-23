@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Card from "../../../component/utilities-components/Card";
 import MyEvents from "../../../component/utilities-components/MyEvents";
-import ToDo from "../../../component/ToDo";
+import ToDo from "../../../component/Todo_Components/ToDo";
 
 const ManagerDashboard = () => {
   const [showEvent, setShowEvent] = useState(false);
