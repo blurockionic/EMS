@@ -17,7 +17,9 @@ const SideNavbar = ({ sidebarClass, setActive }) => {
       <div className="flex flex-col justify-between h-full">
         <div className="flex flex-col items-center w-full cursor-pointer">
           <div className="w-full flex justify-between px-3 items-center py-2">
-            <span className="text-lg uppercase">DG Caterers</span>
+            <span className="text-lg font-sans font-extrabold">
+              BluRock Ionic
+            </span>
             <button
               className="self-end p-2 m-2 hover:text-red-600"
               onClick={() => setActive(false)}
@@ -45,7 +47,6 @@ const SideNavbar = ({ sidebarClass, setActive }) => {
             </ul>
           </div>
 
-
           <div className="w-full cursor-pointer">
             <ul className="w-full mt-2">
               <div className="flex flex-row justify-between mx-2 px-4 py-1">
@@ -61,7 +62,7 @@ const SideNavbar = ({ sidebarClass, setActive }) => {
                 </Link>
               </li>
               <li className="mb-2 w-full">
-                <Link to={"./commingSoon"} className={linkClasses}>
+                <Link to={"./myTodo"} className={linkClasses}>
                   <LuListTodo className="text-lg mr-3" />
                   <span className="font-semibold">To do</span>
                 </Link>
