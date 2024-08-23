@@ -41,10 +41,6 @@ const ManagerDashboard = () => {
             <MyEvents/>
           }
         </div>
-
-        <div>
-          <ToDo/>
-        </div>
     </>
   );
 };
