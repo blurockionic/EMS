@@ -41,7 +41,7 @@ import ProjectDetails from "./component/project/ProjectDetails";
 import IssuesComp from "./page/admin/issue/IssuesComp";
 import ComingSoon from "./component/utilities-components/ComingSoon";
 import Meeting from "./component/meet-components/Meeting";
-import ToDo from "./component/ToDo";
+import ToDo from "./component/Todo_Components/ToDo";
 
 // export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 export const server = "http://localhost:4000/api/v1";
