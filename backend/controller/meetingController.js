@@ -1,7 +1,6 @@
 import { Meeting } from "../model/meetingSchema.js";
 import { User } from "../model/user.js";
 
-
 export const createMeeting = async (req, res) => {
   try {
     const {
@@ -14,7 +13,7 @@ export const createMeeting = async (req, res) => {
       lastEditBy,
       lastEditTime,
     } = req.body;
-    
+
     if (!title || !createdBy || !attendees || !eventTime || !type) {
       return res
         .status(400)
@@ -45,32 +44,41 @@ export const createMeeting = async (req, res) => {
 
 export const getMeetings = async (req, res) => {
   try {
-    const meetings = await Meeting.find({}).populate({
-      path: "attendees createdBy lastEditBy",
-      select: "profilePicture firstName lastName", // Select fields to populate
-      model: User, // Specify the User model for population
-    });
-    if (!meetings) {
-      return res.status(401).json({
+    const meetings = await Meeting.find({})
+      .populate({
+        path: "attendees createdBy lastEditBy",
+        select: "profilePicture firstName lastName",
+        model: User,
+      })
+      .sort({ createdAt: -1 });
+
+    console.log(meetings); // Log the result to check if sorting is working
+
+    if (meetings.length === 0) {
+      return res.status(404).json({
         success: true,
         message: "No meetings found",
       });
     }
+
     res.status(200).json({
       success: true,
-      message: "all meeting data fetch successfully",
+      message: "All meeting data fetched successfully",
       data: meetings,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error); // Log any errors
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching meetings",
+    });
   }
 };
-
 
 export const updateMeeting = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, attendees, eventTime, type, lastEditBy } = req.body;
+    const { title, attendees, eventTime, type, lastEditBy, agenda } = req.body;
 
     const updatedMeeting = await Meeting.findByIdAndUpdate(
       id,
@@ -81,10 +89,15 @@ export const updateMeeting = async (req, res) => {
         lastEditBy,
         lastEditTime: new Date(),
         type,
+        agenda,
       },
       { new: true }
     );
-    res.status(200).json(updatedMeeting);
+    res.status(200).json({
+      success: true,
+      message: "Meeting details updated successfully ",
+      updatedMeeting,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

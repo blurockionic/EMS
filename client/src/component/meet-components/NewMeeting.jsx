@@ -1,34 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; // Import React and necessary hooks
 import {
   MdKeyboardArrowUp,
   MdKeyboardArrowDown,
   MdMoreTime,
   MdFormatListBulletedAdd,
   MdOutlineViewAgenda,
-} from "react-icons/md";
+} from "react-icons/md"; // Import icons for various UI elements
 import {
   BsArrowsAngleContract,
   BsArrowsAngleExpand,
   BsThreeDots,
-} from "react-icons/bs";
-import { FaRegUserCircle, FaRegClock } from "react-icons/fa";
-import { AiOutlineClose } from "react-icons/ai";
-import { IoMdTimer } from "react-icons/io";
-import { PiUsersBold } from "react-icons/pi";
-import { fetchProfile } from "../../Redux/slices/profileSlice";
-import { fetchUsers } from "../../Redux/slices/allUserSlice";
-import {
-  fetchMeetings,
-  createMeeting,
-  updateMeeting,
-} from "../../Redux/slices/meetingSlice";
-import { useDispatch, useSelector } from "react-redux";
+} from "react-icons/bs"; // Import more icons
+import { FaRegUserCircle, FaRegClock } from "react-icons/fa"; // Import icons for user and clock
+import { AiOutlineClose } from "react-icons/ai"; // Import close icon
+import { IoMdTimer } from "react-icons/io"; // Import timer icon
+import { PiUsersBold } from "react-icons/pi"; // Import users icon
+import { fetchProfile } from "../../Redux/slices/profileSlice"; // Import action to fetch user profile
+import { fetchUsers } from "../../Redux/slices/allUserSlice"; // Import action to fetch all users
+import { fetchMeetings, createMeeting } from "../../Redux/slices/meetingSlice"; // Import actions to fetch and create meetings
+import { useDispatch, useSelector } from "react-redux"; // Import Redux hooks for dispatching actions and selecting state
 
-const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
-  const [modelSize, setModelSize] = useState("small");
-  const [dropDownMenu, setDropDownMenu] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+const NewMeeting = ({ active, setActive }) => {
+  // Component for creating a new meeting
+  const [modelSize, setModelSize] = useState("small"); // State for modal size (small or large)
+  const [dropDownMenu, setDropDownMenu] = useState(null); // State for currently active dropdown menu
+  const [searchTerm, setSearchTerm] = useState(""); // State for search input in attendee dropdown
   const [formData, setFormData] = useState({
+    // State for form data
     title: "",
     createdBy: "",
     attendees: [],
@@ -40,113 +38,100 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
     agenda: "",
   });
 
-  const [moreRowsShow, setMoreRowsShow] = useState(false);
+  const [moreRowsShow, setMoreRowsShow] = useState(false); // State to show/hide additional form fields
 
-  const dispatch = useDispatch();
-  const profile = useSelector((state) => state.profile.data);
-  const { data: users } = useSelector((state) => state.user);
-  const createNewMessageResponse = useSelector(
-    (state) => state.meetings.newMeetingRes
-  );
-
-  console.log(currentMeeting?.attendees);
+  const dispatch = useDispatch(); // Initialize dispatch function for Redux
+  const profile = useSelector((state) => state.profile.data); // Get user profile from Redux state
+  const { data: users } = useSelector((state) => state.user); // Get users list from Redux state
 
   useEffect(() => {
-    dispatch(fetchUsers());
-    dispatch(fetchProfile());
-    dispatch(fetchMeetings());
-  }, [dispatch, createNewMessageResponse]);
+    // Fetch data when component mounts or dependencies change
+    dispatch(fetchUsers()); // Fetch all users
+    dispatch(fetchProfile()); // Fetch user profile
+    dispatch(fetchMeetings()); // Fetch existing meetings
+  }, [dispatch]); // Dependency array to re-run effect if dispatch changes
 
   useEffect(() => {
-    if (active) {
-      if (mode === "update" && currentMeeting) {
-        setFormData({
-          title: currentMeeting.title || "",
-          createdBy: currentMeeting.createdBy || profile._id,
-          attendees: currentMeeting.attendees || [],
-          createTime: currentMeeting.createTime || new Date().toISOString(),
-          eventTime: currentMeeting.eventTime
-            ? new Date(currentMeeting.eventTime).toISOString().slice(0, 16)
-            : "",
-          lastEditBy: profile._id,
-          lastEditTime: new Date().toISOString(),
-          type: currentMeeting.type || "",
-          agenda: currentMeeting.agenda || "",
-        });
-      } else {
-        setFormData({
-          title: "",
-          createdBy: profile._id,
-          attendees: [],
-          createTime: new Date().toISOString(),
-          eventTime: "",
-          lastEditBy: profile._id,
-          lastEditTime: new Date().toISOString(),
-          type: "",
-          agenda: "",
-        });
-      }
-    }
-  }, [active, mode, currentMeeting, profile]);
+    // Reset form data when the component is active or profile changes
+    setFormData({
+      title: "",
+      createdBy: profile._id,
+      attendees: [],
+      createTime: new Date().toISOString(),
+      eventTime: "",
+      lastEditBy: profile._id,
+      lastEditTime: new Date().toISOString(),
+      type: "",
+      agenda: "",
+    });
+  }, [active, profile]); // Dependencies to re-run effect if active or profile changes
 
   const toggleModelSize = () => {
+    // Toggle modal size between small and large
     setModelSize((prevSize) => (prevSize === "small" ? "large" : "small"));
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    // Handle input changes in the form
+    const { name, value } = e.target; // Destructure input name and value
+    setFormData((prevData) => ({ ...prevData, [name]: value })); // Update form data
   };
 
-  const handleSubmit = () => {
-    if (mode === "create") {
-      console.log(formData);
-
-      return;
-      dispatch(createMeeting(formData));
-    } else if (mode === "update") {
-      dispatch(updateMeeting({ id: currentMeeting._id, data: formData }));
+  const handleSubmit = async () => {
+    // Handle form submission
+    try {
+      const response = await dispatch(createMeeting(formData)).unwrap(); // Dispatch createMeeting action and unwrap response
+      console.log("Meeting created successfully:", response.message); // Log success message
+      setActive(false)
+      dispatch(fetchMeetings()); // Fetch existing meetings
+      // Perform additional actions, like closing the modal or resetting the form
+    } catch (error) {
+      // Catch any errors during meeting creation
+      console.error("Error creating meeting:", error); // Log error
+      // Show an error message to the user or take other actions
     }
-
-    setActive(false);
-    dispatch(fetchMeetings());
   };
 
   const selectDropDownHandler = (menu) => {
+    // Toggle dropdown menu visibility
     setDropDownMenu((prevMenu) => (prevMenu === menu ? null : menu));
   };
 
   const handleDropDownSelect = (field, value, e) => {
-    e.stopPropagation();
+    // Handle selection in dropdown menus
+    e.stopPropagation(); // Prevent event bubbling
     setFormData((prevData) => {
       if (field === "attendees") {
+        // Handle attendees dropdown separately
         return {
           ...prevData,
           attendees: prevData.attendees.includes(value)
-            ? prevData.attendees.filter((attendee) => attendee !== value)
-            : [...prevData.attendees, value],
+            ? prevData.attendees.filter((attendee) => attendee !== value) // Remove attendee if already selected
+            : [...prevData.attendees, value], // Add attendee if not already selected
         };
       } else {
+        // Handle other dropdown fields
         return { ...prevData, [field]: value };
       }
     });
-    setDropDownMenu(null);
+    setDropDownMenu(null); // Close the dropdown menu
   };
 
-  const filteredUsers = users.filter((user) =>
-    user.firstName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(
+    (
+      user // Filter users based on search term
+    ) => user.firstName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  console.log(formData.attendees);
-
   const getAttendeesNames = () => {
+    // Get names of selected attendees
     return formData.attendees
       .map((attendeeId) => {
-        const user = users.find((user) => user._id === attendeeId);
-        return user ? `${user.firstName} ${user.lastName}` : "";
+        const user = users.find((user) => user._id === attendeeId); // Find user by ID
+        return user ? `${user.firstName} ${user.lastName}` : ""; // Return full name if user found
       })
-      .filter(Boolean)
-      .join(", ");
+      .filter(Boolean) // Remove empty names
+      .join(", "); // Join names with comma
   };
 
   const sidebarClass = `dark:bg-slate-900 bg-white z-50 h-full fixed top-0 right-0 transition-transform duration-500 ${
@@ -155,11 +140,11 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
         ? "translate-x-0 w-full"
         : "translate-x-0 w-[40rem]"
       : "translate-x-full"
-  }`;
+  }`; // Class names for sidebar based on active state and modal size
 
   const blurEffectClass = `z-40 inset-0 bg-gray-900 opacity-50 transition-all ease-in-out duration-200 ${
     active ? "fixed w-full h-full" : "hidden"
-  }`;
+  }`; // Class names for blur effect based on active state
 
   return (
     <div>
@@ -255,15 +240,7 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
                     selectDropDownHandler("attendees");
                   }}
                 >
-                  <div>
-                    {getAttendeesNames() ||
-                      formData.attendees.map((attendee) => (
-                        <span>
-                          {attendee.firstName} {attendee.lastName}
-                        </span>
-                      )) ||
-                      "Select attendees"}
-                  </div>
+                  <div>{getAttendeesNames() || "Select attendees"}</div>
                   {dropDownMenu === "attendees" && (
                     <div
                       className="absolute z-50 bg-white dark:bg-slate-700 w-full top-0 left-0 mt-2 shadow-lg rounded-md"
@@ -451,7 +428,7 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
                   className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
                   onClick={handleSubmit}
                 >
-                  {mode === "create" ? "Create Meeting" : "Update Meeting"}
+                  Create Meeting
                 </button>
               </div>
             </div>
