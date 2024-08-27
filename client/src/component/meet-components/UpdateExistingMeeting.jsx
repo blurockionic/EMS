@@ -1,65 +1,8 @@
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    try {
-      // if (!email || !password) {
-      //   alert("Please enter both email and password.");
-      //   return;
-      // }
-  
-      // LOGIN
-      const response = await axios.post(
-        `${server}/users/login`,
-        {
-          email,
-          password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true
-        }
-      );
-  
-      const { data } = response;
-      const { success, message } = data;
-  
-      if (success) {
-        alert(message);
-        // Navigate to the dashboard
-        navigate("../dashboard");
-      } else {
-        // Handle unsuccessful login
-        alert(message);
-      }
-    } catch (error) {
-  
-      // Handle specific error cases if needed
-      if (error.response) {
-        // The request was made, but the server responded with a status code outside the 2xx range
-        alert( error.response.data.message);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error("No response received from the server");
-      } else {
-        // Something happened in setting up the request that triggered an error
-        console.error("Error setting up the request:", error.message);
-      }
-    }
-  };
-
-
-
-
-
+// File: src/components/UpdateExistingMeeting.js
 import React, { useEffect, useState } from "react";
 import {
-  MdKeyboardArrowUp,
-  MdKeyboardArrowDown,
-  MdMoreTime,
-  MdFormatListBulletedAdd,
   MdOutlineViewAgenda,
+  MdFormatListBulletedAdd,
 } from "react-icons/md";
 import {
   BsArrowsAngleContract,
@@ -70,111 +13,138 @@ import { FaRegUserCircle, FaRegClock } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { IoMdTimer } from "react-icons/io";
 import { PiUsersBold } from "react-icons/pi";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchProfile } from "../../Redux/slices/profileSlice";
 import { fetchUsers } from "../../Redux/slices/allUserSlice";
-import {
-  fetchMeetings,
-  createMeeting,
-  updateMeeting,
-} from "../../Redux/slices/meetingSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { fetchMeetings, updateMeeting } from "../../Redux/slices/meetingSlice";
+import { ToastContainer, toast } from "react-toastify";
 
-const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
+const UpdateExistingMeeting = ({ active, setActive, meetingId }) => {
+  // Initialize Redux dispatch
+  const dispatch = useDispatch();
+
+  // Get meetings data from Redux state
+  const meetings = useSelector((state) => state.meetings.data);
+  // State to manage the size of the model (small or large)
   const [modelSize, setModelSize] = useState("small");
+  // State to manage which dropdown menu is currently open
   const [dropDownMenu, setDropDownMenu] = useState(null);
+  // State for search term in the attendees dropdown
   const [searchTerm, setSearchTerm] = useState("");
+  // State to manage the form data
   const [formData, setFormData] = useState({
     title: "",
     createdBy: "",
+    lastEditedBy: "",
     attendees: [],
     createTime: "",
     eventTime: "",
-    lastEditBy: "",
     lastEditTime: "",
     type: "",
     agenda: "",
   });
-
-  const [moreRowsShow, setMoreRowsShow] = useState(false);
-
-  const dispatch = useDispatch();
+  // Get profile data from Redux state
   const profile = useSelector((state) => state.profile.data);
+  // Get users data from Redux state
   const { data: users } = useSelector((state) => state.user);
-  const createNewMessageResponse = useSelector(
-    (state) => state.meetings.newMeetingRes
-  );
+  // State to manage data of the single meeting being updated
+  const [singleMeetingData, setSingleMeetingData] = useState({});
 
-  console.log(currentMeeting?.attendees);
-
+  // Fetch meeting details, users, and profile when component mounts or meetingId changes
   useEffect(() => {
+    if (meetingId) {
+      dispatch(fetchMeetings());
+    }
     dispatch(fetchUsers());
     dispatch(fetchProfile());
-    dispatch(fetchMeetings());
-  }, [dispatch, createNewMessageResponse]);
+  }, [dispatch, meetingId]);
 
+  // Update singleMeetingData state when meetings or meetingId change
   useEffect(() => {
-    if (active) {
-      if (mode === "update" && currentMeeting) {
-        setFormData({
-          title: currentMeeting.title || "",
-          createdBy: currentMeeting.createdBy || profile._id,
-          attendees: currentMeeting.attendees || [],
-          createTime: currentMeeting.createTime || new Date().toISOString(),
-          eventTime: currentMeeting.eventTime
-            ? new Date(currentMeeting.eventTime).toISOString().slice(0, 16)
-            : "",
-          lastEditBy: profile._id,
-          lastEditTime: new Date().toISOString(),
-          type: currentMeeting.type || "",
-          agenda: currentMeeting.agenda || "",
-        });
-      } else {
-        setFormData({
-          title: "",
-          createdBy: profile._id,
-          attendees: [],
-          createTime: new Date().toISOString(),
-          eventTime: "",
-          lastEditBy: profile._id,
-          lastEditTime: new Date().toISOString(),
-          type: "",
-          agenda: "",
-        });
-      }
+    if (meetings && meetingId) {
+      const meeting = meetings.find((meet) => meet._id === meetingId);
+      setSingleMeetingData(meeting || {});
     }
-  }, [active, mode, currentMeeting, profile]);
+  }, [meetings, meetingId]);
 
+  // Update formData state when singleMeetingData or profile change
+  useEffect(() => {
+    if (singleMeetingData._id) {
+      const {
+        createdBy,
+        attendees,
+        createTime,
+        eventTime,
+        // lastEditTime,
+        title,
+        type,
+        agenda,
+      } = singleMeetingData;
+
+      setFormData({
+        title: title || "",
+        createdBy: createdBy
+          ? `${createdBy.firstName} ${createdBy.lastName}`
+          : "",
+        lastEditedBy: `${profile.firstName} ${profile.lastName}`,
+        attendees: attendees.map((attendee) => attendee._id) || [],
+        createTime: createTime,
+        eventTime: eventTime
+          ? new Date(eventTime).toISOString().substring(0, 16)
+          : "", // Format eventTime for datetime-local input
+        lastEditTime: new Date().toISOString().substring(0, 16),
+        type: type || "",
+        agenda: agenda || "",
+      });
+    }
+  }, [singleMeetingData, profile]);
+
+  // Toggle the size of the model between small and large
   const toggleModelSize = () => {
     setModelSize((prevSize) => (prevSize === "small" ? "large" : "small"));
   };
 
+  // Handle changes in input fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    if (mode === "create") {
-      console.log(formData);
+  // Handle form submission to update meeting
+  const handleSubmit = async () => {
+    try {
+      // Create a new data object from formData
+      const newData = { ...formData };
+      console.log("New Data:", newData);
 
-      return;
-      dispatch(createMeeting(formData));
-    } else if (mode === "update") {
-      dispatch(updateMeeting({ id: currentMeeting._id, data: formData }));
+      // Dispatch updateMeeting action and wait for completion
+      const response = await dispatch(
+        updateMeeting({ id: meetingId, newData })
+      ).unwrap();
+      console.log(response);
+
+      // Close the model on successful update
+      setActive(false);
+      dispatch(fetchMeetings())
+    } catch (error) {
+      console.error(error);
+      // Show error message on failure
+      toast.error("Some error occurred while updating meeting data");
+      setActive(false);
     }
-
-    setActive(false);
-    dispatch(fetchMeetings());
   };
 
+  // Toggle dropdown menu visibility
   const selectDropDownHandler = (menu) => {
     setDropDownMenu((prevMenu) => (prevMenu === menu ? null : menu));
   };
 
+  // Handle selection from dropdown menus
   const handleDropDownSelect = (field, value, e) => {
     e.stopPropagation();
     setFormData((prevData) => {
       if (field === "attendees") {
+        // Toggle attendee selection
         return {
           ...prevData,
           attendees: prevData.attendees.includes(value)
@@ -182,20 +152,21 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
             : [...prevData.attendees, value],
         };
       } else {
+        // Update other fields
         return { ...prevData, [field]: value };
       }
     });
     setDropDownMenu(null);
   };
 
+  // Filter users based on search term
   const filteredUsers = users.filter((user) =>
     user.firstName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  console.log(formData.attendees);
-
+  // Get names of attendees from formData
   const getAttendeesNames = () => {
-    return formData.attendees
+    return (formData.attendees || [])
       .map((attendeeId) => {
         const user = users.find((user) => user._id === attendeeId);
         return user ? `${user.firstName} ${user.lastName}` : "";
@@ -204,6 +175,7 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
       .join(", ");
   };
 
+  // Define sidebar class based on active state and model size
   const sidebarClass = `dark:bg-slate-900 bg-white z-50 h-full fixed top-0 right-0 transition-transform duration-500 ${
     active
       ? modelSize === "large"
@@ -212,12 +184,13 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
       : "translate-x-full"
   }`;
 
+  // Define blur effect class for overlay
   const blurEffectClass = `z-40 inset-0 bg-gray-900 opacity-50 transition-all ease-in-out duration-200 ${
     active ? "fixed w-full h-full" : "hidden"
   }`;
-
   return (
-    <div>
+    <>
+      <ToastContainer />
       <div className={sidebarClass}>
         <div
           className={`mx-auto ${modelSize === "large" ? "w-[90%]" : "w-[90%]"}`}
@@ -273,28 +246,41 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
                   <FaRegUserCircle className="text-xl mr-2" />
                   <span className="font-semibold">Created By</span>
                 </div>
-                <div
-                  className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    selectDropDownHandler("createdBy");
-                  }}
-                >
-                  <div className="font-bold flex space-x-1 ">
-                    <img
-                      className="w-6 h-6 rounded-full mr-2"
-                      src={
-                        profile?.profilePicture ??
-                        "https://via.placeholder.com/150"
-                      }
-                      alt="Profile"
-                    />
-                    {profile?.firstName ?? "no creator found"}{" "}
-                    {profile?.lastName}
+                <div className="w-[60%] px-4 py-1">
+                  <div className="font-bold flex space-x-1">
+                    {formData.createdBy}
                   </div>
-                  {dropDownMenu === "createdBy" && (
-                    <div className="absolute z-50 bg-white dark:bg-slate-700 w-full top-0 left-0 mt-2 shadow-lg rounded-md"></div>
-                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-row justify-between w-full">
+                <div className="flex items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group w-[40%]">
+                  <FaRegUserCircle className="text-xl mr-2" />
+                  <span className="font-semibold">Last Edited By</span>
+                </div>
+                <div className="w-[60%] px-4 py-1">
+                  <div className="font-bold flex space-x-1">
+                    {formData.lastEditedBy}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-row justify-between w-full">
+                <div className="flex items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group w-[40%]">
+                  <FaRegClock className="text-xl mr-2" />
+                  <span className="font-semibold">Last Edit Time</span>
+                </div>
+                <div className="w-[60%] px-4 py-1">
+                  <span className="font-semibold inline-block bg-slate-200 dark:bg-gray-700 hover:bg-slate-300 px-2 py-1 rounded-md">
+                    {new Date(formData.lastEditTime).toLocaleString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      hour12: true,
+                    })}
+                  </span>
                 </div>
               </div>
 
@@ -310,15 +296,7 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
                     selectDropDownHandler("attendees");
                   }}
                 >
-                  <div>
-                    {getAttendeesNames() ||
-                      formData.attendees.map((attendee) => (
-                        <span>
-                          {attendee.firstName} {attendee.lastName}
-                        </span>
-                      )) ||
-                      "Select attendees"}
-                  </div>
+                  <div>{getAttendeesNames() || "Select attendees"}</div>
                   {dropDownMenu === "attendees" && (
                     <div
                       className="absolute z-50 bg-white dark:bg-slate-700 w-full top-0 left-0 mt-2 shadow-lg rounded-md"
@@ -340,7 +318,17 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
                               handleDropDownSelect("attendees", user._id, e)
                             }
                           >
-                            {user.firstName} {user.lastName}
+                            <div className="flex items-center">
+                              <img
+                                className="w-6 h-6 rounded-full mr-2"
+                                src={user.profilePicture}
+                                alt={user.firstName}
+                              />
+                              <span>{`${user.firstName} ${user.lastName}`}</span>
+                              {formData.attendees.includes(user._id) && (
+                                <AiOutlineClose className="text-red-600 ml-2" />
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -351,33 +339,45 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
 
               <div className="flex flex-row justify-between w-full">
                 <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
-                  <FaRegClock className="text-xl mr-2" />
+                  <IoMdTimer className="text-xl mr-2" />
                   <span className="font-semibold">Create Time</span>
                 </div>
-                <div className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1">
-                  <div>{new Date(formData.createTime).toLocaleString()}</div>
+                <div className="w-[60%] px-4 py-1">
+                  <div className="font-bold flex space-x-1">
+                    <span className="font-semibold inline-block bg-slate-200 dark:bg-gray-700 hover:bg-slate-300 px-2 py-1 rounded-md">
+                      {new Date(formData.createTime).toLocaleString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                    </span>
+                  </div>
                 </div>
               </div>
 
               <div className="flex flex-row justify-between w-full">
                 <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
-                  <MdMoreTime className="text-xl mr-2" />
+                  <FaRegClock className="text-xl mr-2" />
                   <span className="font-semibold">Event Time</span>
                 </div>
-                <div className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1">
+                <div className="w-[60%] px-4 py-1">
                   <input
                     type="datetime-local"
                     name="eventTime"
+                    required
                     value={formData.eventTime}
                     onChange={handleInputChange}
-                    className="outline-none w-full bg-transparent"
+                    className="w-full border rounded-md p-2"
                   />
                 </div>
               </div>
 
               <div className="flex flex-row justify-between w-full">
                 <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
-                  <MdFormatListBulletedAdd className="text-xl mr-2" />
+                  <MdOutlineViewAgenda className="text-xl mr-2" />
                   <span className="font-semibold">Type</span>
                 </div>
                 <div
@@ -387,7 +387,7 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
                     selectDropDownHandler("type");
                   }}
                 >
-                  <div>{formData.type || "Select a type"}</div>
+                  <div>{formData.type || "Select type"}</div>
                   {dropDownMenu === "type" && (
                     <div
                       className="absolute z-50 bg-white dark:bg-slate-700 w-full top-0 left-0 mt-2 shadow-lg rounded-md"
@@ -430,93 +430,46 @@ const NewMeeting = ({ active, setActive, currentMeeting, mode }) => {
                 </div>
               </div>
 
-              {moreRowsShow && (
-                <div className="flex flex-row justify-between w-full">
-                  <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
-                    <IoMdTimer className="text-xl mr-2" />
-                    <span className="font-semibold">Last Edit By</span>
-                  </div>
-                  <div className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1">
-                    <div>
-                      {profile.firstName} {profile.lastName}
-                    </div>
-                  </div>
+              <div className="flex flex-row justify-between w-full">
+                <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
+                  <MdFormatListBulletedAdd className="text-xl mr-2" />
+                  <span className="font-semibold">Agenda</span>
                 </div>
-              )}
-
-              {moreRowsShow && (
-                <div className="flex flex-row justify-between w-full">
-                  <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
-                    <IoMdTimer className="text-xl mr-2" />
-                    <span className="font-semibold">Last Edit Time</span>
-                  </div>
-                  <div className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1">
-                    <div>
-                      {new Date(formData.lastEditTime).toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {moreRowsShow && (
-                <div className="flex flex-row justify-between w-full">
-                  <div className="flex items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group w-[40%]">
-                    <MdOutlineViewAgenda className="text-xl mr-2" />
-                    <span className="font-semibold">Agenda</span>
-                  </div>
-                  <div
-                    className="relative w-[60%] p-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      selectDropDownHandler("");
-                    }}
-                  >
-                    <textarea
-                      type="text"
-                      name="agenda"
-                      rows={3}
-                      cols={2}
-                      value={formData.agenda}
-                      onChange={handleInputChange}
-                      className="w-full outline-none"
-                      placeholder="Enter meeting agenda..."
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div className="w-full flex items-center justify-between cursor-pointer mx-auto px-3 py-2">
-                <div
-                  className="flex hover:bg-gray-200 hover:rounded-md p-2 dark:hover:bg-gray-700 group"
-                  onClick={() => setMoreRowsShow((prev) => !prev)}
-                >
-                  {moreRowsShow ? (
-                    <MdKeyboardArrowUp className="text-2xl mr-2" />
-                  ) : (
-                    <MdKeyboardArrowDown className="text-2xl mr-2" />
-                  )}
-                  <span className="text-md font-semibold">
-                    {moreRowsShow ? "Show less" : "Show more"}
-                  </span>
+                <div className="w-[60%] px-4 py-1">
+                  <textarea
+                    name="agenda"
+                    value={formData.agenda}
+                    onChange={handleInputChange}
+                    className="w-full border rounded-md p-2"
+                    rows="4"
+                    placeholder="Agenda details..."
+                  ></textarea>
                 </div>
               </div>
 
-              <div className="flex justify-center">
+              <div className="flex justify-end space-x-4">
+                <button
+                  className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600"
+                  onClick={() => setActive(false)}
+                >
+                  Cancel
+                </button>
                 <button
                   className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
                   onClick={handleSubmit}
                 >
-                  {mode === "create" ? "Create Meeting" : "Update Meeting"}
+                  Save
                 </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <div className={blurEffectClass} onClick={() => setActive(false)}></div>
-    </div>
+      {active && (
+        <div className={blurEffectClass} onClick={() => setActive(false)}></div>
+      )}
+    </>
   );
 };
 
-export default NewMeeting;
+export default UpdateExistingMeeting;

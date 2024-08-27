@@ -82,32 +82,32 @@ const MeetingViewMode = ({ viewMode, meetings }) => {
                 <th className=" ">
                   <div className="flex items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
                     <span>
-                      <FiUsers />
+                      <FiUsers  className="mr-2" />
                     </span>
                     <span> Attendees </span>
                   </div>
                 </th>
                 <th>
                   <div className="flex items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
-                    <FaRegUserCircle className="text-xl mr-2" />
+                    <FaRegUserCircle className=" mr-2" />
                     <span className="font-semibold">Created By</span>
                   </div>
                 </th>
                 <th>
                   <div className="flex items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
-                    <FaRegClock className="text-xl mr-2" />
+                    <FaRegClock className=" mr-2" />
                     <span className="font-semibold">Create Time</span>
                   </div>
                 </th>
                 <th>
                   <div className="flex items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
-                    <MdMoreTime className="text-xl mr-2" />
+                    <MdMoreTime className=" text-xl mr-2" />
                     <span className="font-semibold">Event Time</span>
                   </div>
                 </th>
                 <th>
                   <div className="flex items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
-                    <MdFormatListBulletedAdd className="text-xl mr-2" />
+                    <MdFormatListBulletedAdd className="text-lg mr-2" />
                     <span className="font-semibold">Type</span>
                   </div>
                 </th>
