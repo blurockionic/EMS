@@ -1,9 +1,4 @@
-import React, {
-
-  useRef,
-  useState,
-  useMemo,
-} from "react";
+import React, { useRef, useState, useMemo, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import {
   BsArrowsAngleContract,
@@ -22,27 +17,29 @@ import {
 } from "react-icons/md";
 import { PiUsersBold } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMeetings } from "../../Redux/slices/meetingSlice";
-import { toast } from "react-toastify";
+import { closeMeeting, fetchMeetings } from "../../Redux/slices/meetingSlice";
+import { toast, ToastContainer } from "react-toastify";
 import TimeAgo from "../utilities-components/TimeAgo";
-import { FaRegSquareCheck } from "react-icons/fa6";
+import { FaRegSquareCheck, FaUsersViewfinder } from "react-icons/fa6";
+import { GoIssueClosed } from "react-icons/go";
 
-const CompleteMeeting = ({ active, setActive, meetingData }) => {
+const MeetingNotes = ({ active, setActive, meetingData }) => {
   const dispatch = useDispatch();
 
   // States
   const [modelSize, setModelSize] = useState("small");
   const [dropDownMenu, setDropDownMenu] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [content, setContent] = useState("");
   const [moreRowsShow, setMoreRowsShow] = useState(false);
   const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
   const [showMentionList, setShowMentionList] = useState(false);
   const [notes, setNotes] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [actualAttendees, setActualAttendees] = useState([]);
+
   const [currentNoteIndex, setCurrentNoteIndex] = useState(null);
   const [newNoteContent, setNewNoteContent] = useState("");
   const textareaRef = useRef(null);
+  const meetingId = meetingData._id;
 
   // Memoize profile and user data
   const profile = useSelector((state) => state.profile.data);
@@ -52,31 +49,44 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
     [users]
   );
 
+  const [filteredUsers, setFilteredUsers] = useState(users);
+
   const toggleModelSize = () => {
     setModelSize((prevSize) => (prevSize === "small" ? "large" : "small"));
   };
 
   const handleSubmit = async () => {
     try {
-      setActive(false);
+      // Prepare the notes data with the createdBy field
+      const preparedNotes = notes.map((noteContent) => ({
+        content: noteContent,
+        createdBy: profile._id, // Set the user ID who created the note
+      }));
+
+      // Dispatch the closeMeeting action directly with prepared data
+      await dispatch(
+        closeMeeting({
+          meetingId,
+          notes: preparedNotes,
+          actualAttendees,
+        })
+      ).unwrap();
+
+      // Handle success
+      console.log("Meeting closed successfully");
+      toast.success("Meeting closed successfully");
+
+      // Fetch the updated meetings data
       dispatch(fetchMeetings());
     } catch (error) {
-      console.error(error);
-      toast.error("Some error occurred while updating meeting data");
+      // Handle error
+      console.error("Failed to close the meeting:", error);
+      toast.error("Failed to close the meeting. Please try again.");
+    } finally {
+      // Ensure the active state is reset
       setActive(false);
     }
   };
-
-  const handleDropDownSelect = (field, value, e) => {
-    e.stopPropagation();
-    setDropDownMenu(null);
-  };
-
-  const filteredUsersMemo = useMemo(() => {
-    return memoizedUsers.filter((user) =>
-      user.firstName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [memoizedUsers, searchTerm]);
 
   // Adjusted handleMention to correctly manage currentNoteIndex
   const handleMention = (index, e) => {
@@ -90,13 +100,17 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
       const mentionTrigger = match[1];
       const cursorPosition = e.target.selectionEnd;
       const { offsetTop, offsetLeft } = textareaRef.current;
-      const rect = e.target.getBoundingClientRect();
       const lineNumber = content.slice(0, cursorPosition).split("\n").length;
 
-      const mentionTop = offsetTop + lineNumber * 24 - rect.top;
-      const mentionLeft = offsetLeft - rect.left;
+      // Calculate the top and left position of the mention dropdown
+      const mentionTop = offsetTop + lineNumber * 24;
+      const mentionLeft = offsetLeft + lineNumber * 8;
 
-      setMentionPosition({ top: mentionTop, left: mentionLeft });
+      // Adjust position to account for scroll and height of the element
+      setMentionPosition({
+        top: mentionTop,
+        left: mentionLeft,
+      });
       setShowMentionList(true);
       setFilteredUsers(
         memoizedUsers.filter((user) =>
@@ -182,7 +196,7 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
     }
   };
 
-  const sidebarClass = `dark:bg-slate-900 bg-white z-50 h-full fixed top-0 right-0 transition-transform duration-500 ${
+  const sidebarClass = `dark:bg-slate-900 bg-white z-50 h-full fixed top-0 right-0 transition-transform duration-500 overflow-y-scroll ${
     active
       ? modelSize === "large"
         ? "translate-x-0 w-full"
@@ -194,8 +208,55 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
     active ? "fixed w-full h-full" : "hidden"
   }`;
 
-  console.log(notes);
-  
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    // Filter users based on search term
+    setFilteredUsers(
+      users.filter((user) =>
+        `${user.firstName} ${user.lastName}`
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      )
+    );
+  }, [searchTerm, users]);
+
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropDownMenu(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectDropDownHandler = (menu) => {
+    setDropDownMenu((prevMenu) => (prevMenu === menu ? null : menu));
+  };
+
+  const getAttendeesNames = () => {
+    return actualAttendees
+      .map((attendeeId) => {
+        const user = users.find((user) => user._id === attendeeId);
+        return user ? `${user.firstName} ${user.lastName}` : "";
+      })
+      .filter(Boolean)
+      .join(", ");
+  };
+
+  const handleDropDownSelect = (menu, userId, event) => {
+    event.stopPropagation();
+    setActualAttendees((prevAttendees) =>
+      prevAttendees.includes(userId)
+        ? prevAttendees.filter((id) => id !== userId)
+        : [...prevAttendees, userId]
+    );
+    setDropDownMenu(null); // Close the dropdown menu
+  };
+
   return (
     <div>
       {Object.keys(meetingData).length > 0 ? (
@@ -234,10 +295,10 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
 
               <div className="p-4">
                 {/* Upper div */}
-                <div className="border-b-2 ">
+                <div className="border-b-2">
                   <div className="mb-4">
                     <h1 className="text-4xl font-bold capitalize">
-                  {meetingData.title}
+                      {meetingData.title}
                     </h1>
                   </div>
 
@@ -301,10 +362,7 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
                       <div className="flex flex-row justify-between w-full">
                         <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
                           <PiUsersBold className="text-xl mr-2" />
-                          <span className="font-semibold">
-                            {" "}
-                          Attendees
-                          </span>
+                          <span className="font-semibold"> Attendees</span>
                         </div>
                         <div
                           className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1"
@@ -316,7 +374,6 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
                             <div>
                               {meetingData.attendees.map((attendee) => (
                                 <span key={attendee._id}>
-                                  
                                   {attendee.firstName} {attendee.lastName}{" "}
                                 </span>
                               ))}
@@ -443,16 +500,16 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
                   </div>
                 </div>
 
-                <div className="p-2">
+                <div className="p-2 border-b-2">
                   <div className="mb-4">
                     <div className="text-2xl font-bold capitalize flex space-x-1">
-                    <FaRegSquareCheck className="mt-1" />  
-                    <span>
-                    Meeting Notes
-                    </span>
+                      <FaRegSquareCheck className="mt-1" />
+                      <span>Meeting Notes</span>
                     </div>
+                    <small className="mt-1 font-semibold">
+                      Add meeting notes to close the current meeting{" "}
+                    </small>
                   </div>
-
                   <div
                     className={`flex flex-col space-y-4 mx-auto ${
                       modelSize === "large" ? "w-[90%]" : "w-[90%]"
@@ -462,20 +519,20 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
                       {notes.map((note, index) => (
                         <li
                           key={index}
-                          className="relative flex items-center p-1"
+                          className="relative flex items-start space-x-2"
                         >
                           <span className="text-3xl">
                             <BsDot />
                           </span>
-                          <div className="flex-1 ml-2 relative">
-                            <input
+                          <div className="flex-1 relative">
+                            <textarea
                               type="text"
                               value={note}
                               onChange={(e) =>
                                 handleNoteChange(index, e.target.value)
                               }
                               onKeyUp={(e) => handleMention(index, e)}
-                              className="w-full p-1 border rounded"
+                              className="w-full p-2 border rounded outline-none"
                               placeholder="Add a note with mentions..."
                             />
                             {showMentionList && currentNoteIndex === index && (
@@ -499,7 +556,7 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
                             )}
                           </div>
                           <button
-                            className="absolute top-3 -right-3 text-red-500"
+                            className="absolute top-1 right-1 text-red-500"
                             onClick={() => handleRemoveNote(index)}
                           >
                             <IoMdTrash />
@@ -516,11 +573,11 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
                         onChange={(e) => setNewNoteContent(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Add a note with mentions..."
-                        className="w-full h-12 p-2 border-0 outline-none"
+                        className="w-full h-12 p-2 border rounded outline-none"
                       />
-                      {showMentionList && (
+                      {showMentionList && currentNoteIndex === -1 && (
                         <ul
-                          className="bg-white border rounded mt-2 shadow-lg absolute max-h-40 overflow-y-auto z-10"
+                          className="bg-white border rounded shadow-lg absolute max-h-40 overflow-y-auto z-10"
                           style={{
                             top: `${mentionPosition.top}px`,
                             left: `${mentionPosition.left}px`,
@@ -538,18 +595,90 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
                         </ul>
                       )}
                     </div>
-                    <button className="p-1" onClick={handleNoteSubmit}>
-                      <IoMdAdd /> Add
-                    </button>
+                  </div>
+                  <div className="flex justify-end mt-4">
+                    <div
+                      onClick={handleNoteSubmit}
+                      className="inline-flex items-center font-semibold text-white bg-gray-900 hover:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white px-2 py-1 rounded-md shadow-inner cursor-pointer transition-colors"
+                    >
+                      <IoMdAdd className="text-lg mr-1" />
+                      <span>New</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex justify-center">
+                <div className="p-2">
+                  <div className="mb-4">
+                    <div className="text-2xl font-bold capitalize flex space-x-1">
+                      <FaUsersViewfinder className="mt-1" />
+                      <span>Participants</span>
+                    </div>
+                    <small className="mt-1 font-semibold">
+                      List meeting participants using their names
+                    </small>
+                  </div>
+                  <div
+                    className={`flex flex-col space-y-4 mx-auto ${
+                      modelSize === "large" ? "w-[90%]" : "w-[90%]"
+                    }`}
+                  >
+                    <div className="flex flex-row justify-between w-full">
+                      <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
+                        <PiUsersBold className="text-xl mr-2" />
+                        <span className="font-semibold">Attendees</span>
+                      </div>
+                      <div
+                        ref={dropdownRef}
+                        className="relative w-[60%] px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 cursor-pointer group flex-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          selectDropDownHandler("attendees");
+                        }}
+                      >
+                        <div>{getAttendeesNames() || "Select attendees"}</div>
+                        {dropDownMenu === "attendees" && (
+                          <div
+                            className="absolute z-50 bg-white dark:bg-slate-700 w-full top-0 left-0 mt-2 shadow-lg rounded-md"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <input
+                              type="search"
+                              className="w-full p-2 border-b"
+                              placeholder="Search..."
+                              value={searchTerm}
+                              onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <div className="max-h-60 overflow-y-auto">
+                              {filteredUsers.map((user) => (
+                                <div
+                                  key={user._id}
+                                  className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+                                  onClick={(e) =>
+                                    handleDropDownSelect(
+                                      "attendees",
+                                      user._id,
+                                      e
+                                    )
+                                  }
+                                >
+                                  {user.firstName} {user.lastName}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end mt-4">
                   <button
-                    className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+                    className="inline-flex items-center space-x-1 font-semibold text-white bg-gray-900 hover:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white px-2 py-1 rounded-md shadow-inner cursor-pointer transition-colors"
                     onClick={handleSubmit}
                   >
-                    Close
+                    <GoIssueClosed />
+                    <span>Close</span>
                   </button>
                 </div>
               </div>
@@ -560,7 +689,6 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
             className={blurEffectClass}
             onClick={() => setActive(false)}
           ></div>
-
         </>
       ) : (
         <div> Data not present </div>
@@ -569,4 +697,4 @@ const CompleteMeeting = ({ active, setActive, meetingData }) => {
   );
 };
 
-export default CompleteMeeting;
+export default MeetingNotes;

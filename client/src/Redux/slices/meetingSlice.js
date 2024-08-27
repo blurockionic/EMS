@@ -1,6 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"; // redux function for creating slice and API call using createAsyncThunk function of redux
-import axios from "axios"; // axios for API call
-import { server } from "../../App"; // importing server URL from app.js file
+// src/slices/meetingSlice.js
+
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { server } from "../../App";
 
 // Async thunk for creating a meeting
 export const createMeeting = createAsyncThunk(
@@ -25,8 +27,6 @@ export const updateMeeting = createAsyncThunk(
   "meetings/updateMeeting",
   async ({ id, newData }, { rejectWithValue }) => {
     try {
-      console.log("New Data:", newData);
-
       const response = await axios.put(
         `${server}/meeting/updateMeetingDetails/${id}`,
         newData,
@@ -40,8 +40,7 @@ export const updateMeeting = createAsyncThunk(
       return response.data; // Return the response data from the server
     } catch (error) {
       if (error.response) {
-        // Reject with the response data to be handled in the component
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response.data); // Return the response data for error handling
       }
       return rejectWithValue(error.message);
     }
@@ -59,6 +58,28 @@ export const fetchMeetings = createAsyncThunk(
   }
 );
 
+// Async thunk to close a meeting
+export const closeMeeting = createAsyncThunk(
+  'meetings/closeMeeting',
+  async ({ meetingId, notes, actualAttendees }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${server}/meeting/closeMeeting/${meetingId}`,
+        { notes, actualAttendees },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data; // Return the response data from the server
+    } catch (error) {
+      return rejectWithValue(error.response.data); // Return the response data for error handling
+    }
+  }
+);
+
 // Create a slice for meetings
 const meetingSlice = createSlice({
   name: "meetings",
@@ -67,6 +88,7 @@ const meetingSlice = createSlice({
     status: "idle", // Status of the request (idle, loading, succeeded, failed)
     newMeetingRes: null, // Response data for creating a meeting
     updateMeetingRes: null, // Response data for updating a meeting
+    closeMeetingRes: null, // Response data for closing a meeting
     error: null, // Error message
     successMessage: null, // Success message from backend
   },
@@ -117,6 +139,22 @@ const meetingSlice = createSlice({
       })
       // Handle rejected state for updating a meeting
       .addCase(updateMeeting.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || action.error.message;
+      })
+      // Handle pending state for closing a meeting
+      .addCase(closeMeeting.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      // Handle fulfilled state for closing a meeting
+      .addCase(closeMeeting.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.closeMeetingRes = action.payload; // Set the response data for closing a meeting
+        state.successMessage = action.payload.message; // Assuming backend sends a success message
+      })
+      // Handle rejected state for closing a meeting
+      .addCase(closeMeeting.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload || action.error.message;
       });
