@@ -14,7 +14,19 @@ const meetingSchema = new mongoose.Schema(
     lastEditBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     lastEditTime: { type: Date, default: Date.now },
     agenda: { type: String, trim: true },
+    status: {
+      type: String,
+      enum: ["Open", "In Review", "Close"],
+      default: "Open",
+    },
+    actualAttendees: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Updated field
+    notes: [{ 
+      content: { type: String, trim: true }, 
+      createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, 
+      createdAt: { type: Date, default: Date.now } 
+    }], // Added field for notes
     type: { type: String },
+  
   },
   {
     timestamps: true, // Automatically manages createdAt and updatedAt fields

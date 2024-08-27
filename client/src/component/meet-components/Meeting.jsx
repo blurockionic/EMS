@@ -4,7 +4,11 @@ import { IoSearchSharp, IoCalendar } from "react-icons/io5";
 import { SiGotomeeting } from "react-icons/si";
 import { IoMdAdd } from "react-icons/io";
 import { FaBorderAll, FaTable } from "react-icons/fa";
-import { MdOutlineViewTimeline, MdOutlineAttractions, MdMoreTime } from "react-icons/md";
+import {
+  MdOutlineViewTimeline,
+  MdOutlineAttractions,
+  MdMoreTime,
+} from "react-icons/md";
 import { LuGalleryHorizontalEnd } from "react-icons/lu";
 import { BsThreeDots } from "react-icons/bs";
 import { PiDotsThreeBold } from "react-icons/pi";
@@ -12,14 +16,15 @@ import { FiEdit } from "react-icons/fi";
 import { MdFileDownloadDone } from "react-icons/md";
 import { RiCloseLine, RiDeleteBin6Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
-
+import { GoIssueClosed } from "react-icons/go";
 // Import utility and component modules
 import BigCalendarComponent from "../utilities-components/calendar/BigCalendar";
-import TimelineComponent from "../TimelineComponent";
+import TimelineComponent from "./TimelineComponent.jsx";
 import NewMeeting from "./NewMeeting";
 import UpdateExistingMeeting from "./UpdateExistingMeeting.jsx";
-import CompleteMeeting from "./CompleteMeeting.jsx";
 import MeetingViewMode from "./MeetingViewMode.jsx";
+import MeetingNotes from "./MeetingNotes.jsx";
+import ClosedMeeting from "./ClosedMeeting.jsx";
 
 // Main component definition
 const Meeting = () => {
@@ -64,12 +69,13 @@ const Meeting = () => {
   // Memoized function to get the icon associated with each tab
   const getTabIcon = useCallback((tab) => {
     const icons = {
-      Meetings: <SiGotomeeting className="mr-2" />,
-      Calendar: <IoCalendar className="mr-2" />,
-      All: <FaBorderAll className="mr-2" />,
-      "Table View": <FaTable className="mr-2" />,
-      Timeline: <MdOutlineViewTimeline className="mr-2" />,
-      Gallery: <LuGalleryHorizontalEnd className="mr-2" />,
+      Meetings: <SiGotomeeting className="mr-2 mt-1" />,
+      Calendar: <IoCalendar className="mr-2 mt-1" />,
+      All: <FaBorderAll className="mr-2 mt-1" />,
+      "Table View": <FaTable className="mr-2 mt-1" />,
+      Timeline: <MdOutlineViewTimeline className="mr-2 mt-1" />,
+      Completed: <GoIssueClosed className="mr-2 mt-1" />,
+      Gallery: <LuGalleryHorizontalEnd className="mr-2 mt-1" />,
     };
     return icons[tab] || null; // Return the corresponding icon or null if not found
   }, []);
@@ -113,7 +119,7 @@ const Meeting = () => {
     setModals((prevModals) => ({
       ...prevModals,
       activeUpdateMeeting: actionType === "edit", // Show update modal if action is edit
-      activeCompleteMeeting: actionType === "complete", // Show complete modal if action is complete
+      activeCompleteMeeting: actionType === "Notes", // Show complete modal if action is complete
     }));
   };
 
@@ -128,8 +134,8 @@ const Meeting = () => {
               ? "border-b-2 border-green-500 font-bold" // Style for active tab
               : "font-semibold bg-transparent" // Style for inactive tab
           }`}
-          onClick={() =>
-            setUiState((prevState) => ({ ...prevState, activeTab: tab })) // Update active tab on click
+          onClick={
+            () => setUiState((prevState) => ({ ...prevState, activeTab: tab })) // Update active tab on click
           }
         >
           {getTabIcon(tab)} {tab}
@@ -157,12 +163,12 @@ const Meeting = () => {
                 }))
               }
             >
-              <IoMdAdd className="text-xl mx-2" />
+              <IoMdAdd className="text-2xl mx-2 mt-2" />
             </div>
             {uiState.showMoreTabs && (
               <div className="absolute top-full mt-2 w-full md:w-56 bg-white dark:bg-gray-700 border rounded-md shadow-lg z-10 p-1">
                 <ul>
-                  {["Table View", "Timeline", "Gallery"].map((tab) => (
+                  {["Table View", "Timeline", "Completed", "Gallery"].map((tab) => (
                     <li
                       key={tab}
                       className="flex flex-row cursor-pointer mx-2 px-4 py-1 hover:bg-gray-200 hover:rounded-lg mt-2"
@@ -218,7 +224,11 @@ const Meeting = () => {
       </nav>
 
       <div className="mt-4">
-        {uiState.activeTab === "Meetings" && (
+        {uiState.activeTab === "Meetings" && <div> jia shree ram</div>}
+        {uiState.activeTab === "Calendar" && (
+          <BigCalendarComponent meetings={meetings} />
+        )}
+        {uiState.activeTab === "All" && (
           <div className="w-full">
             <table className="w-full">
               <thead>
@@ -317,13 +327,16 @@ const Meeting = () => {
                             <li
                               className="block px-4 py-2 text-left w-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                               onClick={() =>
-                                meetingActionButtonHandler("complete",meeting._id )
+                                meetingActionButtonHandler(
+                                  "Notes",
+                                  meeting._id
+                                )
                               }
                             >
                               <div className="flex space-x-2">
                                 <MdFileDownloadDone className="mt-1 text-gray-800 dark:text-gray-200" />
                                 <span className="font-semibold text-gray-800 dark:text-gray-200">
-                                  Complete
+                                 Notes
                                 </span>
                               </div>
                             </li>
@@ -354,14 +367,13 @@ const Meeting = () => {
             </table>
           </div>
         )}
-        {uiState.activeTab === "Calendar" && (
-          <BigCalendarComponent meetings={meetings} />
-        )}
-        {uiState.activeTab === "All" && <div>All content goes here...</div>}
         {uiState.activeTab === "Table View" && (
           <MeetingViewMode meetings={meetings} viewMode={uiState.activeTab} />
         )}
         {uiState.activeTab === "Timeline" && <TimelineComponent />}
+        {uiState.activeTab === "Completed" && (
+        <ClosedMeeting meetings={meetings}/>
+        )}
         {uiState.activeTab === "Gallery" && (
           <MeetingViewMode meetings={meetings} viewMode={uiState.activeTab} />
         )}
@@ -389,8 +401,8 @@ const Meeting = () => {
           meetingId={uiState.editableMeetingId}
         />
       )}
-      {uiState.action === "complete" && (
-        <CompleteMeeting
+      {uiState.action === "Notes" && (
+        <MeetingNotes
           active={modals.activeCompleteMeeting}
           setActive={(isActive) =>
             setModals((prevState) => ({
