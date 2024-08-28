@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { GoIssueClosed, GoIssueOpened, GoIssueReopened } from "react-icons/go";
 import { BsThreeDots } from "react-icons/bs";
-import TimeAgo from "./TimeAgo";
+import TimeAgo from "../utilities-components/TimeAgo";
 import {
   fetchTasks,
   closeTask,
@@ -20,7 +20,7 @@ import { toast, ToastContainer } from "react-toastify";
 
 // import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import "@cyntler/react-doc-viewer/dist/index.css";
-import Loader from "./Loader";
+import Loader from "../utilities-components/Loader";
 
 const SingleTaskDetails = () => {
   const { taskId } = useParams();

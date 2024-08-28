@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers } from "../../Redux/slices/allUserSlice";
 import { TbBuildingEstate } from "react-icons/tb";
 import { GoLocation } from "react-icons/go";
-import Loader from "./Loader";
+import Loader from "../utilities-components/Loader";
 
 const EmployeeTable = ({ viewMode }) => {
   const dispatch = useDispatch();
