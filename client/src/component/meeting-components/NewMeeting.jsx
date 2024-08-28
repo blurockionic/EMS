@@ -39,7 +39,7 @@ const NewMeeting = ({ active, setActive }) => {
   });
 
   const [moreRowsShow, setMoreRowsShow] = useState(false); // State to show/hide additional form fields
-
+  const [loading, setLoading] = useState(false); // state for loading form button when hit create meeting
   const dispatch = useDispatch(); // Initialize dispatch function for Redux
   const profile = useSelector((state) => state.profile.data); // Get user profile from Redux state
   const { data: users } = useSelector((state) => state.user); // Get users list from Redux state
@@ -79,10 +79,12 @@ const NewMeeting = ({ active, setActive }) => {
 
   const handleSubmit = async () => {
     // Handle form submission
+    setLoading(true);
+
     try {
       const response = await dispatch(createMeeting(formData)).unwrap(); // Dispatch createMeeting action and unwrap response
       console.log("Meeting created successfully:", response.message); // Log success message
-      setActive(false)
+      setActive(false);
       dispatch(fetchMeetings()); // Fetch existing meetings
       // Perform additional actions, like closing the modal or resetting the form
     } catch (error) {
@@ -179,15 +181,15 @@ const NewMeeting = ({ active, setActive }) => {
           </div>
 
           <div className="p-6">
-            <div className="mb-4">
-              <h1 className="text-4xl font-bold">
+            <div className="mb-4 w-full">
+              <h1 className="text-3xl font-bold">
                 <input
                   type="text"
                   name="title"
                   required
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="outline-none border-b border-gray-300 focus:border-blue-500 focus:ring-0"
+                  className="outline-none w-full"
                   placeholder="Untitled"
                 />
               </h1>
@@ -425,10 +427,38 @@ const NewMeeting = ({ active, setActive }) => {
 
               <div className="flex justify-center">
                 <button
-                  className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+                  className="bg-slate-950 text-white py-2 px-4 rounded-md hover:bg-slate-800 disabled:bg-gray-400"
                   onClick={handleSubmit}
+                  disabled={loading}
                 >
-                  Create Meeting
+                  {loading ? (
+                    <div className="flex items-center">
+                      {/* Loader Spinner */}
+                      <svg
+                        className="animate-spin h-5 w-5 text-white mr-2"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        ></path>
+                      </svg>
+                      Loading...
+                    </div>
+                  ) : (
+                    "Create Meeting"
+                  )}
                 </button>
               </div>
             </div>
