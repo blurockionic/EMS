@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Chat from "../../component/utilities-components/Chat";
+import Chat from "../../component/pages-components/Chat";
 
 const EmpTeam = () => {
   const [activeTeamTab, setActiveTeamTab] = useState("My Team");

@@ -12,7 +12,7 @@ import { fetchUsers } from "../../Redux/slices/allUserSlice";
 import { ToastContainer, toast } from "react-toastify";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "./CalendarStyles.css"; // Custom styles
+import "../utilities-components/CalendarStyles.css"; // Custom styles
 import { fetchProfile } from "../../Redux/slices/profileSlice";
 import { IoCalendarNumberOutline } from "react-icons/io5";
 import DatePicker from "react-datepicker";

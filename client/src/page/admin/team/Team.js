@@ -21,7 +21,7 @@ import { fetchProjects } from "../../../Redux/slices/projectSlice";
 import { fetchEmployees } from "../../../Redux/slices/employeeSlice";
 import { fetchProfile } from "../../../Redux/slices/profileSlice";
 import { fetchUsers } from "../../../Redux/slices/allUserSlice";
-import Chat from "../../../component/utilities-components/Chat";
+import Chat from "../../../component/pages-components/Chat";
 
 const Team = () => {
   const dispatch = useDispatch();

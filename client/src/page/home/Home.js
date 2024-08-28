@@ -5,9 +5,9 @@ import { Outlet } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProfile } from "../../Redux/slices/profileSlice";
-import ProfileSidebarModel from "../../component/utilities-components/ProfileSidebarModel";
-import ThemeToggle from "../../component/utilities-components/ThemeToggle";
-import SideNavbar from "../../component/utilities-components/SideNavbar";
+import ProfileSidebarModel from "../../component/sidebar-components/ProfileSidebarModel";
+import ThemeToggle from "../../component/theme-components/ThemeToggle";
+import SideNavbar from "../../component/sidebar-components/ToolsSideNavbar";
 
 const Home = () => {
   const [active, setActive] = useState(false);
