@@ -40,9 +40,10 @@ import CreateMilestone from "./component/milestone-components/CreateMilestone";
 import ProjectDetails from "./component/pages-components/ProjectDetails";
 import IssuesComp from "./page/admin/issue/IssuesComp";
 import ComingSoon from "./component/utilities-components/ComingSoon";
-import Meeting from "./component/meet-components/Meeting";
+import Meeting from "./component/meeting-components/Meeting";
 import ToDo from "./component/Todo_Components/ToDo";
-
+import MyEvents from "./component/event-components/MyEvents";
+import ActionItemsManager from "./component/actionItem-components/ActionItemsManager";
 // export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 export const server = "http://localhost:4000/api/v1";
 
@@ -88,9 +89,9 @@ function App() {
           <Route path="newMilestone/:projectId" element={<CreateMilestone />} />
           <Route path="commingSoon" element={<ComingSoon/>} />
           <Route path="meeting" element={<Meeting/>} />
-          <Route path="meeting" element={<Meeting/>} />
+          <Route path="events" element={<MyEvents/>} />
           <Route path="myTodo" element={<ToDo/>} />
-          {/* <Route path="newMeeting" element={<Meeting/>} /> */}
+          <Route path="actionItems" element={<ActionItemsManager/>} />
 
           {/* hr  */}
           <Route path="hrdashboard" element={<HrDashaboard />} />

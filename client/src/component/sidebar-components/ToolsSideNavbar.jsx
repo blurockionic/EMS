@@ -12,13 +12,14 @@ import { GrHomeRounded } from "react-icons/gr"; // Icon for home
 import { GoInbox, GoVersions } from "react-icons/go"; // Icons for inbox and version
 import { LuListTodo } from "react-icons/lu"; // Icon for to-do list
 import { MdOutlineEventSeat } from "react-icons/md"; // Icon for events
-
+import { GiTemporaryShield } from "react-icons/gi";
 const ToolSideNavbar = ({ sidebarClass, setActive }) => {
   // Array to store tab data for easy management and scalability
   const tabData = [
     { to: "./commingSoon", icon: GrHomeRounded, label: "Home" },
     { to: "./commingSoon", icon: GoInbox, label: "Inbox" },
-    { to: "./commingSoon", icon: MdOutlineEventSeat, label: "Events" },
+    { to: "./events", icon: MdOutlineEventSeat, label: "Events" },
+    { to: "./actionItems", icon: GiTemporaryShield, label: "Action Items" },
     { to: "./commingSoon", icon: HiOutlineSaveAs, label: "Notes" },
     { to: "./myTodo", icon: LuListTodo, label: "To do" },
     { to: "./commingSoon", icon: IoCalendarNumberOutline, label: "Calendar" },
@@ -73,7 +74,7 @@ const ToolSideNavbar = ({ sidebarClass, setActive }) => {
                   <BsThreeDots /> {/* Icon for additional options */}
                 </span>
               </div>
-              {tabData.slice(2, 7).map(({ to, icon: Icon, label }, index) => (
+              {tabData.slice(2, 8).map(({ to, icon: Icon, label }, index) => (
                 <li className="mb-2 w-full" key={index}>
                   <Link to={to} className={linkClasses}>
                     <Icon className="text-lg mr-3" />
@@ -87,7 +88,7 @@ const ToolSideNavbar = ({ sidebarClass, setActive }) => {
           {/* Footer section with help and version information */}
           <div>
             <ul className="w-full">
-              {tabData.slice(7).map(({ to, icon: Icon, label }, index) => (
+              {tabData.slice(8).map(({ to, icon: Icon, label }, index) => (
                 <li className="mb-2 w-full" key={index}>
                   <Link to={to} className={linkClasses}>
                     <Icon className="text-lg mr-3" />
