@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Card from "../../component/utilities-components/Card";
-import EmployeeTable from "../../component/utilities-components/EmployeeTable";
+import EmployeeTable from "../../component/pages-components/EmployeeTable";
 import axios from "axios";
 import { server } from "../../App";
 

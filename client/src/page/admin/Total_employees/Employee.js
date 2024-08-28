@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Tooltip } from "react-tooltip";
 
 import { fetchProfile } from "../../../Redux/slices/profileSlice";
-import EmployeeTable from "../../../component/utilities-components/EmployeeTable";
+import EmployeeTable from "../../../component/pages-components/EmployeeTable";
 import NewEmployee from "../../HR/NewEmployee";
 import Loader from "../../../component/utilities-components/Loader";
 import { IoMdPersonAdd } from "react-icons/io";
