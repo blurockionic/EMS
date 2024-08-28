@@ -1,5 +1,5 @@
 // Import necessary libraries and components
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { IoSearchSharp, IoCalendar } from "react-icons/io5";
 import { SiGotomeeting } from "react-icons/si";
 import { IoMdAdd } from "react-icons/io";
@@ -29,6 +29,7 @@ import Loader from "../utilities-components/Loader.jsx";
 
 // Main component definition
 const Meeting = () => {
+  const [openStatusMeetings, setOpenStatusMeetings] = useState([]); // set open status meetings to open current meetings
   // Consolidate related state variables into a single state object for better manageability
   const [uiState, setUiState] = useState({
     activeTab: "Meetings", // Initial tab displayed
@@ -52,6 +53,12 @@ const Meeting = () => {
   const meetings = useSelector((state) => state.meetings.data);
   // Use Redux selector to fetch meetings status from the state for activate loader
   const meetingStatus = useSelector((state) => state.meetings.status);
+// useEeffect for filtering out open status meeting 
+  useEffect(() => {
+    setOpenStatusMeetings(
+      meetings.filter((meeting) => meeting.status === "Open")
+    );
+  },[meetings, meetingStatus]);
 
   // Memoized function to add a new tab and update state accordingly
   const addTab = useCallback(
@@ -233,7 +240,151 @@ const Meeting = () => {
         </nav>
 
         <div className="mt-4">
-          {uiState.activeTab === "Meetings" && <div> jia shree ram</div>}
+          {uiState.activeTab === "Meetings" && (
+            <div className="w-full">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-slate-100 dark:bg-gray-800 w-full flex justify-between">
+                    <th className="px-4 py-2 w-[50%]">
+                      <div className="flex items-center justify-start hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-2 py-1 group">
+                        <span className="font-semibold">Meeting Title</span>
+                      </div>
+                    </th>
+                    <th className="px-4 py-2 text-end">
+                      <div className="flex items-center justify-start hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-2 py-1 group">
+                        <MdMoreTime className="text-xl mr-2" />
+                        <span className="font-semibold">Event Time</span>
+                      </div>
+                    </th>
+                    <th className="px-4 py-2 text-end">
+                      <div className="flex items-center justify-start hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md px-2 py-1 group">
+                        <MdOutlineAttractions className="text-xl mr-2" />
+                        <span className="font-semibold">Action</span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {openStatusMeetings && openStatusMeetings?.length > 0 ? (
+                    openStatusMeetings?.map((meeting) => (
+                      <tr
+                        key={meeting._id}
+                        className="border-b dark:border-gray-600 w-full flex justify-between hover:bg-slate-100 dark:hover:bg-slate-700"
+                      >
+                        <td className="px-4 py-4 w-[50%]">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-xl hover:text-blue-700 dark:hover:text-blue-500 capitalize cursor-pointer">
+                              {meeting.title}
+                            </span>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {meeting.description}
+                            </p>
+                            <div className="mt-2 md:mt-0 flex flex-col md:flex-row">
+                              <span className="text-gray-500 dark:text-gray-400">
+                                Created by
+                              </span>
+                              <span className="font-semibold mx-2">
+                                {meeting.createdBy.firstName}{" "}
+                                {meeting.createdBy.lastName}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span className="font-semibold inline-block bg-slate-200 dark:bg-gray-700 hover:bg-slate-300 px-2 py-1 rounded-md">
+                            {new Date(meeting.eventTime).toLocaleString(
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "numeric",
+                                hour12: true,
+                              }
+                            )}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 relative">
+                          <span
+                            onClick={() => handleMeetingRowClick(meeting._id)}
+                          >
+                            <PiDotsThreeBold className="text-3xl" />
+                          </span>
+                          {uiState.activeRowId === meeting._id && (
+                            <ul className="absolute top-0 z-20 right-0 w-[10rem] h-auto bg-white dark:bg-gray-800 shadow-lg rounded-md p-4 context-menu space-y-2">
+                              <li className="flex justify-end mb-2">
+                                <button
+                                  onClick={() =>
+                                    setUiState((prevState) => ({
+                                      ...prevState,
+                                      activeRowId: null,
+                                    }))
+                                  }
+                                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                                >
+                                  <RiCloseLine className="text-xl" />
+                                </button>
+                              </li>
+                              <li
+                                className="block px-4 py-2 text-left w-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                                onClick={() =>
+                                  meetingActionButtonHandler(
+                                    "edit",
+                                    meeting._id
+                                  )
+                                }
+                              >
+                                <div className="flex space-x-2">
+                                  <FiEdit className="mt-1 text-gray-800 dark:text-gray-200" />
+                                  <span className="font-semibold text-gray-800 dark:text-gray-200">
+                                    Edit
+                                  </span>
+                                </div>
+                              </li>
+                              <li
+                                className="block px-4 py-2 text-left w-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                                onClick={() =>
+                                  meetingActionButtonHandler(
+                                    "Notes",
+                                    meeting._id
+                                  )
+                                }
+                              >
+                                <div className="flex space-x-2">
+                                  <MdFileDownloadDone className="mt-1 text-gray-800 dark:text-gray-200" />
+                                  <span className="font-semibold text-gray-800 dark:text-gray-200">
+                                    Notes
+                                  </span>
+                                </div>
+                              </li>
+                              <li className="block px-4 py-2 text-left w-full hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
+                                <div className="flex space-x-2">
+                                  <RiDeleteBin6Line className="mt-1 text-gray-800 dark:text-gray-200" />
+                                  <span className="font-semibold text-gray-800 dark:text-gray-200">
+                                    Delete
+                                  </span>
+                                </div>
+                              </li>
+                            </ul>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className="w-full">
+                      <td
+                        colSpan="3"
+                        className="px-4 py-4 text-center text-gray-600 dark:text-gray-400"
+                      >
+                        No meetings available.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
           {uiState.activeTab === "Calendar" && (
             <BigCalendarComponent meetings={meetings} />
           )}

@@ -90,13 +90,13 @@ const BigCalendar = ({ meetings }) => {
             onSelectSlot={handleSelectSlot}
             onSelectEvent={handleSelectEvent}
           />
-          {selectedEvent && (
+          {/* {selectedEvent && (
             <EventModal
               event={selectedEvent}
               onSave={handleSaveEvent}
               onClose={() => setSelectedEvent(null)}
             />
-          )}
+          )} */}
         </div>
       )}
     </>
