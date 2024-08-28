@@ -109,9 +109,9 @@ const MyEvents = () => {
   return (
     <>
       <div className="flex flex-col justify-end mr-4">
-        <div className="p-4 max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
+        {/* <div className="p-4 max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
           <Calendar />
-        </div>
+        </div> */}
 
         <div className="border-2 mt-2 rounded-lg">
           <div className="p-2 flex flex-row justify-between">

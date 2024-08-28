@@ -18,7 +18,7 @@ const ToolSideNavbar = ({ sidebarClass, setActive }) => {
   const tabData = [
     { to: "./commingSoon", icon: GrHomeRounded, label: "Home" },
     { to: "./commingSoon", icon: GoInbox, label: "Inbox" },
-    { to: "./commingSoon", icon: MdOutlineEventSeat, label: "Events" },
+    { to: "./events", icon: MdOutlineEventSeat, label: "Events" },
     { to: "./commingSoon", icon: HiOutlineSaveAs, label: "Notes" },
     { to: "./myTodo", icon: LuListTodo, label: "To do" },
     { to: "./commingSoon", icon: IoCalendarNumberOutline, label: "Calendar" },
