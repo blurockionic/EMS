@@ -2,7 +2,7 @@ import multer from "multer";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    console.log("inside the multer code", req , file );
+    // console.log("inside the multer code", req , file );
     cb(null, "./temp");
   },
   filename: function (req, file, cb) {

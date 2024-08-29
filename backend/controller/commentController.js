@@ -2,9 +2,11 @@ import { Comment } from "../model/commentSchema.js";
 import { Issue } from "../model/issueSchema.js";
 import { Task } from "../model/task.js";
 import { User } from "../model/user.js";
+import { uploadOnCloudinary } from "../utilities/cloudinary.js";
 
 export const createComment = async (req, res) => {
   const { comment, commentedBy, relatedTaskId, relatedIssueId } = req.body;
+  const file = req.file; // Access the uploaded file
 
   try {
     // Ensure that the user exists
@@ -35,11 +37,23 @@ export const createComment = async (req, res) => {
       commentedBy,
     });
 
+    if (file) {
+      // Upload profile picture to Cloudinary
+      const uploadResult = await uploadOnCloudinary(req.file.path);
+      if (uploadResult) {
+        newComment.documentFile  = uploadResult.url;
+      }
+    } else {
+      console.log("No file recieved");
+    }
+
     // Save the comment to the database
     await newComment.save();
-     // Update the Task document with the new comment reference
-     if (relatedTaskId) {
-      await Task.findByIdAndUpdate(relatedTaskId, { $push: { comments: newComment._id } });
+    // Update the Task document with the new comment reference
+    if (relatedTaskId) {
+      await Task.findByIdAndUpdate(relatedTaskId, {
+        $push: { comments: newComment._id },
+      });
     } else if (relatedIssueId) {
       // Update the Issue document with the new comment reference if needed
     }
@@ -55,8 +69,6 @@ export const createComment = async (req, res) => {
   }
 };
 
-
-
 export const getAllComments = async (req, res) => {
   const { relatedTaskId, relatedIssueId } = req.query;
 
@@ -67,12 +79,14 @@ export const getAllComments = async (req, res) => {
     } else if (relatedIssueId) {
       allComments = await Comment.find({ relatedIssueId });
     } else {
-      return res.status(400).json({ message: 'Task ID or Issue ID is required' });
+      return res
+        .status(400)
+        .json({ message: "Task ID or Issue ID is required" });
     }
 
     res.status(200).json(allComments);
   } catch (error) {
-    console.error('Error fetching comments:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error fetching comments:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

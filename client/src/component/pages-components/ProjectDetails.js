@@ -9,7 +9,7 @@ import { RxPerson } from "react-icons/rx";
 import { GrOverview, GrTechnology } from "react-icons/gr";
 import { CgCalendarNext } from "react-icons/cg";
 import { useLocation } from "react-router-dom";
-import Milestones from "../utilities-components/Milestones";
+import Milestones from "../milestone-components/Milestones";
 import Task from "./Task";
 
 const ProjectDetails = () => {

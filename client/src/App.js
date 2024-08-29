@@ -31,21 +31,27 @@ import Team from "./page/admin/team/Team";
 import EmpTeam from "./page/employee/EmpTeam";
 import AppVersion from "./page/admin/AppVersion/AppVersion";
 import EmpTasksDetails from "./page/employee/EmpTasksDetails";
-import SingleTaskDetails from "./component/utilities-components/SingleTaskDetails";
+import SingleTaskDetails from "./component/pages-components/SingleTaskDetails";
 import { fetchProfile } from "./Redux/slices/profileSlice";
 import { useEffect } from "react";
-import YourProfilePage from "./component/utilities-components/YourProfilePage";
-import YourOrganization from "./component/utilities-components/YourOrganization";
-import CreateMilestone from "./component/utilities-components/CreateMilestone";
-import ProjectDetails from "./component/project/ProjectDetails";
+import YourProfilePage from "./component/pages-components/YourProfilePage";
+import YourOrganization from "./component/pages-components/YourOrganization";
+import CreateMilestone from "./component/milestone-components/CreateMilestone";
+import ProjectDetails from "./component/pages-components/ProjectDetails";
 import IssuesComp from "./page/admin/issue/IssuesComp";
 import ComingSoon from "./component/utilities-components/ComingSoon";
-import Meeting from "./component/meet-components/Meeting";
-
+import Meeting from "./component/meeting-components/Meeting";
+import ToDo from "./component/Todo_Components/ToDo";
+import MyEvents from "./component/event-components/MyEvents";
+import ActionItemsManager from "./component/actionItem-components/ActionItemsManager";
+import { selectLoggedIn } from "./Redux/slices/authSlice";
+import ProtectedRoute from "./page/auth/ProtectedRoute";
+import NotFound from "./component/pages-components/NotFound";
 export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 // export const server = "http://localhost:4000/api/v1";
-
 function App() {
+  const loggedIn = useSelector(selectLoggedIn);
+
   const theme = useSelector((state) => state.theme.mode);
   const dispatch = useDispatch();
 
@@ -63,10 +69,26 @@ function App() {
 
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+        // Public Routes
         <Route path="/login" element={<Login />} />
-        {/* //protected route  */}
-        <Route path="/dashboard" element={<Home />}>
+        <Route
+          path="/"
+          element={
+            loggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
+          }
+        />
+        {/* <Route path="/" element={<Navigate to="/dashboard" />} /> */}
+        //protected route
+        {/* <Route path="/dashboard" element={<Home />}> */}
+        //Protected Routes
+        <Route
+          path="/dashboard/*"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        >
           <Route path="" element={<Navigate to="home" />} />
           <Route path="home" element={<MainDashboard />} />
           <Route path="employee" element={<Employee />} />
@@ -85,8 +107,11 @@ function App() {
           <Route path="newEmployee" element={<NewEmployee />} />
           <Route path="projectdetails" element={<ProjectDetails />} />
           <Route path="newMilestone/:projectId" element={<CreateMilestone />} />
-          <Route path="commingSoon" element={<ComingSoon/>} />
-          <Route path="meeting" element={<Meeting/>} />
+          <Route path="commingSoon" element={<ComingSoon />} />
+          <Route path="meeting" element={<Meeting />} />
+          <Route path="events" element={<MyEvents />} />
+          <Route path="myTodo" element={<ToDo />} />
+          <Route path="actionItems" element={<ActionItemsManager />} />
 
           {/* hr  */}
           <Route path="hrdashboard" element={<HrDashaboard />} />
@@ -111,7 +136,12 @@ function App() {
           <Route path="empteam" element={<EmpTeam />} />
 
           <Route path="taskreportfeedback" element={<TaskReportFeedback />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
+        {/* Catch-All Route for Undefined Paths */}
+        <Route path="*" element={<NotFound />} />
+        // Redirect undefined routes to the dashboard home page
+        {/* <Route path="*" element={<Navigate to="/dashboard/home" />} /> */}
       </Routes>
     </Router>
   );

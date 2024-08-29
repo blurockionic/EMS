@@ -1,5 +1,5 @@
 import React from "react";
-import MyEvents from "../../component/utilities-components/MyEvents";
+import MyEvents from "../../component/event-components/MyEvents";
 const EmployeeDashboard = () => {
   return (
     <div>

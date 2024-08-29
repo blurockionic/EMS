@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  MdAdd,
   MdOutlineCalendarMonth,
   MdTimer,
   MdClose,
@@ -10,13 +9,15 @@ import Select from "react-select";
 import { createEvent, fetchEvents } from "../../Redux/slices/eventSlice";
 import { fetchUsers } from "../../Redux/slices/allUserSlice";
 import { ToastContainer, toast } from "react-toastify";
-import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "./CalendarStyles.css"; // Custom styles
+import "../utilities-components/CalendarStyles.css"; // Custom styles
 import { fetchProfile } from "../../Redux/slices/profileSlice";
 import { IoCalendarNumberOutline } from "react-icons/io5";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { IoMdAdd, IoMdClose } from "react-icons/io";
+import { BsThreeDots } from "react-icons/bs";
+import Loader from "../utilities-components/Loader";
 
 const MyEvents = () => {
   const dispatch = useDispatch();
@@ -34,7 +35,22 @@ const MyEvents = () => {
   // Redux selectors
   const { data: users } = useSelector((state) => state.user);
   const { data: profile } = useSelector((state) => state.profile);
-  const { events } = useSelector((state) => state.events);
+  const events = useSelector((state) => state.events.events);
+
+  const eventStatus = useSelector((state) => state.events.status);
+
+  const [activeTab, setActiveTab] = useState("events"); // State to track active tab
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Toggle menu visibility
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+  // Close menu
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
 
   // Fetch initial data
   useEffect(() => {
@@ -57,7 +73,6 @@ const MyEvents = () => {
         startTime,
         endTime,
         people: selectedMembers.map((member) => member._id),
-      
       };
       console.log(eventData);
 
@@ -108,73 +123,201 @@ const MyEvents = () => {
 
   return (
     <>
-      <div className="flex flex-col justify-end mr-4">
-        <div className="p-4 max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
-          <Calendar />
-        </div>
-
-        <div className="border-2 mt-2 rounded-lg">
-          <div className="p-2 flex flex-row justify-between">
-            <h3 className="font-bold">Events</h3>
-            {(profile.role === "manager" || profile.role === "admin") && (
-              <button
-                className="bg-purple-500 text-white py-1 px-2 rounded hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                onClick={toggleFormModal}
-              >
-                <MdAdd />
-              </button>
-            )}
+    {
+      eventStatus === "loading" && ( <Loader/> )
+    }
+      <div className="w-[90%] mx-auto mt-2">
+        <h1 className="text-4xl font-bold p-2">Events</h1>
+        <nav className="flex flex-row justify-between items-center p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          {/* Tab Navigation */}
+          <div className="flex flex-row space-x-4 border-b-2 border-transparent dark:border-transparent">
+            <button
+              className={`py-2 px-4 font-semibold ${
+                activeTab === "events"
+                  ? "border-b-2 border-green-500 "
+                  : "text-gray-500 dark:text-gray-300"
+              }`}
+              onClick={() => setActiveTab("events")}
+            >
+              Events
+            </button>
+            <button
+              className={`py-2 px-4 font-semibold ${
+                activeTab === "other"
+                  ? "border-b-2 border-green-500 "
+                  : "text-gray-500 dark:text-gray-300"
+              }`}
+              onClick={() => setActiveTab("other")}
+            >
+              Other
+            </button>
           </div>
-        </div>
 
-        {filteredEvents?.length > 0 &&
-          filteredEvents.map((event) => (
-            <div key={event._id} className="border-2 mt-2 rounded-lg mb-6">
-              <div className="p-2 flex flex-wrap flex-col">
-                <h3 className="font-bold text-xl">{event.eventTitle}</h3>
-                <p>{event.eventDescription}</p>
-                <p>
-                  <strong>Type:</strong> {event.eventType}
-                </p>
+          <div className="flex flex-row items-center space-x-2">
+            <div>
+              <div className="relative">
+                <span
+                  className="p-0.5 cursor-pointer text-gray-500 dark:text-gray-300"
+                  onClick={toggleMenu}
+                >
+                  <BsThreeDots className="text-xl" />
+                </span>
 
-                <div className="flex flex-row space-x-16">
-                  <div className="flex space-x-2">
-                    <span>
-                      <MdOutlineCalendarMonth className="text-lg mt-1" />
-                    </span>
-                    <span>
-                      {new Date(event.eventDate).toLocaleDateString()}
-                    </span>
+                {/* Dropdown Menu */}
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-10">
+                    <ul>
+                      <li
+                        onClick={() => {
+                          setActiveTab("history");
+                          closeMenu();
+                        }}
+                        className="flex items-center px-4 py-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+                      >
+                        <IoMdClose className="text-xl mr-2" />
+                        <span>History</span>
+                      </li>
+                    </ul>
                   </div>
-                  <div className="flex space-x-1">
-                    <span>
-                      <MdTimer className="text-lg mt-1" />
-                    </span>
-                    <span>{event.startTime}</span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap">
-                  {event.people.slice(0, 5).map((person, index) => (
-                    <div key={person._id} className="flex items-center">
-                      <img
-                        className="w-8 h-8 rounded-full"
-                        src={
-                          person?.profilePicture ??
-                          "https://via.placeholder.com/20"
-                        }
-                        alt="Profile"
-                      />
-                    </div>
-                  ))}
-                  {event.people.length > 5 && (
-                    <div className="flex items-center ml-2">
-                      <span>+{event.people.length - 5}</span>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
             </div>
-          ))}
+            {(profile.role === "manager" || profile.role === "admin") && (
+              <div
+                onClick={toggleFormModal}
+                className="flex items-center font-semibold text-white bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 px-2 py-1 rounded-md shadow-md cursor-pointer transition-colors"
+              >
+                <IoMdAdd className="text-lg mr-1" />
+                <span>New</span>
+              </div>
+            )}
+          </div>
+        </nav>
+
+        {/* <div className="p-4 max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
+          <Calendar />
+        </div> */}
+
+        {activeTab === "events" && (
+          <>
+            {filteredEvents?.length > 0 ? (
+              filteredEvents.map((event) => (
+                <div key={event._id} className="border-2 mt-2 rounded-lg mb-6">
+                  <div className="p-2 flex flex-wrap flex-col">
+                    <h3 className="font-bold text-xl">{event.eventTitle}</h3>
+                    <p>{event.eventDescription}</p>
+                    <p>
+                      <strong>Type:</strong> {event.eventType}
+                    </p>
+
+                    <div className="flex flex-row space-x-16">
+                      <div className="flex space-x-2">
+                        <span>
+                          <MdOutlineCalendarMonth className="text-lg mt-1" />
+                        </span>
+                        <span>
+                          {new Date(event.eventDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="flex space-x-1">
+                        <span>
+                          <MdTimer className="text-lg mt-1" />
+                        </span>
+                        <span>{event.startTime}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap">
+                      {event.people.slice(0, 5).map((person) => (
+                        <div key={person._id} className="flex items-center">
+                          <img
+                            className="w-8 h-8 rounded-full"
+                            src={
+                              person?.profilePicture ??
+                              "https://via.placeholder.com/20"
+                            }
+                            alt="Profile"
+                          />
+                        </div>
+                      ))}
+                      {event.people.length > 5 && (
+                        <div className="flex items-center ml-2">
+                          <span>+{event.people.length - 5}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>No events found.</p>
+            )}
+          </>
+        )}
+
+        {activeTab === "history" && (
+          <>
+            {(profile.role === "manager" || profile.role === "admin") && (
+              <>
+                {events?.length > 0 ? (
+                  events.map((event) => (
+                    <div
+                      key={event._id}
+                      className="border-2 mt-2 rounded-lg mb-6"
+                    >
+                      <div className="p-2 flex flex-wrap flex-col">
+                        <h3 className="font-bold text-xl">
+                          {event.eventTitle}
+                        </h3>
+                        <p>{event.eventDescription}</p>
+                        <p>
+                          <strong>Type:</strong> {event.eventType}
+                        </p>
+
+                        <div className="flex flex-row space-x-16">
+                          <div className="flex space-x-2">
+                            <span>
+                              <MdOutlineCalendarMonth className="text-lg mt-1" />
+                            </span>
+                            <span>
+                              {new Date(event.eventDate).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="flex space-x-1">
+                            <span>
+                              <MdTimer className="text-lg mt-1" />
+                            </span>
+                            <span>{event.startTime}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap">
+                          {event.people.slice(0, 5).map((person) => (
+                            <div key={person._id} className="flex items-center">
+                              <img
+                                className="w-8 h-8 rounded-full"
+                                src={
+                                  person?.profilePicture ??
+                                  "https://via.placeholder.com/20"
+                                }
+                                alt="Profile"
+                              />
+                            </div>
+                          ))}
+                          {event.people.length > 5 && (
+                            <div className="flex items-center ml-2">
+                              <span>+{event.people.length - 5}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p>No events found.</p>
+                )}
+              </>
+            )}
+          </>
+        )}
       </div>
 
       {/* Modal */}
