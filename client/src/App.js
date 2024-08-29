@@ -136,6 +136,7 @@ function App() {
           <Route path="empteam" element={<EmpTeam />} />
 
           <Route path="taskreportfeedback" element={<TaskReportFeedback />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
         {/* Catch-All Route for Undefined Paths */}
         <Route path="*" element={<NotFound />} />
