@@ -1,6 +1,4 @@
-import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
-import { server } from "../../App";
 import { useNavigate } from "react-router-dom";
 import NET from "vanta/dist/vanta.net.min";
 import logo from "../../assets/employee.png";
@@ -9,19 +7,22 @@ import { useDispatch } from "react-redux";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 const Login = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [vantaEffect, setVantaEffect] = useState(null);
-  const myRef = useRef(null);
+  const dispatch = useDispatch(); // Redux dispatch function for dispatching actions
+  const navigate = useNavigate(); // React Router hook for navigation
+  const [email, setEmail] = useState(""); // State for email input
+  const [password, setPassword] = useState(""); // State for password input
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [vantaEffect, setVantaEffect] = useState(null); // State for Vanta.js effect
+  const [loading, setLoading] = useState(false); // State for loading spinner
+
+  const myRef = useRef(null); // Ref for Vanta.js effect
   useEffect(() => {
+    // Initialize Vanta.js effect
     if (!vantaEffect) {
       setVantaEffect(
         NET({
           el: myRef.current,
-          color: 0x0,
+          color: 0x0, // Color of the Vanta effect
           waveHeight: 20,
           shininess: 50,
           waveSpeed: 1.5,
@@ -30,30 +31,28 @@ const Login = () => {
         })
       );
     }
+    // Clean up Vanta.js effect on component unmount
     return () => {
       if (vantaEffect) vantaEffect.destroy();
     };
   }, [vantaEffect]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
+    setLoading(true); // Show loading spinner
 
     try {
       // Dispatch login action from authSlice
       const actionResult = await dispatch(login({ email, password }));
-
       // Check if login was successful based on action result
-      console.log(actionResult);
       if (actionResult.payload && actionResult.payload.success) {
-        // Handle success
-        alert(actionResult.payload.message);
+        // alert(actionResult.payload.message); // Show success message
         navigate("/dashboard"); // Navigate to dashboard on successful login
       } else {
-        // Handle failure
         alert(
           actionResult.error.message ||
             "Login failed. Please check your credentials."
-        );
+        ); // Show error message
       }
     } catch (error) {
       console.error("Error occurred during login:", error.message);
@@ -65,43 +64,41 @@ const Login = () => {
       } else {
         console.error("Error setting up the request:", error.message); // Handle request setup error
       }
+    } finally {
+      setLoading(false); // Hide loading spinner after attempt
     }
   };
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+    setShowPassword(!showPassword); // Toggle password visibility
   };
 
   return (
     <div className="grid grid-cols-12 h-screen">
-      <div className="col-span-4 p-4 flex items-center " ref={myRef}>
+      <div className="col-span-4 p-4 flex items-center" ref={myRef}>
         <div className="mx-auto">
           <img src={logo} alt="brand logo" />
-          {/* <span className=" text-8xl font-bold text-slate-100">
-            Blurock <br />
-          </span> */}
           <p className="text-slate-900 text-center font-bold">
             Automate your work with us
           </p>
         </div>
       </div>
-      <div className="col-span-8  flex items-center justify-center border-l-2 border-gray-300 bg-gradient-to-r from-gray-100  to-white">
-        {/* log in form  */}
-
+      <div className="col-span-8 flex items-center justify-center border-l-2 border-gray-300 bg-gradient-to-r from-gray-100 to-white">
+        {/* Login form */}
         <form
-          className="bg-white p-4 rounded shadow-lg w-2/5 h-2/3 mx-auto "
+          className="bg-white p-4 rounded shadow-lg w-2/5 h-2/3 mx-auto"
           onSubmit={handleSubmit}
         >
           <h2 className="text-xl font-semibold mb-4 text-center">LOGIN</h2>
           <div className="mb-4">
             <label
-              className="block text-gray-700 text-sm mb-2 text-left"
+              className="block text-gray-700 text-sm mb-2 text-left font-semibold"
               htmlFor="email"
             >
               Email
             </label>
             <input
-              className="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
               type="email"
               id="email"
               placeholder="Enter email"
@@ -112,13 +109,13 @@ const Login = () => {
           </div>
           <div className="mb-6 relative">
             <label
-              className="block text-gray-700 text-sm  mb-2 text-left"
+              className="block text-gray-700 text-sm mb-2 text-left font-semibold"
               htmlFor="password"
             >
               Password
             </label>
             <input
-              className="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
               type={showPassword ? "text" : "password"}
               id="password"
               placeholder="Enter password"
@@ -130,17 +127,52 @@ const Login = () => {
               className="absolute inset-y-0 right-0 pr-3 pt-8 flex items-center cursor-pointer"
               onClick={togglePasswordVisibility}
             >
-              {showPassword ? <AiOutlineEyeInvisible className="text-xl" /> : <AiOutlineEye  className="text-xl"/>}
+              {showPassword ? (
+                <AiOutlineEyeInvisible className="text-xl" />
+              ) : (
+                <AiOutlineEye className="text-xl" />
+              )}
             </div>
           </div>
-          <div className=" mt-32 flex items-center justify-between">
+          <div className="mt-24 flex items-center justify-between">
             <button
-              className="w-64 bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-900 hover:from-indigo-400 mx-auto font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="flex-1 bg-slate-950 text-white py-2 px-4 rounded-md hover:bg-slate-800 disabled:bg-gray-400 flex items-center justify-center"
               type="submit"
+              disabled={loading} // Disable button when loading
             >
-              Sign In
+              <span className="flex items-center">
+                {loading ? (
+                  <div className="flex items-center">
+                    {/* Loader Spinner */}
+                    <svg
+                      className="animate-spin h-5 w-5 text-white mr-2"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      ></path>
+                    </svg>
+                    Loading...
+                  </div>
+                ) : (
+                  "Sign In"
+                )}
+              </span>
             </button>
           </div>
+
           <div className="flex items-center justify-between">
             <span className="w-full text-end mt-1 text-sm cursor-pointer">
               Forgot Password?
