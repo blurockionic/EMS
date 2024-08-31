@@ -1,37 +1,38 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import NET from "vanta/dist/vanta.net.min";
-import logo from "../../assets/employee.png";
-import { login } from "../../Redux/slices/authSlice";
-import { useDispatch } from "react-redux";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import NET from "vanta/dist/vanta.net.min"; // Import Vanta.js effect
+import logo from "../../assets/employee.png"; // Import logo image
+import { login } from "../../Redux/slices/authSlice"; // Import login action from Redux
+import { useDispatch } from "react-redux"; // Import useDispatch hook from Redux
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"; // Import icons for password visibility
 
 const Login = () => {
-  const dispatch = useDispatch(); // Redux dispatch function for dispatching actions
-  const navigate = useNavigate(); // React Router hook for navigation
+  const dispatch = useDispatch(); // Initialize Redux dispatch function
+  const navigate = useNavigate(); // Initialize React Router navigation
   const [email, setEmail] = useState(""); // State for email input
   const [password, setPassword] = useState(""); // State for password input
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [vantaEffect, setVantaEffect] = useState(null); // State for Vanta.js effect
   const [loading, setLoading] = useState(false); // State for loading spinner
 
-  const myRef = useRef(null); // Ref for Vanta.js effect
+  const myRef = useRef(null); // Reference for the Vanta.js effect
+
   useEffect(() => {
-    // Initialize Vanta.js effect
+    // Initialize Vanta.js effect if not already active
     if (!vantaEffect) {
       setVantaEffect(
         NET({
-          el: myRef.current,
-          color: 0x0, // Color of the Vanta effect
-          waveHeight: 20,
-          shininess: 50,
-          waveSpeed: 1.5,
-          zoom: 0.75,
-          backgroundColor: 0xffffff,
+          el: myRef.current, // Attach effect to the element
+          color: 0x0, // Set effect color
+          waveHeight: 20, // Set wave height
+          shininess: 50, // Set shininess level
+          waveSpeed: 1.5, // Set wave speed
+          zoom: 0.75, // Set zoom level
+          backgroundColor: 0xffffff, // Set background color
         })
       );
     }
-    // Clean up Vanta.js effect on component unmount
+    // Clean up the Vanta effect on component unmount
     return () => {
       if (vantaEffect) vantaEffect.destroy();
     };
@@ -42,12 +43,12 @@ const Login = () => {
     setLoading(true); // Show loading spinner
 
     try {
-      // Dispatch login action from authSlice
+      // Dispatch login action from Redux slice
       const actionResult = await dispatch(login({ email, password }));
-      // Check if login was successful based on action result
+      
+      // Check if login was successful
       if (actionResult.payload && actionResult.payload.success) {
-        // alert(actionResult.payload.message); // Show success message
-        navigate("/dashboard"); // Navigate to dashboard on successful login
+        navigate("/dashboard/home"); // Navigate to the dashboard on success
       } else {
         alert(
           actionResult.error.message ||
@@ -56,16 +57,16 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Error occurred during login:", error.message);
-      // Handle specific error cases if needed
+      // Handle different error scenarios
       if (error.response) {
-        alert(error.response.data.message); // Handle server response error
+        alert(error.response.data.message); // Server response error
       } else if (error.request) {
-        console.error("No response received from the server"); // Handle no response error
+        console.error("No response received from the server"); // No response error
       } else {
-        console.error("Error setting up the request:", error.message); // Handle request setup error
+        console.error("Error setting up the request:", error.message); // Request setup error
       }
     } finally {
-      setLoading(false); // Hide loading spinner after attempt
+      setLoading(false); // Hide loading spinner
     }
   };
 
@@ -74,22 +75,23 @@ const Login = () => {
   };
 
   return (
-    <div className="grid grid-cols-12 h-screen">
-      <div className="col-span-4 p-4 flex items-center" ref={myRef}>
-        <div className="mx-auto">
-          <img src={logo} alt="brand logo" />
-          <p className="text-slate-900 text-center font-bold">
+    <div className="grid grid-cols-12 h-screen overflow-hidden">
+      {/* Left side with Vanta.js effect */}
+      <div className="col-span-12 md:col-span-5 p-4 flex items-center" ref={myRef}>
+        <div className="mx-auto text-center">
+          <img src={logo} alt="brand logo" className="" /> {/* Responsive logo */}
+          <p className="text-slate-900 text-center font-bold text-lg mt-4">
             Automate your work with us
           </p>
         </div>
       </div>
-      <div className="col-span-8 flex items-center justify-center border-l-2 border-gray-300 bg-gradient-to-r from-gray-100 to-white">
-        {/* Login form */}
+      {/* Right side with login form */}
+      <div className="col-span-12 md:col-span-7 flex items-center justify-center border-l-2 border-gray-300 bg-gradient-to-r from-gray-100 to-white">
         <form
-          className="bg-white p-4 rounded shadow-lg w-2/5 h-2/3 mx-auto"
+          className="bg-white p-6 rounded shadow-lg w-11/12 sm:w-3/4 md:w-2/3 lg:w-1/2 mx-auto"
           onSubmit={handleSubmit}
         >
-          <h2 className="text-xl font-semibold mb-4 text-center">LOGIN</h2>
+          <h2 className="text-xl font-semibold mb-6 text-center">LOGIN</h2>
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm mb-2 text-left font-semibold"
@@ -123,8 +125,9 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            {/* Toggle visibility icon */}
             <div
-              className="absolute inset-y-0 right-0 pr-3 pt-8 flex items-center cursor-pointer"
+              className="absolute inset-y-0 pt-7 right-0 pr-3 flex items-center cursor-pointer "
               onClick={togglePasswordVisibility}
             >
               {showPassword ? (
@@ -134,7 +137,7 @@ const Login = () => {
               )}
             </div>
           </div>
-          <div className="mt-24 flex items-center justify-between">
+          <div className="mt-8 flex items-center justify-between">
             <button
               className="flex-1 bg-slate-950 text-white py-2 px-4 rounded-md hover:bg-slate-800 disabled:bg-gray-400 flex items-center justify-center"
               type="submit"
@@ -173,8 +176,8 @@ const Login = () => {
             </button>
           </div>
 
-          <div className="flex items-center justify-between">
-            <span className="w-full text-end mt-1 text-sm cursor-pointer">
+          <div className="flex items-center justify-between mt-4">
+            <span className="w-full text-end text-sm cursor-pointer">
               Forgot Password?
             </span>
           </div>

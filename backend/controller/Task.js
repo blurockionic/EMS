@@ -8,11 +8,12 @@ import { Tags } from "../model/tagsSchema.js";
 import { User } from "../model/user.js";
 
 export const task = async (req, res) => {
-  console.log("Inside the /newTask route");
-  console.log(req.file);
-  console.log(req.body);
+  console.log("Inside the /newTask route"); // Log when the route is hit
+  console.log(req.file); // Log the uploaded file details
+  console.log(req.body); // Log the incoming request body
 
   try {
+    // Destructure required fields from the request body
     const {
       title,
       description,
@@ -26,26 +27,27 @@ export const task = async (req, res) => {
       dueDate,
     } = req.body;
 
+    // Parse stringified arrays from the request body
     const assignToArray = JSON.parse(assignTo);
     const selectedTagsArray = JSON.parse(selectedTags);
 
-    // Validate ObjectIds
+    // Validate that all assignTo values are valid ObjectIds
     if (!assignToArray.every((id) => ObjectId.isValid(id))) {
       return res.status(400).json({
         success: false,
-        message:
-          "Invalid assignTo values. Each value must be a valid ObjectId.",
+        message: "Invalid assignTo values. Each value must be a valid ObjectId.",
       });
     }
 
+    // Validate that all selectedTags values are valid ObjectIds
     if (!selectedTagsArray.every((id) => ObjectId.isValid(id))) {
       return res.status(400).json({
         success: false,
-        message:
-          "Invalid selectedTags values. Each value must be a valid ObjectId.",
+        message: "Invalid selectedTags values. Each value must be a valid ObjectId.",
       });
     }
 
+    // Check if the project exists in the database
     const isProjectExist = await Project.findById(project);
     if (!isProjectExist) {
       return res.status(404).json({
@@ -54,15 +56,24 @@ export const task = async (req, res) => {
       });
     }
 
-    let cloudinaryUrl = null;
-    if (req.file) {
-      const result = await uploadOnCloudinary(req.file.path);
-      if (result) {
-        cloudinaryUrl = result.secure_url;
-        console.log("Cloudinary URL:", cloudinaryUrl);
-      }
-    }
+    // Initialize the variable to hold the Cloudinary URL
+    let cloudinaryUrl = "";
 
+    // Check if a file was uploaded and process it
+    if (req.file) {
+      // Upload the file to Cloudinary
+      const uploadResult = await uploadOnCloudinary(req.file.path);
+      if (uploadResult) {
+        cloudinaryUrl = uploadResult.url; // Store the uploaded file URL
+      } else {
+        console.log("File upload to Cloudinary failed");
+      }
+    } else {
+      console.log("No file received");
+    }
+    console.log(cloudinaryUrl);
+
+    // Create a new task using the Task model
     const newTask = await Task.create({
       title,
       description,
@@ -74,27 +85,32 @@ export const task = async (req, res) => {
       project,
       assignDate,
       dueDate,
-      fileUpload: cloudinaryUrl,
+      fileUpload: cloudinaryUrl, // Store the file URL in the task document
     });
 
+    // Fetch the assigned users' details to display their names in the response
     const assignedUsers = await User.find({ _id: { $in: assignToArray } });
     const fullNames = assignedUsers
       .map((user) => `${user.firstName} ${user.lastName}`)
       .join(", ");
 
+    // Send a successful response with the newly created task details
     return res.status(201).json({
       success: true,
       task: newTask,
       message: `Task has been assigned to ${fullNames}`,
     });
   } catch (error) {
-    console.error("Error creating task:", error);
+    console.error("Error creating task:", error); // Log any errors that occur
+
+    // Send an internal server error response if something goes wrong
     return res.status(500).json({
       success: false,
       message: "Internal server error",
     });
   }
 };
+
 export const allTask = async (req, res) => {
   try {
     //validation
@@ -106,9 +122,10 @@ export const allTask = async (req, res) => {
       })
       .populate({
         path: "assignTo",
-        select: "firstName lastName",
+        select: "firstName lastName profilePicture",
+        
         model: User,
-      });
+      }).sort({ createdAt: -1 }); // Sort meetings by creation date, newest first
 
     if (!allTask) {
       return res.status(500).json({

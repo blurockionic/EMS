@@ -24,13 +24,11 @@ import ReportHistory from "./page/employee/ReportHistory";
 import ManagerProject from "./page/manager/project/ManagerProject";
 import ManagerReport from "./page/manager/report/ManagerReport";
 import AdminReport from "./page/admin/report/AdminReport";
-
 import TaskReportFeedback from "./page/employee/TaskReportFeedback";
 import EmpLeave from "./page/manager/empleaves/EmpLeave";
 import Team from "./page/admin/team/Team";
 import EmpTeam from "./page/employee/EmpTeam";
 import AppVersion from "./page/admin/AppVersion/AppVersion";
-import EmpTasksDetails from "./page/employee/EmpTasksDetails";
 import SingleTaskDetails from "./component/pages-components/SingleTaskDetails";
 import { fetchProfile } from "./Redux/slices/profileSlice";
 import { useEffect } from "react";
@@ -47,8 +45,8 @@ import ActionItemsManager from "./component/actionItem-components/ActionItemsMan
 import { selectLoggedIn } from "./Redux/slices/authSlice";
 import ProtectedRoute from "./page/auth/ProtectedRoute";
 import NotFound from "./component/pages-components/NotFound";
-export const server = "https://ems-backend-66x8.onrender.com/api/v1"
-// export const server = "http://localhost:4000/api/v1";
+// export const server = "https://ems-backend-66x8.onrender.com/api/v1"
+export const server = "http://localhost:4000/api/v1";
 function App() {
   const loggedIn = useSelector(selectLoggedIn);
 
@@ -61,7 +59,6 @@ function App() {
 
   useEffect(() => {
     document.body.className = theme;
-    // console.log("issme kya value h ", document.body.className );
   }, [theme]);
 
   return (
@@ -69,18 +66,22 @@ function App() {
 
     <Router>
       <Routes>
-        // Public Routes
+        {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route
           path="/"
           element={
-            loggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
+            loggedIn ? (
+              <Navigate to="/dashboard/home" />
+            ) : (
+              <Navigate to="/login" />
+            )
           }
         />
         {/* <Route path="/" element={<Navigate to="/dashboard" />} /> */}
-        //protected route
+        {/* //protected route */}
         {/* <Route path="/dashboard" element={<Home />}> */}
-        //Protected Routes
+        {/* //Protected Routes */}
         <Route
           path="/dashboard/*"
           element={
@@ -89,7 +90,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="" element={<Navigate to="home" />} />
+          {/* <Route path="" element={<Navigate to="home" />} /> */}
           <Route path="home" element={<MainDashboard />} />
           <Route path="employee" element={<Employee />} />
           <Route path="newProject" element={<NewProject />} />
@@ -112,6 +113,10 @@ function App() {
           <Route path="events" element={<MyEvents />} />
           <Route path="myTodo" element={<ToDo />} />
           <Route path="actionItems" element={<ActionItemsManager />} />
+          <Route
+            path="singleTaskDetails/:taskId"
+            element={<SingleTaskDetails />}
+          />
 
           {/* hr  */}
           <Route path="hrdashboard" element={<HrDashaboard />} />
@@ -127,11 +132,6 @@ function App() {
 
           {/* employee  */}
           <Route path="employeeOverview" element={<EmployeeDashboard />} />
-          <Route path="employeetask" element={<EmpTasksDetails />} />
-          <Route
-            path="singleTaksDetails/:taskId"
-            element={<SingleTaskDetails />}
-          />
           <Route path="reporthistory" element={<ReportHistory />} />
           <Route path="empteam" element={<EmpTeam />} />
 
@@ -140,7 +140,7 @@ function App() {
         </Route>
         {/* Catch-All Route for Undefined Paths */}
         <Route path="*" element={<NotFound />} />
-        // Redirect undefined routes to the dashboard home page
+        {/* // Redirect undefined routes to the dashboard home page */}
         {/* <Route path="*" element={<Navigate to="/dashboard/home" />} /> */}
       </Routes>
     </Router>

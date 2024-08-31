@@ -12,7 +12,7 @@ const logRequestDetails = (req, next) => {
     next();
 };
 //routes for new task
-router.post("/new",isAuthenticated,upload.single('fileUploader'), task)
+router.post("/new",isAuthenticated,upload.single('file'), task)
 
 
 //router for get all task 

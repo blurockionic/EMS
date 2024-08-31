@@ -50,7 +50,7 @@ const Header = () => {
         tab: "task",
         label: "Task",
         icon: GoTasklist,
-        link: "./employeetask",
+        link: "./alltask",
       },
       {
         type: "employee",
@@ -193,18 +193,24 @@ const Header = () => {
     // This is the effect callback function that will run whenever the dependencies change.
   
     if (profile?.role) {
-      // This line checks if `profile` is defined and has a `role` property. 
-      // The optional chaining `?.` ensures that it doesn’t throw an error if `profile` is null or undefined.
-      
-      const overviewTab = filteredTabs.find((tab) => tab.tab.includes("overview"));
-      // This line searches through the `filteredTabs` array to find an element where the `tab` property
-      // contains the string "overview". The `find` method returns the first matching element or `undefined` if none are found.
-      
-      setActiveTab(overviewTab?.tab || "overview");
-      // This line updates the state `activeTab` using the `setActiveTab` function. 
-      // It sets `activeTab` to the `tab` property of the found `overviewTab` if one was found.
-      // If no matching tab was found (`overviewTab` is undefined), it defaults to "overview".
+      const savedTab = localStorage.getItem("activeTab"); // Get the saved tab from localStorage
+      const defaultTab = filteredTabs.find((tab) => tab.tab.includes("overview"))?.tab || "overview";
+      setActiveTab(savedTab || defaultTab); // Set the active tab from localStorage or default to "overview"
     }
+
+    // if (profile?.role) {
+    //   // This line checks if `profile` is defined and has a `role` property. 
+    //   // The optional chaining `?.` ensures that it doesn’t throw an error if `profile` is null or undefined.
+      
+    //   const overviewTab = filteredTabs.find((tab) => tab.tab.includes("overview"));
+    //   // This line searches through the `filteredTabs` array to find an element where the `tab` property
+    //   // contains the string "overview". The `find` method returns the first matching element or `undefined` if none are found.
+      
+    //   setActiveTab(overviewTab?.tab || "overview");
+    //   // This line updates the state `activeTab` using the `setActiveTab` function. 
+    //   // It sets `activeTab` to the `tab` property of the found `overviewTab` if one was found.
+    //   // If no matching tab was found (`overviewTab` is undefined), it defaults to "overview".
+    // }
   }, [profile?.role, filteredTabs]);
   // The effect runs whenever `profile?.role` or `filteredTabs` changes. 
   // If either of these dependencies changes, the effect callback function is re-executed.
@@ -215,6 +221,7 @@ const Header = () => {
   // Callback to handle tab click. Memoized to prevent recreation on each render.
   const handleTabClick = useCallback((tab) => {
     setActiveTab(tab); // Update active tab state
+    localStorage.setItem("activeTab", tab); // Save the active tab to localStorage
   }, []);
 
   return (
