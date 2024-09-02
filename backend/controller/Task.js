@@ -8,9 +8,22 @@ import { Tags } from "../model/tagsSchema.js";
 import { User } from "../model/user.js";
 
 export const task = async (req, res) => {
-  console.log("Inside the /newTask route"); // Log when the route is hit
-  console.log(req.file); // Log the uploaded file details
-  console.log(req.body); // Log the incoming request body
+
+  const generateTaskId = async () => {
+    const lastTask = await Task.findOne().sort({ createdAt: -1 });
+    let newTaskId = "001"; // Start with "001" if there's no previous user
+
+    if (lastTask && lastTask.taskId) {
+        // Extract the numeric part of the last employee ID
+        const lastIdNumber = parseInt(lastTask.taskId, 10); // Directly parse the whole ID as a number
+        const newIdNumber = lastIdNumber + 1; // Increment the number
+
+        // Ensure the new ID is a three-digit number
+        newTaskId = `${newIdNumber.toString().padStart(3, "0")}`;
+    }
+
+    return newTaskId;
+};
 
   try {
     // Destructure required fields from the request body
@@ -73,6 +86,9 @@ export const task = async (req, res) => {
     }
     console.log(cloudinaryUrl);
 
+
+    const taskId = await generateTaskId();
+
     // Create a new task using the Task model
     const newTask = await Task.create({
       title,
@@ -85,6 +101,7 @@ export const task = async (req, res) => {
       project,
       assignDate,
       dueDate,
+      taskId,
       fileUpload: cloudinaryUrl, // Store the file URL in the task document
     });
 
