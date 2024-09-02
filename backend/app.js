@@ -34,8 +34,6 @@ import chatRoutes from "./routes/chatRoutes.js"
 
 import meetingRoutes from "./routes/MeetingRoutes.js"
 
-// Import the socket handler
-// import socketHandler from './socketHandler.js';
 
 //configure the dotenv file
 dotenv.config({
@@ -47,8 +45,8 @@ dotenv.config({
 
 // Allow requests only from http://192.168.1.8:3000
 const corsOptions = {
-  // origin: "https://ems-frontend-omega.vercel.app",
-  origin: "http://localhost:3000",
+  origin: "https://ems-frontend-omega.vercel.app",
+  // origin: "http://localhost:3000",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
 };
