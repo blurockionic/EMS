@@ -1,6 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { GoIssueClosed, GoIssueOpened, GoIssueReopened } from "react-icons/go";
+import {
+  GoDotFill,
+  GoIssueClosed,
+  GoIssueOpened,
+  GoIssueReopened,
+} from "react-icons/go";
 import { BsThreeDots } from "react-icons/bs";
 import TimeAgo from "../utilities-components/TimeAgo";
 import {
@@ -137,7 +142,7 @@ const SingleTaskDetails = () => {
       .then((response) => {
         // This is where you can access the server's response
         // console.log("Server response:", response.payload.success);
-        toast.success(response.payload.message ?? "")
+        toast.success(response.payload.message ?? "");
         setComment("");
         setSelectedFile(null);
         setCommentSubmitted(true);
@@ -153,71 +158,74 @@ const SingleTaskDetails = () => {
     const user = users.find((user) => user._id === userId);
     return user ? `${user.firstName} ${user.lastName}` : "";
   };
+  const renderUserProfilePicture = (userId) => {
+    const user = users.find((user) => user._id === userId);
+    return user ? `${user.profilePicture}` : "";
+  };
 
   if (!task) {
     return <Loader />;
   }
+  console.log(task);
 
   return (
     <>
       <ToastContainer />
       <div className="p-3 min-h-screen w-[80%] sm:w-[80%] mx-auto">
         {/* Task details section */}
-        <div className="shadow-md rounded-lg p-6 mb-6 bg-white dark:bg-gray-800">
+        <div className="shadow-md rounded-lg p-4 mb-4 bg-white dark:bg-gray-800">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white capitalize mb-2 lg:mb-0">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white capitalize mb-2 lg:mb-0">
               {task?.title}
-              <span className="mx-2 text-xl sm:text-base lg:text-2xl">
+              <span className="mx-1 text-lg sm:text-xl md:text-2xl">
                 #{task?.taskId}
               </span>
             </h1>
-            <button className="w-[6rem] bg-green-600 text-white py-1.5 px-3 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-300 mt-2 lg:mt-0">
+            <button className="w-full sm:w-auto bg-green-600 text-white py-1.5 px-4 rounded hover:bg-green-700 dark:hover:bg-green-500 transition duration-300 mt-2 lg:mt-0">
               Edit Task
             </button>
           </div>
-          <div className="flex flex-col flex-wrap sm:flex-row justify-between items-center mt-4">
-            <div className="flex flex-row items-center mb-2 sm:mb-0">
-              <button className="inline-block py-1.5 px-4 rounded-full transition duration-300 bg-slate-50 dark:bg-gray-700 mb-2 sm:mb-0">
+          <div className="flex flex-col sm:flex-row justify-between items-start mt-4">
+            <div className="flex flex-col sm:flex-row items-start mb-4 sm:mb-0">
+              <button className="inline-block py-1 px-3 rounded-full transition duration-300 bg-slate-50 dark:bg-gray-700 mb-2 sm:mb-0">
                 <span className="flex items-center">
                   {task?.status === "Close" && (
                     <>
-                      <GoIssueClosed className="text-xl sm:text-2xl text-purple-800 mr-2 mt-1" />
-                      <span className="font-semibold text-sm sm:text-base">
-                        Close
-                      </span>
+                      <GoIssueClosed className="text-lg sm:text-xl text-purple-800 mr-2" />
+                      <span className="font-semibold text-sm">Close</span>
                     </>
                   )}
                   {task?.status === "Open" && (
                     <>
-                      <GoIssueOpened className="text-xl sm:text-2xl text-green-500 mr-2 mt-1" />
-                      <span className="font-semibold text-sm sm:text-base">
-                        Open
-                      </span>
+                      <GoIssueOpened className="text-lg sm:text-xl text-green-500 mr-2" />
+                      <span className="font-semibold text-sm">Open</span>
                     </>
                   )}
                   {task?.status === "In Review" && (
                     <>
-                      <GoIssueReopened className="text-lg sm:text-xl text-blue-500 mr-2 mt-1" />
-                      <span className="font-semibold text-sm sm:text-base">
-                        In Review
-                      </span>
+                      <GoIssueReopened className="text-lg sm:text-xl text-blue-500 mr-2" />
+                      <span className="font-semibold text-sm">In Review</span>
                     </>
                   )}
                 </span>
               </button>
-              <div className="text-sm p-1 flex items-center ml-2 sm:ml-4">
-                <span className="mr-1">Assign by</span>
-                <span className="mx-2 font-semibold capitalize">
-                  {renderUserFullName(task?.assignBy)}
-                </span>
-                <span className="mr-1 text-xl">•</span>
-                <span className="mx-2">
-                  Assigned: <TimeAgo date={task?.createdAt || new Date()} />
+              <div className="text-sm flex flex-col sm:flex-row items-start sm:ml-4 mt-2 sm:mt-0">
+                <div className="flex">
+                  <GoDotFill className="mt-1" />
+                  <span>Assign by</span>
+                  <span className="mx-2 font-semibold capitalize">
+                    {renderUserFullName(task?.assignBy)}
+                  </span>
+                </div>
+                <span className="flex">
+                  <GoDotFill className="mt-1" />
+                  Assigned &nbsp;{" "}
+                  <TimeAgo date={task?.createdAt || new Date()} />
                 </span>
               </div>
             </div>
-            <div className="flex sm:flex-row lg:flex-row items-center">
-              <div className="text-sm p-1 flex items-center ml-2 sm:ml-4">
+            <div className="flex flex-col sm:flex-row lg:flex-row items-start mt-2 sm:mt-0">
+              <div className="text-sm flex flex-col sm:flex-row items-start sm:ml-4 mb-2 sm:mb-0">
                 <span className="mr-1">Tags</span>
                 <div className="dark:bg-slate-400 bg-slate-200 px-2 py-1 rounded ml-2 sm:ml-1">
                   <span className="mr-1">•</span>
@@ -228,7 +236,7 @@ const SingleTaskDetails = () => {
                   </span>
                 </div>
               </div>
-              <div className="text-sm p-1 flex items-center ml-2 sm:ml-4">
+              <div className="text-sm flex flex-col sm:flex-row items-start sm:ml-4">
                 <span className="mr-1">Due date</span>
                 <div className="dark:bg-slate-400 bg-slate-200 px-2 py-1 rounded ml-2 sm:ml-1">
                   <span className="mr-1">•</span>
@@ -240,34 +248,66 @@ const SingleTaskDetails = () => {
               </div>
             </div>
           </div>
-        </div>
-        {/* Comments section */}
-        <div className="shadow-md rounded-lg p-3 mb-6 border bg-white dark:bg-gray-800">
-          <div className="">
-            <div className="flex justify-between border p-2">
-              <div>
-                <span className="font-bold">
-                  {renderUserFullName(task?.assignBy)}
-                </span>{" "}
-                commented
-                <span className="mx-2">
-                  <TimeAgo date={task?.createdAt || new Date()} />
+          <div className="px-4 mt-4">
+            <span className="mr-1">Assign to</span>
+            <span className="mx-2 font-semibold capitalize">
+              {task?.assignTo?.map((assignTo) => (
+                <span className="space-x-1">
+                  {" "}
+                  {renderUserFullName(assignTo._id)},
                 </span>
+              ))}
+            </span>
+          </div>
+        </div>
+
+        {/* Comments section */}
+        <div className="shadow-md rounded-lg p-4 mb-6 border bg-white dark:bg-gray-800">
+          <div className="border-b border-gray-200 dark:border-gray-600 pb-3 mb-3">
+            <div className="flex justify-between items-start">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2">
+                <div className="flex space-x-2 items-center mb-2 sm:mb-0">
+                  <img
+                    className="w-8 h-8 rounded-full"
+                    src={
+                      renderUserProfilePicture(task?.assignBy) ??
+                      "https://via.placeholder.com/150"
+                    }
+                    alt="https://via.placeholder.com/150"
+                  />
+                  <div className="">
+                    <span className="font-bold">
+                      {renderUserFullName(task?.assignBy)}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center text-sm ">
+                  <GoDotFill className="mt-1" />
+                  <span className="ml-1">Created &nbsp; </span>
+                  <TimeAgo date={task?.createdAt || new Date()} />
+                </div>
               </div>
-              <div>
+
+              <div className="text-gray-600 dark:text-gray-400">
                 <BsThreeDots />
               </div>
             </div>
-            <div className="flex flex-wrap flex-row justify-between p-4">
-              <div>{task?.description}</div>
-              {task?.fileUploader && (
-                <div>
-                  <img src={task?.fileUploader} alt="Uploaded file" />
-                </div>
-              )}
-            </div>
+          </div>
+          <div className="flex flex-col">
+            <div className="text-sm mb-3">{task?.description}</div>
+            {task?.fileUpload && (
+              <div className="flex justify-center">
+                <img
+                  src={task?.fileUpload}
+                  alt="Uploaded file"
+                  className="w-full max-w-sm h-auto object-contain"
+                  style={{ maxWidth: "100%" }}
+                />
+              </div>
+            )}
           </div>
         </div>
+
         {/* User comments and drag-and-drop file upload */}
         <div className="container mx-auto mt-4">
           <div>

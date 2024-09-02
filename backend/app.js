@@ -34,8 +34,6 @@ import chatRoutes from "./routes/chatRoutes.js"
 
 import meetingRoutes from "./routes/MeetingRoutes.js"
 
-// Import the socket handler
-// import socketHandler from './socketHandler.js';
 
 //configure the dotenv file
 dotenv.config({
