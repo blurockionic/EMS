@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { IoMdAdd, IoMdTrash } from "react-icons/io";
 import { BsThreeDots, BsDot } from "react-icons/bs";
-import { FaRegSquareCheck } from "react-icons/fa6";
+import { FaRegClock, FaRegSquareCheck } from "react-icons/fa6";
 import { IoSearchSharp } from "react-icons/io5";
 
 const ActionItemsManager = () => {
@@ -45,6 +45,11 @@ const ActionItemsManager = () => {
     updatedNotes[index] = value;
     setNotes(updatedNotes);
   };
+
+  const memoizedUsers = useMemo(
+    () => [{ _id: "all", firstName: "all", lastName: "" }, ...users],
+    [users]
+  );
 
   // Adjusted handleMention to correctly manage currentNoteIndex
   const handleMention = (index, e) => {
