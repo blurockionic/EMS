@@ -112,7 +112,7 @@ function App() {
           <Route path="meeting" element={<Meeting />} />
           <Route path="events" element={<MyEvents />} />
           <Route path="myTodo" element={<ToDo />} />
-          <Route path="actionItems" element={<ActionItemsManager />} />
+          {/* <Route path="actionItems" element={<ActionItemsManager />} /> */}
           <Route
             path="singleTaskDetails/:taskId"
             element={<SingleTaskDetails />}
