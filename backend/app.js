@@ -30,10 +30,9 @@ import eventRoutes from "./routes/EventRoutes.js";
 
 import milestoneRoutes from "./routes/milestoneRoutes.js";
 
-import chatRoutes from "./routes/chatRoutes.js"
+import chatRoutes from "./routes/chatRoutes.js";
 
-import meetingRoutes from "./routes/MeetingRoutes.js"
-
+import meetingRoutes from "./routes/MeetingRoutes.js";
 
 //configure the dotenv file
 dotenv.config({
@@ -46,18 +45,16 @@ dotenv.config({
 // Allow requests only from http://192.168.1.8:3000
 const corsOptions = {
   // origin: "https://ems-frontend-omega.vercel.app",
-  origin: "http://localhost:3000",
+  origin: "https://ems-beta-brown.vercel.app",
+  // origin: "http://localhost:3000",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
 };
-
 
 export const app = express();
 //middleware
 app.use(express.json());
 app.use(cookieParser());
-
-
 
 //cors
 app.use(cors(corsOptions));
@@ -104,13 +101,13 @@ app.use("/api/v1/training", trainingRoutes);
 app.use("/api/v1/team", teamRoute);
 
 // Use chat routes
-app.use('/api/v1/chat', chatRoutes);
+app.use("/api/v1/chat", chatRoutes);
 
 // use todo router
 app.use("/api/v1/todo", toDoRoutes);
 
 // use meeting router
-app.use("/api/v1/meeting", meetingRoutes)
+app.use("/api/v1/meeting", meetingRoutes);
 
 //default route
 app.get("/", (req, res) => {
