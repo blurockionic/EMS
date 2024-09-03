@@ -1,8 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { IoMdAdd, IoMdTrash } from "react-icons/io";
 import { BsThreeDots, BsDot } from "react-icons/bs";
 import { FaRegClock, FaRegSquareCheck } from "react-icons/fa6";
 import { IoSearchSharp } from "react-icons/io5";
+import { useSelector } from "react-redux";
 
 const ActionItemsManager = () => {
   const [uiState, setUiState] = useState({
@@ -16,9 +17,13 @@ const ActionItemsManager = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [currentNoteIndex, setCurrentNoteIndex] = useState(null);
   const textareaRef = useRef(null);
-
+  const { data: users } = useSelector((state) => state.user);
   const tabsList = []; // Placeholder for tabs list
   const modelSize = "large"; // Placeholder for model size
+  const memoizedUsers = useMemo(
+    () => [{ _id: "all", firstName: "all", lastName: "" }, ...users],
+    [users]
+  );
 
   const handleSearchButton = () => {
     setUiState((prevState) => ({
@@ -46,10 +51,6 @@ const ActionItemsManager = () => {
     setNotes(updatedNotes);
   };
 
-  const memoizedUsers = useMemo(
-    () => [{ _id: "all", firstName: "all", lastName: "" }, ...users],
-    [users]
-  );
 
   // Adjusted handleMention to correctly manage currentNoteIndex
   const handleMention = (index, e) => {
