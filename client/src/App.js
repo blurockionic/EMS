@@ -12,7 +12,7 @@ import Login from "./page/auth/Login";
 import Home from "./page/home/Home";
 import Employee from "./page/admin/Total_employees/Employee";
 import NewProject from "./page/admin/project/NewProject";
-import AllProject from "./page/admin/project/AllProject";
+import AllProject from "./component/projects-components/AllProject";
 import MainDashboard from "./page/mainDashboard/MainDashboard";
 import NewEmployee from "./page/HR/NewEmployee";
 import HrDashaboard from "./page/HR/HrDashaboard";
@@ -21,7 +21,7 @@ import NewTask from "./page/manager/task/NewTask";
 import AllTask from "./page/manager/task/AllTask";
 import EmployeeDashboard from "./page/employee/EmployeeDashboard";
 import ReportHistory from "./page/employee/ReportHistory";
-import ManagerProject from "./page/manager/project/ManagerProject";
+// import ManagerProject from "./page/manager/project/ManagerProject";
 import ManagerReport from "./page/manager/report/ManagerReport";
 import AdminReport from "./page/admin/report/AdminReport";
 import TaskReportFeedback from "./page/employee/TaskReportFeedback";
@@ -35,7 +35,7 @@ import { useEffect } from "react";
 import YourProfilePage from "./component/pages-components/YourProfilePage";
 import YourOrganization from "./component/pages-components/YourOrganization";
 import CreateMilestone from "./component/milestone-components/CreateMilestone";
-import ProjectDetails from "./component/pages-components/ProjectDetails";
+import ProjectDetails from "./component/projects-components/ProjectDetails";
 import IssuesComp from "./page/admin/issue/IssuesComp";
 import ComingSoon from "./component/utilities-components/ComingSoon";
 import Meeting from "./component/meeting-components/Meeting";
@@ -46,6 +46,7 @@ import { selectLoggedIn } from "./Redux/slices/authSlice";
 import ProtectedRoute from "./page/auth/ProtectedRoute";
 import NotFound from "./component/pages-components/NotFound";
 export const server = "https://ems-backend-66x8.onrender.com/api/v1"
+
 // export const server = "http://localhost:4000/api/v1";
 function App() {
   const loggedIn = useSelector(selectLoggedIn);
@@ -125,7 +126,7 @@ function App() {
           <Route path="managerdashboard" element={<ManagerDashboard />} />
           <Route path="newTask" element={<NewTask />} />
           <Route path="alltask" element={<AllTask />} />
-          <Route path="managerproject" element={<ManagerProject />} />
+          {/* <Route path="managerproject" element={<ManagerProject />} /> */}
           <Route path="managerreport" element={<ManagerReport />} />
 
           <Route path="empleave" element={<EmpLeave />} />

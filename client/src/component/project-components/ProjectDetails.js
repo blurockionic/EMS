@@ -10,7 +10,7 @@ import { GrOverview, GrTechnology } from "react-icons/gr";
 import { CgCalendarNext } from "react-icons/cg";
 import { useLocation } from "react-router-dom";
 import Milestones from "../milestone-components/Milestones";
-import Task from "./Task";
+import Task from "../pages-components/Task";
 
 const ProjectDetails = () => {
   const dispatch = useDispatch();

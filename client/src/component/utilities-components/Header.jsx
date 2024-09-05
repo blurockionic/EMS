@@ -43,7 +43,7 @@ const Header = () => {
         tab: "project",
         label: "Project",
         icon: GoProject,
-        link: null, // Null link indicates inactive or placeholder tab
+        link: "./allProject",
       },
       {
         type: "employee",
@@ -157,7 +157,7 @@ const Header = () => {
         tab: "managerproject",
         label: "Project",
         icon: GoProject,
-        link: "./managerproject",
+        link: "./allProject",
       },
       {
         type: "manager",
