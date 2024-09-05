@@ -17,7 +17,6 @@ import { fetchUsers } from "../../../Redux/slices/allUserSlice";
 import { fetchTags } from "../../../Redux/slices/tagSlice";
 import Loader from "../../../component/utilities-components/Loader";
 import { BsThreeDots } from "react-icons/bs";
-import { FaTable } from "react-icons/fa";
 import { TbSubtask } from "react-icons/tb";
 import { MdOutlineViewTimeline } from "react-icons/md";
 import { fetchProfile } from "../../../Redux/slices/profileSlice";
@@ -31,9 +30,12 @@ const AllTask = () => {
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const profile = useSelector((state) => state.profile.data);
-  const { tasks = [], employeeSpecificTasks = [] } = useSelector(
-    (state) => state.tasks
+  const tasks = useSelector((state) => state.tasks.tasks); // Ensure default empty array
+
+  const { employeeSpecificTasks = [] } = useSelector(
+    (state) => state.tasks.employeeSpecificTasks
   ); // Ensure default empty array
+ 
   const taskStatus = useSelector((state) => state.tasks.loading);
   const { data: users, status } = useSelector((state) => state.user);
   // Extract profile._id to a variable
@@ -74,7 +76,6 @@ const AllTask = () => {
       dispatch(specificEmployeeTasks(profileId));
     }
   }, [profileId, dispatch]); // Simplified dependency array
-
 
   useEffect(() => {
     const openTasks = tasks.filter((task) => task.status === "Open");
@@ -119,7 +120,7 @@ const AllTask = () => {
 
   const handleTaskDetails = (taskId) => {
     // Ensure you use the correct path when navigating
-navigate(`../singleTaskDetails/${taskId}`);
+    navigate(`../singleTaskDetails/${taskId}`);
     // navigate(`../singleTaskDetails/${taskId}`);
   };
 
@@ -240,18 +241,16 @@ navigate(`../singleTaskDetails/${taskId}`);
               {uiState.showMoreTabs && (
                 <div className="absolute top-full mt-2 w-full md:w-56 bg-white dark:bg-gray-700 border rounded-md shadow-lg z-10 p-1">
                   <ul>
-                    {["Timeline",].map(
-                      (tab) => (
-                        <li
-                          key={tab}
-                          className="flex flex-row cursor-pointer mx-2 px-4 py-1 hover:bg-gray-200 hover:rounded-lg mt-2"
-                          onClick={() => addTab(tab)}
-                        >
-                          {getTabIcon(tab)}
-                          {tab}
-                        </li>
-                      )
-                    )}
+                    {["Timeline"].map((tab) => (
+                      <li
+                        key={tab}
+                        className="flex flex-row cursor-pointer mx-2 px-4 py-1 hover:bg-gray-200 hover:rounded-lg mt-2"
+                        onClick={() => addTab(tab)}
+                      >
+                        {getTabIcon(tab)}
+                        {tab}
+                      </li>
+                    ))}
                   </ul>
                 </div>
               )}

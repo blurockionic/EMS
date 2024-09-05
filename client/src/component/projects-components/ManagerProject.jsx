@@ -2,11 +2,11 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProjects } from "../../../Redux/slices/projectSlice";
-import { fetchProfile } from "../../../Redux/slices/profileSlice";
-import { fetchTeams } from "../../../Redux/slices/teamSlice";
-import { server } from "../../../App";
-import { LuGalleryVerticalEnd, LuLayoutList } from "react-icons/lu";
+import { fetchProjects } from "../../Redux/slices/projectSlice";
+import { fetchProfile } from "../../Redux/slices/profileSlice";
+import { fetchTeams } from "../../Redux/slices/teamSlice";
+import { server } from "../../App";
+
 const ManagerProject = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -136,158 +136,95 @@ const ManagerProject = () => {
 
   return (
     <>
-      <div>
-        <nav>
-          <div>
-            <div className="flex flex-row justify-between border-b border-gray-300 dark:border-gray-700">
-              <div className="flex flex-row">
-                <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
-                  <div className="flex items-center font-semibold bg-slate-800 dark:bg-gray-600 text-white px-4 py-1.5 rounded-md shadow-inner hover:bg-gray-600 dark:hover:bg-gray-500 cursor-pointer mx-1">
-                    All Project
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-row">
-                <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
-                  <button
-                    className={`tooltip-class p-2 rounded ${
-                      viewMode === "table"
-                        ? "bg-slate-900 dark:bg-gray-800"
-                        : "bg-gray-500 dark:bg-gray-700"
-                    }`}
-                    onClick={() => setViewMode("table")}
-                    data-tip="Switch to Table View"
-                  >
-                    <LuLayoutList className="text-white dark:text-gray-300" />
-                  </button>
-                  <button
-                    className={`tooltip-2-class p-2 rounded ${
-                      viewMode === "gallery"
-                        ? "bg-slate-900 dark:bg-gray-800"
-                        : "bg-gray-500 dark:bg-gray-700"
-                    }`}
-                    onClick={() => setViewMode("gallery")}
-                    data-tip="Switch to Gallery View"
-                  >
-                    <LuGalleryVerticalEnd className="text-white dark:text-gray-300" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </nav>
-      </div>
-      <div>
-        {viewMode === "table" ? (
-          <>
-            {managerProject?.length > 0 ? (
-              <div className="overflow-x-auto mt-5">
-                <table className="min-w-full table-auto">
-                  <thead className="bg-slate-400">
-                    <tr>
-                      <th className="border px-4 py-2">S.No</th>
-                      <th className="border px-4 py-2">Project Name</th>
-                      <th className="border px-4 py-2">Start Date</th>
-                      <th className="border px-4 py-2">Submission Date</th>
-                      <th className="border px-4 py-2">Team Name</th>
-                      <th className="border px-4 py-2">Status</th>
-                      <th className="border px-4 py-2">Assign Task</th>
-                      <th className="border px-4 py-2">Action</th>
-                      <th className="border px-4 py-2">Details</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {managerProject.map((project, index) => (
-                      <tr key={project._id} className="text-center">
-                        <td className="border px-4 py-2">{index + 1}</td>
-                        <td className="border px-4 py-2">
-                          {project.projectName}
-                        </td>
-                        <td className="border px-4 py-2">
-                          {project.projectStartDate}
-                        </td>
-                        <td className="border px-4 py-2">
-                          {project.projectEndDate}
-                        </td>
-                        <td className="border px-4 py-2">
-                          {teams
-                            .filter((team) => team._id === project.teamId)
-                            .map((filteredTeam) => (
-                              <div key={filteredTeam._id}>
-                                {filteredTeam.teamName}
-                              </div>
-                            ))}
-                        </td>
-                        <td className="border px-4 py-2">
-                          {project.isCompleted ? (
-                            <span className="text-green-800">Completed</span>
-                          ) : (
-                            <span className="text-red-800">Not Completed</span>
-                          )}
-                        </td>
-                        <td className="border px-4 py-2">
-                          <button
-                            className={`mx-auto font-bold py-2 px-4 rounded ${
-                              project.isCompleted
-                                ? "bg-red-300 cursor-not-allowed text-white"
-                                : "text-blue-500"
-                            }`}
-                            onClick={() =>
-                              !project.isCompleted && handleAssignTask(project)
-                            }
-                            disabled={project.isCompleted}
-                          >
-                            Assign Task
-                          </button>
-                        </td>
-                        <td className="border px-4 py-2">
-                          <button
-                            className={`mx-auto font-bold py-2 px-4 rounded ${
-                              project.isCompleted
-                                ? "bg-red-300 cursor-not-allowed text-white"
-                                : "text-blue-500"
-                            }`}
-                            onClick={() =>
-                              !project.isCompleted && handleReportClick(project)
-                            }
-                            disabled={project.isCompleted}
-                          >
-                            Report
-                          </button>
-                        </td>
-                        <td className="border px-4 py-2">
-                          <button
-                            className="mx-auto text-blue-500 font-bold py-2 px-4 rounded"
-                            onClick={() => handleOnShowMore(project._id)}
-                          >
-                            View
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="text-center mt-5 p-4 bg-slate-200">
-                <h1 className="uppercase font-bold">
-                  Sorry! Data not available!
-                </h1>
-              </div>
-            )}
-          </>
-        ) : null}
-
-        {viewMode === "gallery" ? (
-          <>
-            {" "}
-            <div> gallery view comming soon.... </div>{" "}
-          </>
-        ) : null}
-      </div>
-
-      {/* show modal for report the project  */}
+      {managerProject?.length > 0 ? (
+        <div className="overflow-x-auto mt-5">
+          <table className="min-w-full table-auto">
+            <thead className="bg-slate-400">
+              <tr>
+                <th className="border px-4 py-2">S.No</th>
+                <th className="border px-4 py-2">Project Name</th>
+                <th className="border px-4 py-2">Start Date</th>
+                <th className="border px-4 py-2">Submission Date</th>
+                <th className="border px-4 py-2">Team Name</th>
+                <th className="border px-4 py-2">Status</th>
+                <th className="border px-4 py-2">Assign Task</th>
+                <th className="border px-4 py-2">Action</th>
+                <th className="border px-4 py-2">Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {managerProject.map((project, index) => (
+                <tr key={project._id} className="text-center">
+                  <td className="border px-4 py-2">{index + 1}</td>
+                  <td className="border px-4 py-2">{project.projectName}</td>
+                  <td className="border px-4 py-2">
+                    {project.projectStartDate}
+                  </td>
+                  <td className="border px-4 py-2">{project.projectEndDate}</td>
+                  <td className="border px-4 py-2">
+                    {teams
+                      .filter((team) => team._id === project.teamId)
+                      .map((filteredTeam) => (
+                        <div key={filteredTeam._id}>
+                          {filteredTeam.teamName}
+                        </div>
+                      ))}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {project.isCompleted ? (
+                      <span className="text-green-800">Completed</span>
+                    ) : (
+                      <span className="text-red-800">Not Completed</span>
+                    )}
+                  </td>
+                  <td className="border px-4 py-2">
+                    <button
+                      className={`mx-auto font-bold py-2 px-4 rounded ${
+                        project.isCompleted
+                          ? "bg-red-300 cursor-not-allowed text-white"
+                          : "text-blue-500"
+                      }`}
+                      onClick={() =>
+                        !project.isCompleted && handleAssignTask(project)
+                      }
+                      disabled={project.isCompleted}
+                    >
+                      Assign Task
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2">
+                    <button
+                      className={`mx-auto font-bold py-2 px-4 rounded ${
+                        project.isCompleted
+                          ? "bg-red-300 cursor-not-allowed text-white"
+                          : "text-blue-500"
+                      }`}
+                      onClick={() =>
+                        !project.isCompleted && handleReportClick(project)
+                      }
+                      disabled={project.isCompleted}
+                    >
+                      Report
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2">
+                    <button
+                      className="mx-auto text-blue-500 font-bold py-2 px-4 rounded"
+                      onClick={() => handleOnShowMore(project._id)}
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="text-center mt-5 p-4 bg-slate-200">
+          <h1 className="uppercase font-bold">Sorry! Data not available!</h1>
+        </div>
+      )}
 
       {isModalOpen && (
         <div className="fixed inset-0 z-10 overflow-y-auto">

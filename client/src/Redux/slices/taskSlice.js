@@ -101,8 +101,6 @@ export const specificEmployeeTasks = createAsyncThunk(
   "tasks/specificEmployeeTasks",
   async (employeeId, thunkAPI) => {
     try {
-      console.log("employeeId",employeeId);
-      
       const response = await axios.get(
         `${server}/task/${employeeId}`,
         {

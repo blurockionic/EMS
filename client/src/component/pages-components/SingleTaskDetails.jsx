@@ -166,7 +166,6 @@ const SingleTaskDetails = () => {
   if (!task) {
     return <Loader />;
   }
-  console.log(task);
 
   return (
     <>
@@ -252,11 +251,18 @@ const SingleTaskDetails = () => {
             <span className="mr-1">Assign to</span>
             <span className="mx-2 font-semibold capitalize">
               {task?.assignTo?.map((assignTo) => (
-                <span className="space-x-1">
+                <span key={assignTo._id} className="space-x-1">
                   {" "}
                   {renderUserFullName(assignTo._id)},
                 </span>
               ))}
+            </span>
+          </div>
+          <div className="px-4 mt-4">
+            <span className="mr-1">Related Project</span>
+            <span className="mx-2 font-semibold capitalize">
+               {task?.project?.projectName
+              }
             </span>
           </div>
         </div>

@@ -1,15 +1,21 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useCallback } from "react";
 import { IoMdAdd, IoMdTrash } from "react-icons/io";
-import { BsThreeDots, BsDot } from "react-icons/bs";
-import { FaRegClock, FaRegSquareCheck } from "react-icons/fa6";
-import { IoSearchSharp } from "react-icons/io5";
+import { BsThreeDots, } from "react-icons/bs";
+import { FaBorderAll, FaTable } from "react-icons/fa6";
+import { IoCalendar, IoSearchSharp } from "react-icons/io5";
 import { useSelector } from "react-redux";
+import { MdOutlineAttractions, MdOutlineViewTimeline } from "react-icons/md";
+import { GoIssueClosed } from "react-icons/go";
 
 const ActionItemsManager = () => {
   const [uiState, setUiState] = useState({
     showMoreTabs: false,
     searchInputBox: false,
+    activeTab: "Action Items", // Default tab set to Action Items
+    loading: false, // Loading state for showing Loader
+    tabs: ["Action Items", "Calendar", "All"], // Initialize tabs list
   });
+
   const [notes, setNotes] = useState([]);
   const [newNoteContent, setNewNoteContent] = useState("");
   const [showMentionList, setShowMentionList] = useState(false);
@@ -18,11 +24,44 @@ const ActionItemsManager = () => {
   const [currentNoteIndex, setCurrentNoteIndex] = useState(null);
   const textareaRef = useRef(null);
   const { data: users } = useSelector((state) => state.user);
-  const tabsList = []; // Placeholder for tabs list
-  const modelSize = "large"; // Placeholder for model size
+
   const memoizedUsers = useMemo(
     () => [{ _id: "all", firstName: "all", lastName: "" }, ...users],
     [users]
+  );
+
+  // Memoized function to get the icon associated with each tab
+  const getTabIcon = useCallback((tab) => {
+    const icons = {
+      "Action Items": <MdOutlineAttractions className="mr-2 mt-1" />,
+      Calendar: <IoCalendar className="mr-2 mt-1" />,
+      All: <FaBorderAll className="mr-2 mt-1" />,
+      "Table View": <FaTable className="mr-2 mt-1" />,
+      Timeline: <MdOutlineViewTimeline className="mr-2 mt-1" />,
+      Completed: <GoIssueClosed className="mr-2 mt-1" />,
+    };
+    return icons[tab] || null; // Return the corresponding icon or null if not found
+  }, []);
+
+  const [modals, setModals] = useState();
+
+  // Memoized list of tabs to optimize rendering
+  const tabsList = useMemo(
+    () =>
+      uiState.tabs.map((tab) => (
+        <div
+          key={tab}
+          className={`flex items-center cursor-pointer px-2 py-2 ${
+            uiState.activeTab === tab
+              ? "border-b-2 border-green-500 font-bold" // Style for active tab
+              : "font-semibold bg-transparent" // Style for inactive tab
+          }`}
+          onClick={() => handleTabClick(tab)} // Update active tab on click
+        >
+          {getTabIcon(tab)} {tab}
+        </div>
+      )),
+    [uiState.tabs, uiState.activeTab, getTabIcon] // Dependencies: tabs, activeTab, getTabIcon
   );
 
   const handleSearchButton = () => {
@@ -33,16 +72,7 @@ const ActionItemsManager = () => {
   };
 
   const handleNewClick = () => {
-    // Logic for handling new item click
-  };
-
-  const addTab = (tab) => {
-    // Logic for adding a new tab
-  };
-
-  const getTabIcon = (tab) => {
-    // Logic to get icon for a tab
-    return null;
+    setModals({ ...modals, activeNewMeeting: true });
   };
 
   const handleNoteChange = (index, value) => {
@@ -51,15 +81,13 @@ const ActionItemsManager = () => {
     setNotes(updatedNotes);
   };
 
-
-  // Adjusted handleMention to correctly manage currentNoteIndex
   const handleMention = (index, e) => {
     const isExistingNote = index !== -1;
     const content = isExistingNote ? notes[index] : newNoteContent;
 
-    // Detect if there's an active mention
     const mentionRegex = /@([a-zA-Z]*)$/;
     const match = content.slice(0, e.target.selectionEnd).match(mentionRegex);
+
     if (match) {
       const mentionTrigger = match[1];
       const cursorPosition = e.target.selectionEnd;
@@ -67,14 +95,9 @@ const ActionItemsManager = () => {
       const rect = e.target.getBoundingClientRect();
       const lineNumber = content.slice(0, cursorPosition).split("\n").length;
 
-      // Calculate the top and left position of the mention dropdown
-      const mentionTop = offsetTop + lineNumber * 24;
-      const mentionLeft = offsetLeft + lineNumber * 8;
-
-      // Adjust position to account for scroll and height of the element
       setMentionPosition({
-        top: mentionTop,
-        left: mentionLeft,
+        top: rect.top + window.scrollY + lineNumber * 24,
+        left: rect.left + window.scrollX + lineNumber * 8,
       });
       setShowMentionList(true);
       setFilteredUsers(
@@ -84,18 +107,33 @@ const ActionItemsManager = () => {
             .includes(mentionTrigger.toLowerCase())
         )
       );
-
-      setCurrentNoteIndex(isExistingNote ? index : -1); // Use index or -1 for new note
+      setCurrentNoteIndex(isExistingNote ? index : -1);
     } else {
       setShowMentionList(false);
       setCurrentNoteIndex(null);
     }
   };
 
-
   const handleUserSelect = (user) => {
     // Logic for handling user selection from mention list
+    console.log(`User selected: ${user.firstName} ${user.lastName}`);
   };
+
+  // Memoized function to add a new tab and update state accordingly
+  const addTab = useCallback(
+    (tab) => {
+      // Only add the tab if it's not already present
+      if (!uiState.tabs.includes(tab)) {
+        setUiState((prevState) => ({
+          ...prevState,
+          tabs: [...prevState.tabs, tab], // Add new tab
+          activeTab: tab, // Set the new tab as active
+          showMoreTabs: false, // Hide the 'more' tabs indicator
+        }));
+      }
+    },
+    [uiState.tabs] // Dependency array: update if tabs change
+  );
 
   const handleRemoveNote = (index) => {
     const updatedNotes = notes.filter((_, i) => i !== index);
@@ -113,8 +151,19 @@ const ActionItemsManager = () => {
     // Logic for handling key down events in textarea
   };
 
+  const handleTabClick = (tab) => {
+    setUiState((prevState) => ({
+      ...prevState,
+      activeTab: tab,
+    }));
+  };
+
   return (
     <div className="w-[90%] mx-auto mt-2">
+      {/* Loader only appears at the top of the screen when loading */}
+      {/* {uiState.loading && <Loader />} */}
+
+      {/* <h1 className="text-4xl font-bold p-2">{uiState.activeTab}</h1> */}
       <h1 className="text-4xl font-bold p-2">Action Items</h1>
 
       <nav className="flex flex-row justify-between">
@@ -132,12 +181,12 @@ const ActionItemsManager = () => {
                 }))
               }
             >
-              <IoMdAdd className="text-xl mx-2" />
+              <IoMdAdd className="text-2xl mx-2 mt-2" />
             </div>
             {uiState.showMoreTabs && (
               <div className="absolute top-full mt-2 w-full md:w-56 bg-white dark:bg-gray-700 border rounded-md shadow-lg z-10 p-1">
                 <ul>
-                  {["Table View", "Timeline"].map((tab) => (
+                  {["Table View", "Timeline", "Completed"].map((tab) => (
                     <li
                       key={tab}
                       className="flex flex-row cursor-pointer mx-2 px-4 py-1 hover:bg-gray-200 hover:rounded-lg mt-2"
@@ -193,121 +242,16 @@ const ActionItemsManager = () => {
       </nav>
 
       <div className="p-2">
-        <div className="mb-4">
-          <div className="text-2xl font-bold capitalize flex space-x-1">
-            <FaRegSquareCheck className="mt-1" />
-            <span>Action Items</span>
-          </div>
-        </div>
-
         <div
           className={`flex flex-col space-y-4 mx-auto ${
-            modelSize === "large" ? "w-[90%]" : "w-[90%]"
+            uiState.activeTab === "Action Items" ? "w-[90%]" : "w-[90%]"
           }`}
         >
-          <ul className="space-y-2">
-            {notes.map((note, index) => (
-              <li key={index} className="relative flex items-center p-1">
-                <div className="flex flex-col w-full">
-                  <div className="flex items-start ml-2 relative">
-                    <span className="text-3xl">
-                      <BsDot />
-                    </span>
-                    <textarea
-                      type="text"
-                      value={note}
-                      onChange={(e) => handleNoteChange(index, e.target.value)}
-                      onKeyUp={(e) => handleMention(index, e)}
-                      className="w-full p-1 border rounded"
-                      placeholder="Add a note with mentions..."
-                    />
-                    {showMentionList && currentNoteIndex === index && (
-                      <ul
-                        className="bg-white border rounded mt-2 shadow-lg absolute max-h-40 overflow-y-auto z-10"
-                        style={{
-                          top: `${mentionPosition.top}px`,
-                          left: `${mentionPosition.left}px`,
-                        }}
-                        aria-labelledby={`mention-list-${index}`}
-                      >
-                        {filteredUsers.map((user) => (
-                          <li
-                            key={user._id}
-                            className="px-4 py-2 cursor-pointer hover:bg-blue-100"
-                            onClick={() => handleUserSelect(user)}
-                          >
-                            {user.firstName} {user.lastName}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <button
-                      className="absolute top-2 -right-2 text-red-500"
-                      onClick={() => handleRemoveNote(index)}
-                      aria-label={`Remove note ${index}`}
-                    >
-                      <IoMdTrash />
-                    </button>
-                  </div>
-
-                  <div className="flex flex-row justify-between mt-2">
-                    <div className="flex w-[40%] items-center px-4 py-1 hover:bg-gray-200 hover:rounded-md dark:hover:bg-gray-700 group">
-                      <FaRegClock className="text-xl mr-2" />
-                      <span className="font-semibold">Due Date</span>
-                    </div>
-                    <div className="w-[60%] px-4 py-1">
-                      <input
-                        type="datetime-local"
-                        name="eventTime"
-                        required
-                        className="w-full border rounded-md p-2"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <div className="relative">
-            <textarea
-              ref={textareaRef}
-              rows={2}
-              value={newNoteContent}
-              onKeyUp={(e) => handleMention(-1, e)} // Handle mentions in new note
-              onChange={(e) => setNewNoteContent(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Add a note with mentions..."
-              className="w-full h-12 p-2 border-0 outline-none"
-            />
-            {showMentionList && currentNoteIndex === -1 && (
-              <ul
-                className="bg-white border rounded mt-2 shadow-lg absolute max-h-40 overflow-y-auto z-10"
-                style={{
-                  top: `${mentionPosition.top}px`,
-                  left: `${mentionPosition.left}px`,
-                }}
-                aria-labelledby="mention-list-new"
-              >
-                {filteredUsers.map((user) => (
-                  <li
-                    key={user._id}
-                    className="px-4 py-2 cursor-pointer hover:bg-blue-100"
-                    onClick={() => handleUserSelect(user)}
-                  >
-                    {user.firstName} {user.lastName}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <button
-            className="p-2 mt-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            onClick={handleNoteSubmit}
-            aria-label="Add new note"
-          >
-            <IoMdAdd />
-            Add
-          </button>
+          {uiState.activeTab === "Action Items" && (
+            <ul className="space-y-2">
+              <div>"this is action"</div>
+            </ul>
+          )}
         </div>
       </div>
     </div>

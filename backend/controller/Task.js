@@ -8,22 +8,21 @@ import { Tags } from "../model/tagsSchema.js";
 import { User } from "../model/user.js";
 
 export const task = async (req, res) => {
-
   const generateTaskId = async () => {
     const lastTask = await Task.findOne().sort({ createdAt: -1 });
     let newTaskId = "001"; // Start with "001" if there's no previous user
 
     if (lastTask && lastTask.taskId) {
-        // Extract the numeric part of the last employee ID
-        const lastIdNumber = parseInt(lastTask.taskId, 10); // Directly parse the whole ID as a number
-        const newIdNumber = lastIdNumber + 1; // Increment the number
+      // Extract the numeric part of the last employee ID
+      const lastIdNumber = parseInt(lastTask.taskId, 10); // Directly parse the whole ID as a number
+      const newIdNumber = lastIdNumber + 1; // Increment the number
 
-        // Ensure the new ID is a three-digit number
-        newTaskId = `${newIdNumber.toString().padStart(3, "0")}`;
+      // Ensure the new ID is a three-digit number
+      newTaskId = `${newIdNumber.toString().padStart(3, "0")}`;
     }
 
     return newTaskId;
-};
+  };
 
   try {
     // Destructure required fields from the request body
@@ -48,7 +47,8 @@ export const task = async (req, res) => {
     if (!assignToArray.every((id) => ObjectId.isValid(id))) {
       return res.status(400).json({
         success: false,
-        message: "Invalid assignTo values. Each value must be a valid ObjectId.",
+        message:
+          "Invalid assignTo values. Each value must be a valid ObjectId.",
       });
     }
 
@@ -56,7 +56,8 @@ export const task = async (req, res) => {
     if (!selectedTagsArray.every((id) => ObjectId.isValid(id))) {
       return res.status(400).json({
         success: false,
-        message: "Invalid selectedTags values. Each value must be a valid ObjectId.",
+        message:
+          "Invalid selectedTags values. Each value must be a valid ObjectId.",
       });
     }
 
@@ -85,7 +86,6 @@ export const task = async (req, res) => {
       console.log("No file received");
     }
     console.log(cloudinaryUrl);
-
 
     const taskId = await generateTaskId();
 
@@ -140,9 +140,13 @@ export const allTask = async (req, res) => {
       .populate({
         path: "assignTo",
         select: "firstName lastName profilePicture",
-        
         model: User,
-      }).sort({ createdAt: -1 }); // Sort meetings by creation date, newest first
+      })
+      .populate({
+        path: "project", // Populate the project field with entire project data
+        model: Project,
+      })
+      .sort({ createdAt: -1 }); // Sort meetings by creation date, newest first
 
     if (!allTask) {
       return res.status(500).json({
