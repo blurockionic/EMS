@@ -16,7 +16,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProfile } from "../../Redux/slices/profileSlice";
 
 const Header = () => {
-
   // Setting up dispatch to trigger actions in the Redux store
   const dispatch = useDispatch();
   // Getting profile data from the Redux store
@@ -183,45 +182,41 @@ const Header = () => {
     [profile?.role, tabData] // Recalculate when profile role or tabData changes
   );
 
-
   // State to manage the currently active tab
-  
+
   // Initialize activeTab based on user's role when profile is available
   const [activeTab, setActiveTab] = useState("");
 
-  useEffect(() => { 
+  useEffect(() => {
     // This is the effect callback function that will run whenever the dependencies change.
-  
+
     if (profile?.role) {
-      const savedTab = localStorage.getItem("activeTab"); // Get the saved tab from localStorage
-      const defaultTab = filteredTabs.find((tab) => tab.tab.includes("overview"))?.tab || "overview";
-      setActiveTab(savedTab || defaultTab); // Set the active tab from localStorage or default to "overview"
+      const defaultTab =
+        filteredTabs.find((tab) => tab.tab.includes("overview"))?.tab ||
+        "overview";
+      setActiveTab(defaultTab); // Set the active tab from localStorage or default to "overview"
     }
 
     // if (profile?.role) {
-    //   // This line checks if `profile` is defined and has a `role` property. 
+    //   // This line checks if `profile` is defined and has a `role` property.
     //   // The optional chaining `?.` ensures that it doesn’t throw an error if `profile` is null or undefined.
-      
+
     //   const overviewTab = filteredTabs.find((tab) => tab.tab.includes("overview"));
     //   // This line searches through the `filteredTabs` array to find an element where the `tab` property
     //   // contains the string "overview". The `find` method returns the first matching element or `undefined` if none are found.
-      
+
     //   setActiveTab(overviewTab?.tab || "overview");
-    //   // This line updates the state `activeTab` using the `setActiveTab` function. 
+    //   // This line updates the state `activeTab` using the `setActiveTab` function.
     //   // It sets `activeTab` to the `tab` property of the found `overviewTab` if one was found.
     //   // If no matching tab was found (`overviewTab` is undefined), it defaults to "overview".
     // }
   }, [profile?.role, filteredTabs]);
-  // The effect runs whenever `profile?.role` or `filteredTabs` changes. 
+  // The effect runs whenever `profile?.role` or `filteredTabs` changes.
   // If either of these dependencies changes, the effect callback function is re-executed.
-  
-
-
 
   // Callback to handle tab click. Memoized to prevent recreation on each render.
   const handleTabClick = useCallback((tab) => {
     setActiveTab(tab); // Update active tab state
-    localStorage.setItem("activeTab", tab); // Save the active tab to localStorage
   }, []);
 
   return (
@@ -240,7 +235,9 @@ const Header = () => {
                   }`}
                   onClick={() => handleTabClick(tab)} // Handle tab click
                 >
-                  <Link to={link || "#"}> {/* Link or placeholder for navigation */}
+                  <Link to={link || "#"}>
+                    {" "}
+                    {/* Link or placeholder for navigation */}
                     <div className="flex py-1.5 px-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
                       <Icon className="mr-2 text-xl" /> {/* Tab icon */}
                       {label} {/* Tab label */}

@@ -1,4 +1,4 @@
-import { Employee } from "../model/employee.js";
+// backend\controller\Task.js
 import { Project } from "../model/project.js";
 import { Task } from "../model/task.js";
 import { uploadOnCloudinary } from "../utilities/cloudinary.js";
@@ -6,6 +6,10 @@ import mongoose from "mongoose";
 const { ObjectId } = mongoose.Types;
 import { Tags } from "../model/tagsSchema.js";
 import { User } from "../model/user.js";
+
+// Required Modules
+import nodemailer from "nodemailer";
+import { Notification } from "../model/NotificationSchema.js"; // importing Notification model
 
 export const task = async (req, res) => {
   const generateTaskId = async () => {
@@ -85,7 +89,6 @@ export const task = async (req, res) => {
     } else {
       console.log("No file received");
     }
-    console.log(cloudinaryUrl);
 
     const taskId = await generateTaskId();
 
@@ -111,7 +114,12 @@ export const task = async (req, res) => {
       .map((user) => `${user.firstName} ${user.lastName}`)
       .join(", ");
 
-    // Send a successful response with the newly created task details
+    // Send email to assigned users
+    await sendEmailNotifications(assignedUsers, newTask);
+
+    // Create in-site notifications for assigned users
+    await createInSiteNotifications(assignedUsers, newTask);
+
     return res.status(201).json({
       success: true,
       task: newTask,
@@ -126,6 +134,76 @@ export const task = async (req, res) => {
       message: "Internal server error",
     });
   }
+};
+
+const sendEmailNotifications = async (assignedUsers, task) => {
+  // Set up the transporter using nodemailer
+  const transporter = nodemailer.createTransport({
+    service: "gmail", // Use your email provider
+    auth: {
+      user: process.env.MAIL_USER, // Your email
+      pass: process.env.MAIL_PASS, // Your email password or app-specific password
+    },
+  });
+
+  // Loop through each user and send an email notification
+  for (const user of assignedUsers) {
+    const mailOptions = {
+      from: process.env.MAIL_USER,
+      to: user.email,
+      subject: `New Task Assigned: ${task.title}`,
+
+      html: `
+        <html>
+          <body style="font-family: Arial, sans-serif; color: #333; background-color: #f5f5f5; padding: 20px;">
+            <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #fff;">
+              <!-- Image at the top of the email -->
+              <div style="text-align: center; margin-bottom: 20px;">
+                <img 
+                  src="${process.env.LOGO_IMAGE}" 
+                  loading="lazy" 
+                  alt="Company Logo" 
+                  style="max-width: 150px; height: auto; display: block; margin: 0 auto;"
+                >
+              </div>
+
+              <h2 style="color: #4CAF50; text-align: center; margin-top: 20px;">New Task Assignment</h2>
+              <p style="font-style: capitalize">Dear, ${user?.firstName} ${
+                user?.lastName},
+              </p>
+              <p>We are pleased to inform you that you have been assigned a new task titled <strong>"${
+                task.title
+              }"</strong>.</p>
+              <p><strong>Description:</strong> ${task.description}</p>
+              <p><strong>Due Date:</strong> ${new Date(
+                task.dueDate
+              ).toLocaleString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}</p>
+              <p>Please log in to your EMS dashboard to view the task details and manage your progress.</p>
+              <p style="margin-top: 20px;">Best regards,<br>BluRock Ionic</p>
+            </div>
+          </body>
+        </html>
+      `,
+    };
+
+    // Send the email using the transporter
+    await transporter.sendMail(mailOptions);
+  }
+};
+
+// Helper function to create in-site notifications
+const createInSiteNotifications = async (assignedUsers, task) => {
+  const notifications = assignedUsers.map((user) => ({
+    user: user._id, // For each user, get their unique ID
+    message: `You have been assigned a new task: ${task.title}`, // Create a message containing the task title
+    read: false, // Set the default state of the notification as unread
+  }));
+
+  await Notification.insertMany(notifications); // Insert the list of notifications into the database at once
 };
 
 export const allTask = async (req, res) => {
@@ -282,7 +360,6 @@ export const deleteTask = async (req, res) => {
 
     // check user
     const { designationType } = req.user;
-    console.log("working");
     if (designationType != "Manager") {
       return res.status(400).json({
         success: false,
