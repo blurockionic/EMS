@@ -14,7 +14,6 @@ const Home = () => {
   const [active, setActive] = useState(false);
   const [profileSideBar, setProfileSidebar] = useState(false);
   const [notificationSideBar, setNotificationsSidebar] = useState(false);
-console.log(notificationSideBar);
 
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.profile.data);

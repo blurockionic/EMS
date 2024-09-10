@@ -12,22 +12,50 @@ import nodemailer from "nodemailer";
 import { Notification } from "../model/NotificationSchema.js"; // importing Notification model
 
 export const task = async (req, res) => {
+  // const generateTaskId = async () => {
+  //   const lastTask = await Task.findOne().sort({ createdAt: -1 });
+  //   let newTaskId = "001"; // Start with "001" if there's no previous user
+
+  //   if (lastTask && lastTask.taskId) {
+  //     // Extract the numeric part of the last employee ID
+  //     const lastIdNumber = parseInt(lastTask.taskId, 10); // Directly parse the whole ID as a number
+  //     const newIdNumber = lastIdNumber + 1; // Increment the number
+
+  //     // Ensure the new ID is a three-digit number
+  //     newTaskId = `${newIdNumber.toString().padStart(3, "0")}`;
+  //   }
+
+  //   return newTaskId;
+  // };
   const generateTaskId = async () => {
+    // Get the current date components
+    const currentDate = new Date();
+    const year = currentDate.getFullYear().toString().slice(2); // Get last 2 digits of the year
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0"); // Ensure month is 2 digits
+    const day = currentDate.getDate().toString().padStart(2, "0"); // Ensure day is 2 digits
+  
+    // Get the last task created and increment its taskId number
     const lastTask = await Task.findOne().sort({ createdAt: -1 });
-    let newTaskId = "001"; // Start with "001" if there's no previous user
-
+    let newTaskNumber = "001"; // Default to "001" if no previous task exists
+  
     if (lastTask && lastTask.taskId) {
-      // Extract the numeric part of the last employee ID
-      const lastIdNumber = parseInt(lastTask.taskId, 10); // Directly parse the whole ID as a number
-      const newIdNumber = lastIdNumber + 1; // Increment the number
-
-      // Ensure the new ID is a three-digit number
-      newTaskId = `${newIdNumber.toString().padStart(3, "0")}`;
+      // Extract the last 3 digits (numeric part) of the taskId for comparison
+      const lastTaskDatePart = lastTask.taskId.split("-")[1];
+      const lastTaskNumber = lastTask.taskId.split("-")[2]; // Get the numeric part
+  
+      // Only increment the number if the date part matches today's date
+      if (lastTaskDatePart === `${year}${month}${day}`) {
+        const newNumber = parseInt(lastTaskNumber, 10) + 1; // Increment the last number
+        newTaskNumber = newNumber.toString().padStart(3, "0"); // Ensure it's 3 digits
+      }
     }
-
+  
+    // Combine the parts into the desired format T-YYMMDD-XXX
+    const newTaskId = `T-${year}${month}${day}-${newTaskNumber}`;
+  
     return newTaskId;
   };
-
+  
   try {
     // Destructure required fields from the request body
     const {
@@ -169,7 +197,8 @@ const sendEmailNotifications = async (assignedUsers, task) => {
 
               <h2 style="color: #4CAF50; text-align: center; margin-top: 20px;">New Task Assignment</h2>
               <p style="font-style: capitalize">Dear, ${user?.firstName} ${
-                user?.lastName},
+        user?.lastName
+      },
               </p>
               <p>We are pleased to inform you that you have been assigned a new task titled <strong>"${
                 task.title
@@ -505,5 +534,56 @@ export const reopenTask = async (req, res) => {
       success: false,
       message: error,
     });
+  }
+};
+
+export const putTaskOnHold = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+
+    // Find the task by ID and update its status to "on hold"
+    const task = await Task.findByIdAndUpdate(
+      taskId,
+      { status: "On Hold" },
+      { new: true }
+    );
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Task status updated to On Hold",
+      task,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update task status", error });
+  }
+};
+
+// Controller to submit a task for review
+export const submitTaskForReview = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+
+    // Find the task by ID and update its status to "in review"
+    const task = await Task.findByIdAndUpdate(
+      taskId,
+      { status: "In Review" },
+      { new: true }
+    );
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Task status updated to In Review",
+      task,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update task status", error });
   }
 };
