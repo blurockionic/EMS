@@ -47,7 +47,7 @@ export const closeTask = createAsyncThunk(
           withCredentials: true,
         }
       );
-      return response.data; // Assuming the response contains success and message
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.message);
     }
@@ -69,7 +69,45 @@ export const reopenTask = createAsyncThunk(
           withCredentials: true,
         }
       );
-      return response.data; // Assuming the response contains success and message
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+// Thunk for putting a task on hold
+export const putTaskOnHold = createAsyncThunk(
+  "tasks/putTaskOnHold",
+  async (taskId, thunkAPI) => {
+    try {
+      const response = await axios.put(
+        `${server}/task/hold/${taskId}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+// Thunk for submitting a task for review
+export const submitTaskForReview = createAsyncThunk(
+  "tasks/submitTaskForReview",
+  async (taskId, thunkAPI) => {
+    try {
+      const response = await axios.put(
+        `${server}/task/review/${taskId}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.message);
     }
@@ -81,36 +119,31 @@ export const specificProjectTask = createAsyncThunk(
   "tasks/specificProjectTask",
   async (taskId, thunkAPI) => {
     try {
-      const response = await axios.get(
-        `${server}/task/specific/${taskId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      return response.data; // Assuming the response contains specific project task data
+      const response = await axios.get(`${server}/task/specific/${taskId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.message);
     }
   }
 );
-// Thunk for fetching specific project tasks
+
+// Thunk for fetching specific employee tasks
 export const specificEmployeeTasks = createAsyncThunk(
   "tasks/specificEmployeeTasks",
   async (employeeId, thunkAPI) => {
     try {
-      const response = await axios.get(
-        `${server}/task/${employeeId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      return response.data.allTaskOfEmployee; // Assuming the response contains specific project task data
+      const response = await axios.get(`${server}/task/${employeeId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data.allTaskOfEmployee;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.message);
     }
@@ -130,6 +163,7 @@ const taskSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetching tasks
       .addCase(fetchTasks.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -142,18 +176,22 @@ const taskSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Submitting a new task
       .addCase(submitNewTask.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(submitNewTask.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks.push(action.payload); // Assuming the new task is added to the state
+        state.tasks.push(action.payload);
       })
       .addCase(submitNewTask.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Closing a task
       .addCase(closeTask.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -168,6 +206,8 @@ const taskSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Reopening a task
       .addCase(reopenTask.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -182,24 +222,61 @@ const taskSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Putting a task on hold
+      .addCase(putTaskOnHold.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(putTaskOnHold.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tasks = state.tasks.map((task) =>
+          task._id === action.meta.arg ? { ...task, status: "on hold" } : task
+        );
+      })
+      .addCase(putTaskOnHold.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Submitting a task for review
+      .addCase(submitTaskForReview.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(submitTaskForReview.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tasks = state.tasks.map((task) =>
+          task._id === action.meta.arg ? { ...task, status: "in review" } : task
+        );
+      })
+      .addCase(submitTaskForReview.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Fetching specific project tasks
       .addCase(specificProjectTask.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(specificProjectTask.fulfilled, (state, action) => {
         state.loading = false;
-        state.projectSpecificTasks = action.payload; // Update the state with specific project tasks
+        state.projectSpecificTasks = action.payload;
       })
       .addCase(specificProjectTask.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Fetching specific employee tasks
       .addCase(specificEmployeeTasks.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(specificEmployeeTasks.fulfilled, (state, action) => {
         state.loading = false;
-        state.employeeSpecificTasks = action.payload;
+        state.employeeSpecificTasks = action.payload || [];
       })
       .addCase(specificEmployeeTasks.rejected, (state, action) => {
         state.loading = false;

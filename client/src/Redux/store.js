@@ -15,6 +15,7 @@ import teamReducer from "./slices/teamSlice"
 import eventReducer from "./slices/eventSlice"
 import toDoReducer from "./slices/toDoSlice";
 import meetingReducer from "./slices/meetingSlice"
+import notificationReducer from "./slices/notificationSlice"; // Import the notification slice
 
 import chatReducer from "./slices/chatSlice"; // Add the chat reducer
 const store = configureStore({
@@ -37,6 +38,10 @@ const store = configureStore({
     chat: chatReducer, // add and create chat
     toDo: toDoReducer,
     meetings: meetingReducer,
+
+    notifications: notificationReducer, // Add notifications reducer
+    // Other reducers can be added here
+
   },
 });
 

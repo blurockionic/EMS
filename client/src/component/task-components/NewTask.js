@@ -4,11 +4,11 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // Importing hooks from Redux for state management
 
-import { fetchProjects } from "../../../Redux/slices/projectSlice";
-import { fetchProfile } from "../../../Redux/slices/profileSlice";
-import { fetchUsers } from "../../../Redux/slices/allUserSlice";
-import { fetchTags } from "../../../Redux/slices/tagSlice";
-import { submitNewTask } from "../../../Redux/slices/taskSlice";
+import { fetchProjects } from "../../Redux/slices/projectSlice";
+import { fetchProfile } from "../../Redux/slices/profileSlice";
+import { fetchUsers } from "../../Redux/slices/allUserSlice";
+import { fetchTags } from "../../Redux/slices/tagSlice";
+import { submitNewTask } from "../../Redux/slices/taskSlice";
 // Importing Redux actions to fetch data and submit the task
 
 import { toast, ToastContainer } from "react-toastify";

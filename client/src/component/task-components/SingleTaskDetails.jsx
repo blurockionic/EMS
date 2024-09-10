@@ -12,6 +12,8 @@ import {
   fetchTasks,
   closeTask,
   reopenTask,
+  putTaskOnHold,
+  submitTaskForReview,
 } from "../../Redux/slices/taskSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers } from "../../Redux/slices/allUserSlice";
@@ -26,6 +28,7 @@ import { toast, ToastContainer } from "react-toastify";
 // import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import "@cyntler/react-doc-viewer/dist/index.css";
 import Loader from "../utilities-components/Loader";
+import { AiOutlineIssuesClose } from "react-icons/ai";
 
 const SingleTaskDetails = () => {
   const { taskId } = useParams();
@@ -76,15 +79,45 @@ const SingleTaskDetails = () => {
       });
   };
 
-  const handleTaskStatusChange = () => {
-    dispatch(reopenTask(taskId))
-      .then((response) => {
-        toast.success(response?.payload?.message ?? "Error");
-        dispatch(fetchTasks());
-      })
-      .catch((error) => {
-        console.error("Error reopening task:", error);
-      });
+  const handleTaskStatusChange = (newStatus) => {
+    if (newStatus === "Open") {
+      dispatch(reopenTask(task._id))
+        .then((response) => {
+          dispatch(fetchTasks()); // Refresh task list
+          toast.success(
+            response.payload.message || "Task reopened successfully"
+          );
+        })
+        .catch((error) => {
+          console.error("Error reopening task:", error);
+          toast.error("Failed to reopen task");
+        });
+    } else if (newStatus === "On Hold") {
+      dispatch(putTaskOnHold(task._id))
+        .then((response) => {
+          dispatch(fetchTasks()); // Refresh task list
+          toast.success(response.payload.message || "Task put on hold");
+        })
+        .catch((error) => {
+          console.error("Error putting task on hold:", error);
+          toast.error("Failed to put task on hold");
+        });
+    } else if (newStatus === "In Review") {
+      dispatch(submitTaskForReview(task._id))
+        .then((response) => {
+          dispatch(fetchTasks()); // Refresh task list
+          toast.success(
+            response.payload.message || "Task submitted for review"
+          );
+        })
+        .catch((error) => {
+          console.error("Error submitting task for review:", error);
+          toast.error("Failed to submit task for review");
+        });
+    } else {
+      console.error(`Unknown task status: ${newStatus}`);
+      toast.error("Unknown task status");
+    }
   };
 
   const onDrop = useCallback((e) => {
@@ -96,26 +129,47 @@ const SingleTaskDetails = () => {
     }
   }, []);
 
+  /**
+   * Handles the drag over event by setting the drag active state.
+   * @param {DragEvent} e The drag over event.
+   */
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    // If the drag event contains items, set the drag active state to true
     if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
       setIsDragActive(true);
     }
   };
 
+  /**
+   * Handles the drag leave event by resetting the drag active state.
+   * @param {DragEvent} e The drag leave event.
+   */
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragActive(false);
+    setIsDragActive(false); // Reset drag active state
   };
 
+  /**
+   * Handles the selection of a file for upload.
+   * @param {Event} e The change event.
+   */
   const handleFileSelect = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+    // Get the selected file from the input element
+    const selectedFile = e.target.files && e.target.files[0];
+
+    // If a file is selected, store it in the component state
+    if (selectedFile) {
+      setSelectedFile(selectedFile);
     }
   };
 
+  /**
+   * Handles the submission of a new comment on a task.
+   * @param {Event} e The submit event.
+   */
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -125,19 +179,28 @@ const SingleTaskDetails = () => {
     if (selectedFile) {
       formData.append("file", selectedFile);
     }
-    // Log formData contents
-    // for (let [key, value] of formData.entries()) {
-    //   console.log(`${key}: ${value}`);
-    // }
 
-    // If you need to log file details
-    // if (selectedFile) {
-    //   console.log("File details:", {
-    //     name: selectedFile.name,
-    //     size: selectedFile.size,
-    //     type: selectedFile.type,
-    //   });
-    // }
+    /**
+     * Log formData contents
+     * @example
+     * for (let [key, value] of formData.entries()) {
+     *   console.log(`${key}: ${value}`);
+     * }
+     */
+    // Log formData contents if needed
+
+    /**
+     * Log file details if needed
+     * @example
+     * if (selectedFile) {
+     *   console.log("File details:", {
+     *     name: selectedFile.name,
+     *     size: selectedFile.size,
+     *     type: selectedFile.type,
+     *   });
+     * }
+     */
+    // Log file details if needed
     dispatch(addComment(formData))
       .then((response) => {
         // This is where you can access the server's response
@@ -154,12 +217,29 @@ const SingleTaskDetails = () => {
       });
   };
 
+  // Helper to check if the user is a manager or admin and assigned to this task
+  const isManagerOrAdmin =
+    (profile.role === "manager" || profile.role === "admin") &&
+    task?.assignBy === profile._id;
+  // Check if the current user is assigned to this task
+  const isAssignedEmployee = task?.assignTo?.some(
+    (assign) => assign._id === profile._id
+  );
+
+  /**
+   * Given a user id, returns the full name of the user as a string, or an empty string if the user is not found
+   * @param {string} userId
+   * @returns {string}
+   */
+
   const renderUserFullName = (userId) => {
     const user = users.find((user) => user._id === userId);
+    // If the user is found, return the full name, otherwise return an empty string
     return user ? `${user.firstName} ${user.lastName}` : "";
   };
   const renderUserProfilePicture = (userId) => {
     const user = users.find((user) => user._id === userId);
+
     return user ? `${user.profilePicture}` : "";
   };
 
@@ -206,6 +286,12 @@ const SingleTaskDetails = () => {
                       <span className="font-semibold text-sm">In Review</span>
                     </>
                   )}
+                  {task?.status === "On Hold" && (
+                    <>
+                      <AiOutlineIssuesClose className="text-lg sm:text-xl text-red-500 mr-2" />
+                      <span className="font-semibold text-sm">On Hold</span>
+                    </>
+                  )}
                 </span>
               </button>
               <div className="text-sm flex flex-col sm:flex-row items-start sm:ml-4 mt-2 sm:mt-0">
@@ -247,9 +333,9 @@ const SingleTaskDetails = () => {
               </div>
             </div>
           </div>
-          <div className="px-4 mt-4">
+          <div className="flex flex-col sm:flex-row px-4 mt-4">
             <span className="mr-1">Assign to</span>
-            <span className="mx-2 font-semibold capitalize">
+            <span className=" font-semibold capitalize">
               {task?.assignTo?.map((assignTo) => (
                 <span key={assignTo._id} className="space-x-1">
                   {" "}
@@ -258,11 +344,10 @@ const SingleTaskDetails = () => {
               ))}
             </span>
           </div>
-          <div className="px-4 mt-4">
+          <div className="flex flex-col sm:flex-row px-4 mt-4">
             <span className="mr-1">Related Project</span>
-            <span className="mx-2 font-semibold capitalize">
-               {task?.project?.projectName
-              }
+            <span className="font-semibold capitalize">
+              {task?.project?.projectName}
             </span>
           </div>
         </div>
@@ -318,33 +403,36 @@ const SingleTaskDetails = () => {
         <div className="container mx-auto mt-4">
           <div>
             {comments?.map((comment, index) => (
-              <div
-                key={index}
-                className="shadow-md rounded-lg p-3 mb-6 border bg-white dark:bg-gray-800"
-              >
-                <div className="border border-gray-800 dark:border-gray-600 rounded-lg p-3 ">
-                  <div className="flex justify-between border p-2">
-                    <div className="flex">
+              <div className="border border-gray-800 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ">
+                <div key={index} className="flex justify-between items-start">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+                    <div className="flex items-center space-x-2 mb-2 sm:mb-0">
                       <img
-                        className="w-6 h-6 rounded-full"
+                        className="w-8 h-8 rounded-full"
                         src={
-                          profile?.profilePicture ??
+                          renderUserProfilePicture(comment?.assignBy) ??
                           "https://via.placeholder.com/150"
                         }
-                        alt="Profile"
+                        alt="https://via.placeholder.com/150"
                       />
-                      <span className="font-bold mx-2">
+                      <span className="font-bold">
                         {renderUserFullName(comment?.commentedBy)}
-                      </span>{" "}
-                      commented
-                      <span className="mx-2">
+                      </span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-300">
+                      <GoDotFill className="mt-1" />
+                      <span className="ml-1">
+                        commented &nbsp;{" "}
                         <TimeAgo date={comment?.createdAt || new Date()} />
                       </span>
                     </div>
-                    <div>
-                      <BsThreeDots />
-                    </div>
                   </div>
+
+                  <div className="text-gray-600 dark:text-gray-400">
+                    <BsThreeDots />
+                  </div>
+                </div>
+                <div className=" mt-3 border border-gray-800 dark:border-gray-600 rounded-lg p-3 ">
                   <div className="flex flex-wrap flex-row justify-between p-3 ">
                     <div>{comment?.comment}</div>
                     {/* Check if documentFile is present and render it */}
@@ -437,25 +525,71 @@ const SingleTaskDetails = () => {
               </div>
             </div>
           </div>
+
+          {/* Manager/Admin Actions */}
           <div className="flex lg:flex-row justify-end mt-4">
-            <div className="flex flex-col sm:flex-row justify-end mb-4">
-              {task.status === "Open" && (
+            {/* Manager/Admin Actions */}
+            {isManagerOrAdmin && (
+              <>
+                <div className="flex flex-col sm:flex-row justify-end mb-4">
+                  {task.status === "Open" && (
+                    <button
+                      className="px-4 py-1.5 bg-slate-800 text-white rounded-lg focus:outline-none ml-2"
+                      onClick={handleIssueClose}
+                    >
+                      Close Task
+                    </button>
+                  )}
+                  {task.status === "Close" && (
+                    <button
+                      className="px-4 py-1.5 bg-slate-800 text-white rounded-lg focus:outline-none ml-2"
+                      onClick={() => handleTaskStatusChange("Open")}
+                    >
+                      Open Task
+                    </button>
+                  )}
+                  {task.status === "On Hold" && (
+                    <button
+                      className="px-4 py-1.5 bg-slate-800 text-white rounded-lg focus:outline-none ml-2"
+                      onClick={() => handleTaskStatusChange("Open")}
+                    >
+                      Reopen Task
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-col sm:flex-row justify-end mb-4">
+                  {task.status === "Open" && (
+                    <button
+                      className="px-4 py-1.5 bg-slate-800 text-white rounded-lg ml-2"
+                      onClick={() => handleTaskStatusChange("On Hold")}
+                    >
+                      Put on Hold
+                    </button>
+                  )}
+                  {task.status === "In Review" && (
+                    <button
+                      className="px-4 py-1.5 bg-slate-800 text-white rounded-lg ml-2"
+                      onClick={handleIssueClose}
+                    >
+                      Close Task
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* Employee Actions */}
+            {isAssignedEmployee && task.status === "Open" && (
+              <div className="flex flex-col sm:flex-row justify-end mb-4">
                 <button
-                  className="px-4 py-1.5 bg-slate-800 text-white rounded-lg focus:outline-none ml-2"
-                  onClick={handleIssueClose}
+                  className="px-4 py-1.5 bg-slate-800 text-white rounded-lg ml-2"
+                  onClick={() => handleTaskStatusChange("In Review")}
                 >
-                  Close Task
+                  Submit for Review
                 </button>
-              )}
-              {task.status === "Close" && (
-                <button
-                  className="px-4 py-1.5 bg-slate-800 text-white rounded-lg focus:outline-none ml-2"
-                  onClick={handleTaskStatusChange}
-                >
-                  Open Task
-                </button>
-              )}
-            </div>
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row justify-end mb-4">
               <button
                 onClick={(e) => handleCommentSubmit(e)}

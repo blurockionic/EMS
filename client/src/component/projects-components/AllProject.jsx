@@ -8,14 +8,14 @@ import { GoIssueClosed, GoProject } from "react-icons/go";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProjects } from "../../Redux/slices/projectSlice";
 import { fetchProfile } from "../../Redux/slices/profileSlice";
-import ManagerProject from "./ManagerProject"
+import ManagerProject from "./ManagerProject";
 import Loader from "../utilities-components/Loader";
 import ProjectCard from "./ProjectCard";
 import { LuLayoutList } from "react-icons/lu";
 
 const AllProject = () => {
   const dispatch = useDispatch();
-
+  const [userProjects, setUserProjects] = useState([]);
   const [uiState, setUiState] = useState({
     showMoreTabs: false,
     searchInputBox: false,
@@ -62,6 +62,19 @@ const AllProject = () => {
     };
     return icons[tab] || null;
   }, []);
+
+  useEffect(() => {
+    // Filter projects where the user is a team member
+    setUserProjects(
+      allProject.filter(
+        (project) =>
+          project.teamMembers.includes(profile._id) ||
+          project.projectManager === profile._id
+      )
+    );
+  }, [profile._id]);
+
+  console.log(userProjects);
 
   const tabsList = useMemo(
     () =>
@@ -188,15 +201,14 @@ const AllProject = () => {
               className="bg-transparent p-1 outline-none"
             />
           )}
-          {
-            profile.role === "admin" && (  <div className="flex items-center" onClick={handleNewClick}>
+          {profile.role === "admin" && (
+            <div className="flex items-center" onClick={handleNewClick}>
               <div className="flex items-center font-semibold text-white bg-gray-900 hover:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white px-2 py-1 rounded-md shadow-inner cursor-pointer transition-colors">
                 <IoMdAdd className="text-lg mr-1" />
                 <span>New</span>
               </div>
-            </div> ) 
-          }
-         
+            </div>
+          )}
         </div>
       </nav>
 
@@ -209,10 +221,76 @@ const AllProject = () => {
           </div>
         )}
         {uiState.activeTab === "My Project" && profile.role === "manager" && (
-          <div> <ManagerProject/> </div>
+          <div>
+            {" "}
+            <ManagerProject />{" "}
+          </div>
         )}
         {uiState.activeTab === "My Project" && profile.role === "employee" && (
-          <div>tab for employee</div>
+          <div>
+            {userProjects.map((project, index) => (
+              <tr key={project._id} className="text-center">
+                <td className="border px-4 py-2">{index + 1}</td>
+                <td className="border px-4 py-2">{project.projectName}</td>
+                <td className="border px-4 py-2">{project.projectStartDate}</td>
+                <td className="border px-4 py-2">{project.projectEndDate}</td>
+                {/* <td className="border px-4 py-2">
+                    {teams
+                      .filter((team) => team._id === project.teamId)
+                      .map((filteredTeam) => (
+                        <div key={filteredTeam._id}>
+                          {filteredTeam.teamName}
+                        </div>
+                      ))}
+                  </td> */}
+                <td className="border px-4 py-2">
+                  {project.isCompleted ? (
+                    <span className="text-green-800">Completed</span>
+                  ) : (
+                    <span className="text-red-800">Not Completed</span>
+                  )}
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    className={`mx-auto font-bold py-2 px-4 rounded ${
+                      project.isCompleted
+                        ? "bg-red-300 cursor-not-allowed text-white"
+                        : "text-blue-500"
+                    }`}
+                    // onClick={() =>
+                    //   !project.isCompleted && handleAssignTask(project)
+                    // }
+                    disabled={project.isCompleted}
+                  >
+                    Assign Task
+                  </button>
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    className={`mx-auto font-bold py-2 px-4 rounded ${
+                      project.isCompleted
+                        ? "bg-red-300 cursor-not-allowed text-white"
+                        : "text-blue-500"
+                    }`}
+                    // onClick={() =>
+                    //   !project.isCompleted && handleReportClick(project)
+                    // }
+                    disabled={project.isCompleted}
+                  >
+                    Report
+                  </button>
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    className="mx-auto text-blue-500 font-bold py-2 px-4 rounded"
+                    // onClick={() => handleOnShowMore(project._id)}
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </div>
         )}
         {uiState.activeTab === "Table View" && (
           <div className="overflow-x-auto mt-5">

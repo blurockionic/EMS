@@ -8,10 +8,12 @@ import { fetchProfile } from "../../Redux/slices/profileSlice";
 import ProfileSidebarModel from "../../component/sidebar-components/ProfileSidebarModel";
 import ThemeToggle from "../../component/theme-components/ThemeToggle";
 import SideNavbar from "../../component/sidebar-components/ToolsSideNavbar";
-
+import { IoMdNotificationsOutline } from "react-icons/io";
+import NotificationsSidebarModel from "../../component/pages-components/NotificationsSidebar";
 const Home = () => {
   const [active, setActive] = useState(false);
   const [profileSideBar, setProfileSidebar] = useState(false);
+  const [notificationSideBar, setNotificationsSidebar] = useState(false);
 
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.profile.data);
@@ -38,7 +40,6 @@ const Home = () => {
       <nav className="w-full p-3 flex flex-row justify-between border border-slate-900 py-3">
         <div className="flex font-bold mx-2 space-x-4">
           <GiHamburgerMenu
-          
             className="text-3xl cursor-pointer"
             onClick={() => setActive(true)}
           />
@@ -49,6 +50,10 @@ const Home = () => {
         </div>
         <div className="flex items-center space-x-2">
           <ThemeToggle />
+
+          <button onClick={() => setNotificationsSidebar(true)}>
+            <IoMdNotificationsOutline className="text-2xl" />
+          </button>
           <button onClick={() => setProfileSidebar(true)}>
             {profile?.profilePicture ? (
               <div className="flex justify-center">
@@ -75,6 +80,10 @@ const Home = () => {
       <ProfileSidebarModel
         active={profileSideBar}
         setActive={setProfileSidebar}
+      />
+      <NotificationsSidebarModel
+        active={notificationSideBar}
+        setActive={setNotificationsSidebar}
       />
     </div>
   );

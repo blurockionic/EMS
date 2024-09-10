@@ -34,6 +34,8 @@ import chatRoutes from "./routes/chatRoutes.js";
 
 import meetingRoutes from "./routes/MeetingRoutes.js";
 
+import NotificationsRoutes from "./routes/notificationsRoutes.js";
+
 //configure the dotenv file
 dotenv.config({
   path: "./configuration/.env",
@@ -109,6 +111,9 @@ app.use("/api/v1/todo", toDoRoutes);
 
 // use meeting router
 app.use("/api/v1/meeting", meetingRoutes);
+
+// use notification router
+app.use("/api/v1/notifications", NotificationsRoutes);
 
 //default route
 app.get("/", (req, res) => {

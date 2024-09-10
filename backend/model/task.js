@@ -25,7 +25,7 @@ const taskSchema = new mongoose.Schema(
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
     status: {
       type: String,
-      enum: ["Open", "In Review", "Close"],
+      enum: ["Open", "In Review", "Close" , "On Hold"],
       default: "Open",
     },
     assignBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

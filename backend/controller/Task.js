@@ -1,4 +1,4 @@
-import { Employee } from "../model/employee.js";
+// backend\controller\Task.js
 import { Project } from "../model/project.js";
 import { Task } from "../model/task.js";
 import { uploadOnCloudinary } from "../utilities/cloudinary.js";
@@ -7,23 +7,55 @@ const { ObjectId } = mongoose.Types;
 import { Tags } from "../model/tagsSchema.js";
 import { User } from "../model/user.js";
 
+// Required Modules
+import nodemailer from "nodemailer";
+import { Notification } from "../model/NotificationSchema.js"; // importing Notification model
+
 export const task = async (req, res) => {
+  // const generateTaskId = async () => {
+  //   const lastTask = await Task.findOne().sort({ createdAt: -1 });
+  //   let newTaskId = "001"; // Start with "001" if there's no previous user
+
+  //   if (lastTask && lastTask.taskId) {
+  //     // Extract the numeric part of the last employee ID
+  //     const lastIdNumber = parseInt(lastTask.taskId, 10); // Directly parse the whole ID as a number
+  //     const newIdNumber = lastIdNumber + 1; // Increment the number
+
+  //     // Ensure the new ID is a three-digit number
+  //     newTaskId = `${newIdNumber.toString().padStart(3, "0")}`;
+  //   }
+
+  //   return newTaskId;
+  // };
   const generateTaskId = async () => {
+    // Get the current date components
+    const currentDate = new Date();
+    const year = currentDate.getFullYear().toString().slice(2); // Get last 2 digits of the year
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0"); // Ensure month is 2 digits
+    const day = currentDate.getDate().toString().padStart(2, "0"); // Ensure day is 2 digits
+  
+    // Get the last task created and increment its taskId number
     const lastTask = await Task.findOne().sort({ createdAt: -1 });
-    let newTaskId = "001"; // Start with "001" if there's no previous user
-
+    let newTaskNumber = "001"; // Default to "001" if no previous task exists
+  
     if (lastTask && lastTask.taskId) {
-      // Extract the numeric part of the last employee ID
-      const lastIdNumber = parseInt(lastTask.taskId, 10); // Directly parse the whole ID as a number
-      const newIdNumber = lastIdNumber + 1; // Increment the number
-
-      // Ensure the new ID is a three-digit number
-      newTaskId = `${newIdNumber.toString().padStart(3, "0")}`;
+      // Extract the last 3 digits (numeric part) of the taskId for comparison
+      const lastTaskDatePart = lastTask.taskId.split("-")[1];
+      const lastTaskNumber = lastTask.taskId.split("-")[2]; // Get the numeric part
+  
+      // Only increment the number if the date part matches today's date
+      if (lastTaskDatePart === `${year}${month}${day}`) {
+        const newNumber = parseInt(lastTaskNumber, 10) + 1; // Increment the last number
+        newTaskNumber = newNumber.toString().padStart(3, "0"); // Ensure it's 3 digits
+      }
     }
-
+  
+    // Combine the parts into the desired format T-YYMMDD-XXX
+    const newTaskId = `T-${year}${month}${day}-${newTaskNumber}`;
+  
     return newTaskId;
   };
-
+  
   try {
     // Destructure required fields from the request body
     const {
@@ -85,7 +117,6 @@ export const task = async (req, res) => {
     } else {
       console.log("No file received");
     }
-    console.log(cloudinaryUrl);
 
     const taskId = await generateTaskId();
 
@@ -111,7 +142,12 @@ export const task = async (req, res) => {
       .map((user) => `${user.firstName} ${user.lastName}`)
       .join(", ");
 
-    // Send a successful response with the newly created task details
+    // Send email to assigned users
+    await sendEmailNotifications(assignedUsers, newTask);
+
+    // Create in-site notifications for assigned users
+    await createInSiteNotifications(assignedUsers, newTask);
+
     return res.status(201).json({
       success: true,
       task: newTask,
@@ -126,6 +162,77 @@ export const task = async (req, res) => {
       message: "Internal server error",
     });
   }
+};
+
+const sendEmailNotifications = async (assignedUsers, task) => {
+  // Set up the transporter using nodemailer
+  const transporter = nodemailer.createTransport({
+    service: "gmail", // Use your email provider
+    auth: {
+      user: process.env.MAIL_USER, // Your email
+      pass: process.env.MAIL_PASS, // Your email password or app-specific password
+    },
+  });
+
+  // Loop through each user and send an email notification
+  for (const user of assignedUsers) {
+    const mailOptions = {
+      from: process.env.MAIL_USER,
+      to: user.email,
+      subject: `New Task Assigned: ${task.title}`,
+
+      html: `
+        <html>
+          <body style="font-family: Arial, sans-serif; color: #333; background-color: #f5f5f5; padding: 20px;">
+            <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #fff;">
+              <!-- Image at the top of the email -->
+              <div style="text-align: center; margin-bottom: 20px;">
+                <img 
+                  src="${process.env.LOGO_IMAGE}" 
+                  loading="lazy" 
+                  alt="Company Logo" 
+                  style="max-width: 150px; height: auto; display: block; margin: 0 auto;"
+                >
+              </div>
+
+              <h2 style="color: #4CAF50; text-align: center; margin-top: 20px;">New Task Assignment</h2>
+              <p style="font-style: capitalize">Dear, ${user?.firstName} ${
+        user?.lastName
+      },
+              </p>
+              <p>We are pleased to inform you that you have been assigned a new task titled <strong>"${
+                task.title
+              }"</strong>.</p>
+              <p><strong>Description:</strong> ${task.description}</p>
+              <p><strong>Due Date:</strong> ${new Date(
+                task.dueDate
+              ).toLocaleString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}</p>
+              <p>Please log in to your EMS dashboard to view the task details and manage your progress.</p>
+              <p style="margin-top: 20px;">Best regards,<br>BluRock Ionic</p>
+            </div>
+          </body>
+        </html>
+      `,
+    };
+
+    // Send the email using the transporter
+    await transporter.sendMail(mailOptions);
+  }
+};
+
+// Helper function to create in-site notifications
+const createInSiteNotifications = async (assignedUsers, task) => {
+  const notifications = assignedUsers.map((user) => ({
+    user: user._id, // For each user, get their unique ID
+    message: `You have been assigned a new task: ${task.title}`, // Create a message containing the task title
+    read: false, // Set the default state of the notification as unread
+  }));
+
+  await Notification.insertMany(notifications); // Insert the list of notifications into the database at once
 };
 
 export const allTask = async (req, res) => {
@@ -282,7 +389,6 @@ export const deleteTask = async (req, res) => {
 
     // check user
     const { designationType } = req.user;
-    console.log("working");
     if (designationType != "Manager") {
       return res.status(400).json({
         success: false,
@@ -428,5 +534,56 @@ export const reopenTask = async (req, res) => {
       success: false,
       message: error,
     });
+  }
+};
+
+export const putTaskOnHold = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+
+    // Find the task by ID and update its status to "on hold"
+    const task = await Task.findByIdAndUpdate(
+      taskId,
+      { status: "On Hold" },
+      { new: true }
+    );
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Task status updated to On Hold",
+      task,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update task status", error });
+  }
+};
+
+// Controller to submit a task for review
+export const submitTaskForReview = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+
+    // Find the task by ID and update its status to "in review"
+    const task = await Task.findByIdAndUpdate(
+      taskId,
+      { status: "In Review" },
+      { new: true }
+    );
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Task status updated to In Review",
+      task,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update task status", error });
   }
 };
