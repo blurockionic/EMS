@@ -43,6 +43,9 @@ const SingleTaskDetails = () => {
   const profile = useSelector((state) => state.profile.data);
   const profileStatus = useSelector((state) => state.profile.status);
   const [commentSubmitted, setCommentSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  // Inside the component
+  const [warningMessage, setWarningMessage] = useState("");
 
   useEffect(() => {
     if (status === "idle") dispatch(fetchUsers());
@@ -172,6 +175,13 @@ const SingleTaskDetails = () => {
    */
   const handleCommentSubmit = (e) => {
     e.preventDefault();
+
+    if (!comment.trim()) {
+      setWarningMessage("Comment cannot be empty!");
+      return; // Prevent submission if comment is empty
+    }
+
+    // Create a FormData object and append data
     const formData = new FormData();
     formData.append("comment", comment);
     formData.append("commentedBy", profile._id);
@@ -179,6 +189,14 @@ const SingleTaskDetails = () => {
     if (selectedFile) {
       formData.append("file", selectedFile);
     }
+
+    // Check if formData is empty
+    if (formData.get("comment") === null && !formData.has("file")) {
+      setWarningMessage("No data to submit!");
+      return; // Prevent submission if formData is empty
+    }
+
+    // Proceed with your submission logic
 
     /**
      * Log formData contents
@@ -201,19 +219,22 @@ const SingleTaskDetails = () => {
      * }
      */
     // Log file details if needed
+    setLoading(true);
     dispatch(addComment(formData))
       .then((response) => {
         // This is where you can access the server's response
-        // console.log("Server response:", response.payload.success);
+
         toast.success(response.payload.message ?? "");
         setComment("");
-        setSelectedFile(null);
-        setCommentSubmitted(true);
+        setSelectedFile(null); // Clear the selected file
+        setCommentSubmitted(true); // Set commentSubmitted to true
+        setWarningMessage(""); // Clear the warning message if the submission is valid
+        setLoading(false); // Reset loading state
 
-        dispatch(fetchComments({ relatedTaskId: taskId }));
+        dispatch(fetchComments({ relatedTaskId: taskId })); // Fetch comments after submission is successful
       })
       .catch((error) => {
-        console.error("Error adding comment:", error);
+        console.error("Error adding comment:", error); // Log the error message if there's an error adding the comment
       });
   };
 
@@ -246,7 +267,15 @@ const SingleTaskDetails = () => {
   if (!task) {
     return <Loader />;
   }
+console.log(task.fileUpload);
+const isImageFile = (url) => {
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+  return imageExtensions.some(ext => url.endsWith(ext));
+};
 
+const handleFileClick = (url) => {
+  window.open(url, '_blank');
+};
   return (
     <>
       <ToastContainer />
@@ -394,6 +423,7 @@ const SingleTaskDetails = () => {
                   className="w-full max-w-sm h-auto object-contain"
                   style={{ maxWidth: "100%" }}
                 />
+                <iframe  src={task?.fileUpload} frameborder="0"></iframe>
               </div>
             )}
           </div>
@@ -403,8 +433,11 @@ const SingleTaskDetails = () => {
         <div className="container mx-auto mt-4">
           <div>
             {comments?.map((comment, index) => (
-              <div className="border border-gray-800 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ">
-                <div key={index} className="flex justify-between items-start">
+              <div
+                key={index}
+                className="border border-gray-800 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 mb-4" // Added mb-4 for bottom margin
+              >
+                <div className="flex justify-between items-start">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
                     <div className="flex items-center space-x-2 mb-2 sm:mb-0">
                       <img
@@ -413,7 +446,7 @@ const SingleTaskDetails = () => {
                           renderUserProfilePicture(comment?.assignBy) ??
                           "https://via.placeholder.com/150"
                         }
-                        alt="https://via.placeholder.com/150"
+                        alt="Profile"
                       />
                       <span className="font-bold">
                         {renderUserFullName(comment?.commentedBy)}
@@ -432,8 +465,8 @@ const SingleTaskDetails = () => {
                     <BsThreeDots />
                   </div>
                 </div>
-                <div className=" mt-3 border border-gray-800 dark:border-gray-600 rounded-lg p-3 ">
-                  <div className="flex flex-wrap flex-row justify-between p-3 ">
+                <div className="mt-3 border border-gray-800 dark:border-gray-600 rounded-lg p-3">
+                  <div className="flex flex-wrap flex-row justify-between ">
                     <div>{comment?.comment}</div>
                     {/* Check if documentFile is present and render it */}
                     {comment?.documentFile && (
@@ -441,7 +474,7 @@ const SingleTaskDetails = () => {
                         {comment?.documentFile ? (
                           <img
                             src={comment?.documentFile}
-                            alt=""
+                            alt="Document"
                             className="mx-auto"
                             style={{
                               width: "80%",
@@ -455,9 +488,9 @@ const SingleTaskDetails = () => {
                         )}
 
                         {/* <DocViewer
-                        documents={[{ uri: comment?.documentFile }]}
-                        pluginRenderers={DocViewerRenderers}
-                      /> */}
+                documents={[{ uri: comment?.documentFile }]}
+                pluginRenderers={DocViewerRenderers}
+              /> */}
                       </div>
                     )}
                   </div>
@@ -465,6 +498,7 @@ const SingleTaskDetails = () => {
               </div>
             ))}
           </div>
+
           {/* Comment box with drag-and-drop file upload */}
           <div className="flex flex-row py-1 items-center">
             <img
@@ -482,6 +516,11 @@ const SingleTaskDetails = () => {
                 className="w-full h-24 border border-gray-800 dark:border-gray-600 rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="Write your comment"
               ></textarea>
+              {warningMessage && (
+                <div className="text-red-500 font-semibold mt-2">
+                  {warningMessage}
+                </div>
+              )}
             </div>
             {selectedFile && (
               <div className="mt-3 text-sm text-gray-700 dark:text-gray-300">
@@ -594,8 +633,36 @@ const SingleTaskDetails = () => {
               <button
                 onClick={(e) => handleCommentSubmit(e)}
                 className="px-4 py-1.5 bg-slate-800 text-white rounded-lg focus:outline-none ml-2"
+                disabled={loading}
               >
-                Comment
+                {loading ? (
+                  <div className="flex items-center">
+                    {/* Loader Spinner */}
+                    <svg
+                      className="animate-spin h-5 w-5 text-white mr-2"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      ></path>
+                    </svg>
+                    Loading...
+                  </div>
+                ) : (
+                  "Comment"
+                )}
               </button>
             </div>
           </div>
