@@ -18,12 +18,11 @@ import {
   GoIssueReopened,
   GoTasklist,
 } from "react-icons/go";
-import { IoMdAdd } from "react-icons/io";
+import { IoMdAdd, IoMdSearch } from "react-icons/io";
 import { BsThreeDots } from "react-icons/bs";
 import { TbSubtask } from "react-icons/tb";
 import { MdOutlineViewTimeline } from "react-icons/md";
 import { AiOutlineIssuesClose } from "react-icons/ai";
-import { IoSearchCircleSharp } from "react-icons/io5";
 
 const AllTask = () => {
   const dispatch = useDispatch();
@@ -35,6 +34,9 @@ const AllTask = () => {
   const [inReviewTasks, setInReviewTasks] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredTasks, setFilteredTasks] = useState([]);
+
   const [uiState, setUiState] = useState({
     activeTab: "All Tasks",
     tabs: ["All Tasks", "My Tasks", "Open", "Close"],
@@ -78,18 +80,42 @@ const AllTask = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const getFilteredTasks = useCallback(() => {
+    // Apply search filtering across all tasks
+    return tasks.filter((task) => {
+      const taskName = task?.title?.toLowerCase() || ""; // Ensure taskName is valid
+      const taskId = task?.taskId?.toString() || ""; // Ensure id is valid
+
+      return (
+        taskName.includes(searchTerm.toLowerCase()) ||
+        taskId.includes(searchTerm)
+      );
+    });
+  }, [tasks, searchTerm]);
+
   const getCurrentPageTasks = useMemo(() => {
+    const filtered = getFilteredTasks();
+    console.log("filter task", filtered);
+
     switch (uiState.activeTab) {
       case "Open":
-        return currentOpenTasks;
+        return getCurrentTasks(
+          filtered.filter((task) => task.status === "Open")
+        );
       case "Close":
-        return currentCloseTasks;
+        return getCurrentTasks(
+          filtered.filter((task) => task.status === "Close")
+        );
       case "On Hold":
-        return currentOnHoldTasks;
+        return getCurrentTasks(
+          filtered.filter((task) => task.status === "On Hold")
+        );
       case "In Review":
-        return currentInReviewTasks;
+        return getCurrentTasks(
+          filtered.filter((task) => task.status === "In Review")
+        );
       default:
-        return tasks;
+        return getCurrentTasks(filtered);
     }
   }, [
     uiState.activeTab,
@@ -98,10 +124,13 @@ const AllTask = () => {
     currentOnHoldTasks,
     currentInReviewTasks,
     tasks,
+    searchTerm,
   ]);
 
-  const handleTabChange = (tab) =>
+  const handleTabChange = (tab) => {
+    setCurrentPage(1); // Reset pagination when changing tab
     setUiState((prevState) => ({ ...prevState, activeTab: tab }));
+  };
 
   const handleTaskDetails = (taskId) =>
     navigate(`../singleTaskDetails/${taskId}`);
@@ -151,6 +180,41 @@ const AllTask = () => {
     [uiState.tabs, uiState.activeTab, getTabIcon]
   );
 
+  const handleSearchInput = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleSearchButton = () => {
+    setUiState((prevState) => ({
+      ...prevState,
+      searchInputBox: !prevState.searchInputBox, // Toggle state
+    }));
+  };
+
+  // Filter today's tasks and other types
+  const filterTodayTasks = () => {
+    const today = new Date().toISOString().split("T")[0];
+    const filtered = tasks.filter(
+      (task) => task.createdAt.split("T")[0] === today
+    );
+    setFilteredTasks(filtered);
+  };
+
+  const TaskView = ({ taskType, currentTasks }) => (
+    <>
+      <RenderTasks
+        tasksList={currentTasks}
+        handleTaskDetails={handleTaskDetails}
+        users={users}
+      />
+      {currentTasks.length === 0 && (
+        <div className="flex justify-center font-bold mt-12">
+          {`No ${taskType.toLowerCase()} tasks available.`}
+        </div>
+      )}
+    </>
+  );
+
   useEffect(() => {
     dispatch(fetchProfile());
     dispatch(fetchTags());
@@ -177,21 +241,6 @@ const AllTask = () => {
     setOnHoldTasks(onHoldTasks);
     setInReviewTasks(inReviewTasks);
   }, [tasks]);
-
-  const TaskView = ({ taskType, currentTasks }) => (
-    <>
-      <RenderTasks
-        tasksList={currentTasks}
-        handleTaskDetails={handleTaskDetails}
-        users={users}
-      />
-      {currentTasks.length === 0 && (
-        <div className="flex justify-center font-bold mt-12">
-          {`No ${taskType.toLowerCase()} tasks available.`}
-        </div>
-      )}
-    </>
-  );
 
   return (
     <>
@@ -234,8 +283,29 @@ const AllTask = () => {
             </div>
           </div>
           <div className="flex flex-row justify-between p-2 space-x-2">
+            <div
+              className={`flex items-center p-0.25 rounded-md transition-colors cursor-pointer ${
+                uiState.searchInputBox
+                  ? "hover:bg-gray-300 dark:hover:bg-gray-700"
+                  : "hover:bg-gray-300 dark:hover:bg-gray-700"
+              }`}
+              onClick={handleSearchButton}
+            >
+              <IoMdSearch className="text-xl cursor-pointer" />
+              {uiState.searchInputBox && (
+                <input
+                  type="search"
+                  placeholder="Type to search..."
+                  className="bg-transparent p-1 outline-none"
+                  onChange={handleSearchInput}
+                  value={searchTerm}
+                  autoFocus // Allow the input field to be focused
+                />
+              )}
+            </div>
+
             <div className="flex space-x-2">
-              <button
+              <div
                 className={`px-2 py-1 rounded-md text-sm ${
                   currentPage === 1
                     ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
@@ -245,8 +315,8 @@ const AllTask = () => {
                 disabled={currentPage === 1}
               >
                 Prev
-              </button>
-              <button
+              </div>
+              <div
                 className={`px-2 py-1 rounded-md text-sm ${
                   getCurrentPageTasks.length < itemsPerPage
                     ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
@@ -256,32 +326,22 @@ const AllTask = () => {
                 disabled={getCurrentPageTasks.length < itemsPerPage}
               >
                 Next
-              </button>
+              </div>
             </div>
 
-            <div className="flex items-center">
-              <IoSearchCircleSharp className="text-xl cursor-pointer" />
-              {uiState.searchInputBox && (
-                <input
-                  type="search"
-                  placeholder="Type to search..."
-                  className="bg-transparent p-1 outline-none"
-                />
-              )}
-              <Link to={"../newTask"}>
-                <div className="flex items-center bg-gray-900 hover:bg-gray-800 text-white px-2 py-1 rounded-md shadow-inner cursor-pointer">
-                  <IoMdAdd className="text-lg mr-1" />
-                  <span>New</span>
-                </div>
-              </Link>
-            </div>
+            <Link to={"../newTask"}>
+              <div className="flex items-center bg-gray-900 hover:bg-gray-800 text-white px-2 py-1 rounded-md shadow-inner cursor-pointer">
+                <IoMdAdd className="text-lg mr-1" />
+                <span>New</span>
+              </div>
+            </Link>
           </div>
         </nav>
       </div>
 
       <div className="p-3 dark:bg-gray-900 min-h-screen w-full mx-auto lg:w-4/5 xl:w-[90%]">
         {uiState.activeTab === "All Tasks" && (
-          <TaskView taskType="All Tasks" currentTasks={tasks} />
+          <TaskView taskType="All Tasks" currentTasks={getCurrentPageTasks} />
         )}
         {uiState.activeTab === "My Tasks" && (
           <TaskView taskType="My Tasks" currentTasks={employeeSpecificTasks} />
@@ -297,6 +357,10 @@ const AllTask = () => {
         )}
         {uiState.activeTab === "In Review" && (
           <TaskView taskType="In Review" currentTasks={currentInReviewTasks} />
+        )}
+        {uiState.activeTab === "Timeline" && (
+          <div> radhe radhe </div>
+          // <TaskView taskType="Timeline" currentTasks={currentTimelineTasks} />
         )}
       </div>
     </>
