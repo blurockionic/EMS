@@ -4,6 +4,7 @@ import { Task } from "../model/task.js";
 import { User } from "../model/user.js";
 import { uploadOnCloudinary } from "../utilities/cloudinary.js";
 
+// Create Comment
 export const createComment = async (req, res) => {
   const { comment, commentedBy, relatedTaskId, relatedIssueId } = req.body;
   const file = req.file; // Access the uploaded file
@@ -40,8 +41,10 @@ export const createComment = async (req, res) => {
     if (file) {
       // Upload profile picture to Cloudinary
       const uploadResult = await uploadOnCloudinary(req.file.path);
+      console.log("Upload result:", uploadResult);
+
       if (uploadResult) {
-        newComment.documentFile  = uploadResult.url;
+        newComment.documentFile = uploadResult.url;
       }
     } else {
       console.log("No file recieved");
@@ -68,7 +71,7 @@ export const createComment = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
+// Get All Comments
 export const getAllComments = async (req, res) => {
   const { relatedTaskId, relatedIssueId } = req.query;
 
@@ -81,12 +84,16 @@ export const getAllComments = async (req, res) => {
     } else {
       return res
         .status(400)
-        .json({ message: "Task ID or Issue ID is required" });
+        .json({ success: false, message: "Task ID or Issue ID is required" });
     }
 
-    res.status(200).json(allComments);
+    res.status(200).json({
+      success: true,
+      message: "All comments fetched successfully",
+      allComments,
+    });
   } catch (error) {
     console.error("Error fetching comments:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

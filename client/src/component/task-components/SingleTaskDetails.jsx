@@ -258,6 +258,7 @@ const SingleTaskDetails = () => {
     // If the user is found, return the full name, otherwise return an empty string
     return user ? `${user.firstName} ${user.lastName}` : "";
   };
+  // Helper to render user profile picture based on user id
   const renderUserProfilePicture = (userId) => {
     const user = users.find((user) => user._id === userId);
 
@@ -267,15 +268,8 @@ const SingleTaskDetails = () => {
   if (!task) {
     return <Loader />;
   }
-console.log(task.fileUpload);
-const isImageFile = (url) => {
-  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
-  return imageExtensions.some(ext => url.endsWith(ext));
-};
+console.log(comments);
 
-const handleFileClick = (url) => {
-  window.open(url, '_blank');
-};
   return (
     <>
       <ToastContainer />
@@ -416,14 +410,24 @@ const handleFileClick = (url) => {
           <div className="flex flex-col">
             <div className="text-sm mb-3">{task?.description}</div>
             {task?.fileUpload && (
-              <div className="flex justify-center">
-                <img
-                  src={task?.fileUpload}
-                  alt="Uploaded file"
-                  className="w-full max-w-sm h-auto object-contain"
-                  style={{ maxWidth: "100%" }}
-                />
-                <iframe  src={task?.fileUpload} frameborder="0"></iframe>
+              <div>
+                {task?.fileUpload.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                  <img
+                    src={task?.fileUpload}
+                    alt="Document"
+                    className="w-7/12 rounded-lg mx-auto object-cover "
+                 
+                  />
+                ) : (
+                  <a
+                    href={task?.fileUpload}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    {task?.fileUpload.split("/").pop()}
+                  </a>
+                )}
               </div>
             )}
           </div>
@@ -466,12 +470,14 @@ const handleFileClick = (url) => {
                   </div>
                 </div>
                 <div className="mt-3 border border-gray-800 dark:border-gray-600 rounded-lg p-3">
-                  <div className="flex flex-wrap flex-row justify-between ">
-                    <div>{comment?.comment}</div>
+                  <div className="flex  flex-wrap flex-col">
+                    <div className="mb-2">{comment?.comment}</div>
                     {/* Check if documentFile is present and render it */}
                     {comment?.documentFile && (
                       <div>
-                        {comment?.documentFile ? (
+                        {comment?.documentFile.match(
+                          /\.(jpeg|jpg|gif|png)$/i
+                        ) ? (
                           <img
                             src={comment?.documentFile}
                             alt="Document"
@@ -484,13 +490,15 @@ const handleFileClick = (url) => {
                             }}
                           />
                         ) : (
-                          comment?.documentFile
+                          <a
+                            href={comment?.documentFile}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 font-bold"
+                          >
+                            {comment?.documentFile.split("/").pop()}
+                          </a>
                         )}
-
-                        {/* <DocViewer
-                documents={[{ uri: comment?.documentFile }]}
-                pluginRenderers={DocViewerRenderers}
-              /> */}
                       </div>
                     )}
                   </div>
