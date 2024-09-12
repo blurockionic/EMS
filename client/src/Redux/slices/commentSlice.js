@@ -5,7 +5,7 @@ import { server } from "../../App"; // Server URL from your configuration
 
 // Define initial state for the comments slice
 const initialState = {
-  comments: [],  // Array to store fetched comments
+  comments: [], // Array to store fetched comments
   loading: false, // Boolean to indicate loading state
   error: null, // Variable to store any error messages
 };
@@ -18,10 +18,13 @@ export const fetchComments = createAsyncThunk(
       let query = "";
       // Construct query string based on provided IDs
       if (relatedTaskId) {
+        // Add relatedTaskId to query string
         query = `?relatedTaskId=${relatedTaskId}`;
       } else if (relatedIssueId) {
+        // Add relatedIssueId to query string
         query = `?relatedIssueId=${relatedIssueId}`;
       } else {
+        // Throw error if neither relatedTaskId nor relatedIssueId is provided 
         throw new Error(
           "Either relatedTaskId or relatedIssueId must be provided"
         );
@@ -29,7 +32,7 @@ export const fetchComments = createAsyncThunk(
 
       // Make HTTP GET request to fetch comments
       const response = await axios.get(`${server}/comment/allcomments${query}`);
-      return response.data; // Return fetched comments
+      return response.data.allComments; // Return fetched comments
     } catch (error) {
       // Log and throw error if request fails
       console.error("Error fetching comments:", error);
@@ -42,14 +45,10 @@ export const fetchComments = createAsyncThunk(
 export const addComment = createAsyncThunk(
   "comments/addComment",
   async (formData) => {
-
-    
-
     //  for (let [key, value] of formData.entries()) {
     //   console.log(`${key}: ${value}`);
     // }
 
-    
     try {
       // Make HTTP POST request to add a new comment
       const response = await axios.post(`${server}/comment/new`, formData, {
