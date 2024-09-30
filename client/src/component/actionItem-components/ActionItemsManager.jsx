@@ -6,6 +6,7 @@ import { IoCalendar, IoSearchSharp } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { MdOutlineAttractions, MdOutlineViewTimeline } from "react-icons/md";
 import { GoIssueClosed } from "react-icons/go";
+import { Link } from "react-router-dom";
 
 const ActionItemsManager = () => {
   const [uiState, setUiState] = useState({
@@ -232,12 +233,12 @@ const ActionItemsManager = () => {
               className="bg-transparent p-1 outline-none"
             />
           )}
-          <div className="flex items-center" onClick={handleNewClick}>
+          <Link className="flex items-center" to="../NewActionItem">
             <div className="flex items-center font-semibold text-white bg-gray-900 hover:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white px-2 py-1 rounded-md shadow-inner cursor-pointer transition-colors">
               <IoMdAdd className="text-lg mr-1" />
               <span>New</span>
             </div>
-          </div>
+          </Link>
         </div>
       </nav>
 
