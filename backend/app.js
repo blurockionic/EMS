@@ -47,9 +47,9 @@ dotenv.config({
 // Allow requests only from http://192.168.1.8:3000
 const corsOptions = {
   //for vercel 
-  // origin: "https://ems-beta-brown.vercel.app",
+  origin: "https://ems-beta-brown.vercel.app",
   // for development only
-  origin: "http://localhost:3000",
+  // origin: "http://localhost:3000",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
 };
