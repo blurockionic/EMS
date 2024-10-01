@@ -1,6 +1,6 @@
-// backend\controller\Task.js
+// backend\controller\actionItem.js
 import { Project } from "../model/project.js";
-import { Task } from "../model/task.js";
+import { actionItem } from "../model/actionItem.js";
 import { uploadOnCloudinary } from "../utilities/cloudinary.js";
 import mongoose from "mongoose";
 const { ObjectId } = mongoose.Types;
@@ -11,49 +11,49 @@ import { User } from "../model/user.js";
 import nodemailer from "nodemailer";
 import { Notification } from "../model/NotificationSchema.js"; // importing Notification model
 
-export const task = async (req, res) => {
-  // const generateTaskId = async () => {
-  //   const lastTask = await Task.findOne().sort({ createdAt: -1 });
-  //   let newTaskId = "001"; // Start with "001" if there's no previous user
+export const actionItem = async (req, res) => {
+  // const generateActionItemId = async () => {
+  //   const lastActionItem = await actionItem.findOne().sort({ createdAt: -1 });
+  //   let newActionItemId = "001"; // Start with "001" if there's no previous user
 
-  //   if (lastTask && lastTask.taskId) {
+  //   if (lastActionItem && lastActionItem.actionItemId) {
   //     // Extract the numeric part of the last employee ID
-  //     const lastIdNumber = parseInt(lastTask.taskId, 10); // Directly parse the whole ID as a number
+  //     const lastIdNumber = parseInt(lastActionItem.actionItemId, 10); // Directly parse the whole ID as a number
   //     const newIdNumber = lastIdNumber + 1; // Increment the number
 
   //     // Ensure the new ID is a three-digit number
-  //     newTaskId = `${newIdNumber.toString().padStart(3, "0")}`;
+  //     newActionItemId = `${newIdNumber.toString().padStart(3, "0")}`;
   //   }
 
-  //   return newTaskId;
+  //   return newActionItemId;
   // };
-  const generateTaskId = async () => {
+  const generateActionItemId = async () => {
     // Get the current date components
     const currentDate = new Date();
     const year = currentDate.getFullYear().toString().slice(2); // Get last 2 digits of the year
     const month = (currentDate.getMonth() + 1).toString().padStart(2, "0"); // Ensure month is 2 digits
     const day = currentDate.getDate().toString().padStart(2, "0"); // Ensure day is 2 digits
   
-    // Get the last task created and increment its taskId number
-    const lastTask = await Task.findOne().sort({ createdAt: -1 });
-    let newTaskNumber = "001"; // Default to "001" if no previous task exists
+    // Get the last actionItem created and increment its actionItemId number
+    const lastActionItem = await actionItem.findOne().sort({ createdAt: -1 });
+    let newActionItemNumber = "001"; // Default to "001" if no previous actionItem exists
   
-    if (lastTask && lastTask.taskId) {
-      // Extract the last 3 digits (numeric part) of the taskId for comparison
-      const lastTaskDatePart = lastTask.taskId.split("-")[1];
-      const lastTaskNumber = lastTask.taskId.split("-")[2]; // Get the numeric part
+    if (lastActionItem && lastActionItem.actionItemId) {
+      // Extract the last 3 digits (numeric part) of the actionItemId for comparison
+      const lastActionItemDatePart = lastActionItem.actionItemId.split("-")[1];
+      const lastActionItemNumber = lastActionItem.actionItemId.split("-")[2]; // Get the numeric part
   
       // Only increment the number if the date part matches today's date
-      if (lastTaskDatePart === `${year}${month}${day}`) {
-        const newNumber = parseInt(lastTaskNumber, 10) + 1; // Increment the last number
-        newTaskNumber = newNumber.toString().padStart(3, "0"); // Ensure it's 3 digits
+      if (lastActionItemDatePart === `${year}${month}${day}`) {
+        const newNumber = parseInt(lastActionItemNumber, 10) + 1; // Increment the last number
+        newActionItemNumber = newNumber.toString().padStart(3, "0"); // Ensure it's 3 digits
       }
     }
   
     // Combine the parts into the desired format T-YYMMDD-XXX
-    const newTaskId = `T-${year}${month}${day}-${newTaskNumber}`;
+    const newActionItemId = `T-${year}${month}${day}-${newActionItemNumber}`;
   
-    return newTaskId;
+    return newActionItemId;
   };
   
   try {
@@ -61,7 +61,7 @@ export const task = async (req, res) => {
     const {
       title,
       description,
-      taskhashId,
+      actionItemhashId,
       selectedTags,
       status,
       assignBy,
@@ -118,13 +118,13 @@ export const task = async (req, res) => {
       console.log("No file received");
     }
 
-    const taskId = await generateTaskId();
+    const actionItemId = await generateActionItemId();
 
-    // Create a new task using the Task model
-    const newTask = await Task.create({
+    // Create a new actionItem using the actionItem model
+    const newActionItem = await actionItem.create({
       title,
       description,
-      taskhashId,
+      actionItemhashId,
       tags: selectedTagsArray,
       status,
       assignBy,
@@ -132,8 +132,8 @@ export const task = async (req, res) => {
       project,
       assignDate,
       dueDate,
-      taskId,
-      fileUpload: cloudinaryUrl, // Store the file URL in the task document
+      actionItemId,
+      fileUpload: cloudinaryUrl, // Store the file URL in the actionItem document
     });
 
     // Fetch the assigned users' details to display their names in the response
@@ -143,18 +143,18 @@ export const task = async (req, res) => {
       .join(", ");
 
     // Send email to assigned users
-    await sendEmailNotifications(assignedUsers, newTask);
+    await sendEmailNotifications(assignedUsers, newActionItem);
 
     // Create in-site notifications for assigned users
-    await createInSiteNotifications(assignedUsers, newTask);
+    await createInSiteNotifications(assignedUsers, newActionItem);
 
     return res.status(201).json({
       success: true,
-      task: newTask,
-      message: `Task has been assigned to ${fullNames}`,
+      actionItem: newActionItem,
+      message: `actionItem has been assigned to ${fullNames}`,
     });
   } catch (error) {
-    console.error("Error creating task:", error); // Log any errors that occur
+    console.error("Error creating actionItem:", error); // Log any errors that occur
 
     // Send an internal server error response if something goes wrong
     return res.status(500).json({
@@ -164,7 +164,7 @@ export const task = async (req, res) => {
   }
 };
 
-const sendEmailNotifications = async (assignedUsers, task) => {
+const sendEmailNotifications = async (assignedUsers, actionItem) => {
   // Set up the transporter using nodemailer
   const transporter = nodemailer.createTransport({
     service: "gmail", // Use your email provider
@@ -179,7 +179,7 @@ const sendEmailNotifications = async (assignedUsers, task) => {
     const mailOptions = {
       from: process.env.MAIL_USER,
       to: user.email,
-      subject: `New Task Assigned: ${task.title}`,
+      subject: `New actionItem Assigned: ${actionItem.title}`,
 
       html: `
         <html>
@@ -195,23 +195,23 @@ const sendEmailNotifications = async (assignedUsers, task) => {
                 >
               </div>
 
-              <h2 style="color: #4CAF50; text-align: center; margin-top: 20px;">New Task Assignment</h2>
+              <h2 style="color: #4CAF50; text-align: center; margin-top: 20px;">New actionItem Assignment</h2>
               <p style="font-style: capitalize">Dear, ${user?.firstName} ${
         user?.lastName
       },
               </p>
-              <p>We are pleased to inform you that you have been assigned a new task titled <strong>"${
-                task.title
+              <p>We are pleased to inform you that you have been assigned a new actionItem titled <strong>"${
+                actionItem.title
               }"</strong>.</p>
-              <p><strong>Description:</strong> ${task.description}</p>
+              <p><strong>Description:</strong> ${actionItem.description}</p>
               <p><strong>Due Date:</strong> ${new Date(
-                task.dueDate
+                actionItem.dueDate
               ).toLocaleString("en-US", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
               })}</p>
-              <p>Please log in to your EMS dashboard to view the task details and manage your progress.</p>
+              <p>Please log in to your EMS dashboard to view the actionItem details and manage your progress.</p>
               <p style="margin-top: 20px;">Best regards,<br>BluRock Ionic</p>
             </div>
           </body>
@@ -225,20 +225,20 @@ const sendEmailNotifications = async (assignedUsers, task) => {
 };
 
 // Helper function to create in-site notifications
-const createInSiteNotifications = async (assignedUsers, task) => {
+const createInSiteNotifications = async (assignedUsers, actionItem) => {
   const notifications = assignedUsers.map((user) => ({
     user: user._id, // For each user, get their unique ID
-    message: `You have been assigned a new task: ${task.title}`, // Create a message containing the task title
+    message: `You have been assigned a new actionItem: ${actionItem.title}`, // Create a message containing the actionItem title
     read: false, // Set the default state of the notification as unread
   }));
 
   await Notification.insertMany(notifications); // Insert the list of notifications into the database at once
 };
 
-export const allTask = async (req, res) => {
+export const allActionItem = async (req, res) => {
   try {
     //validation
-    const allTask = await Task.find({})
+    const allActionItem = await actionItem.find({})
       .populate({
         path: "tags",
         select: "tagName",
@@ -255,18 +255,18 @@ export const allTask = async (req, res) => {
       })
       .sort({ createdAt: -1 }); // Sort meetings by creation date, newest first
 
-    if (!allTask) {
+    if (!allActionItem) {
       return res.status(500).json({
         success: false,
         message: "No record found",
       });
     }
 
-    //get all task
+    //get all actionItem
     return res.status(200).json({
       success: true,
-      allTask,
-      message: "All task fetch successfully!",
+      allActionItem,
+      message: "All actionItem fetch successfully!",
     });
   } catch (error) {
     return res.status(500).json({
@@ -276,8 +276,8 @@ export const allTask = async (req, res) => {
   }
 };
 
-//get employee task // tested
-export const taskOfEmployee = async (req, res) => {
+//get employee actionItem // tested
+export const actionItemOfEmployee = async (req, res) => {
   //fetch employee id from params
   const { id } = req.params;
   try {
@@ -288,12 +288,12 @@ export const taskOfEmployee = async (req, res) => {
     //     return res.status(400).json({
     //       success: false,
     //       message:
-    //         "Only manager can check the task! Please concern deparment to get access.",
+    //         "Only manager can check the actionItem! Please concern deparment to get access.",
     //     });
     //   }
 
     //validation
-    const allTaskOfEmployee = await Task.find({ assignTo: id })
+    const allActionItemOfEmployee = await actionItem.find({ assignTo: id })
       .populate({
         path: "tags",
         select: "tagName",
@@ -305,18 +305,18 @@ export const taskOfEmployee = async (req, res) => {
         model: User,
       });
 
-    if (!allTaskOfEmployee) {
+    if (!allActionItemOfEmployee) {
       return res.status(500).json({
         success: false,
         message: "No record found",
       });
     }
 
-    //get all task
+    //get all actionItem
     return res.status(200).json({
       success: true,
-      allTaskOfEmployee,
-      message: "All task fetch successfully!",
+      allActionItemOfEmployee,
+      message: "All actionItem fetch successfully!",
     });
   } catch (error) {
     return res.status(500).json({
@@ -326,12 +326,12 @@ export const taskOfEmployee = async (req, res) => {
   }
 };
 
-//update task //tested
-export const updateTask = async (req, res) => {
+//update actionItem //tested
+export const updateActionItem = async (req, res) => {
   // fetch id from params
   const { id } = req.params;
   // fetch all data from req  body
-  const { taskTitle, taskDescription, assignTo } = req.body;
+  const { actionItemTitle, actionItemDescription, assignTo } = req.body;
 
   try {
     //VALIDATION
@@ -342,28 +342,28 @@ export const updateTask = async (req, res) => {
       });
     }
 
-    //find task
-    const foundTask = await Task.findById(id);
+    //find actionItem
+    const foundActionItem = await actionItem.findById(id);
 
-    if (!foundTask) {
+    if (!foundActionItem) {
       return res.status(400).json({
         success: false,
-        message: "Task is not found!",
+        message: "actionItem is not found!",
       });
     }
 
-    //udate with new value
-    foundTask.taskTitle = taskTitle;
-    foundTask.taskDescription = taskDescription;
-    foundTask.assignTo = assignTo;
+    //update with new value
+    foundActionItem.actionItemTitle = actionItemTitle;
+    foundActionItem.actionItemDescription = actionItemDescription;
+    foundActionItem.assignTo = assignTo;
 
     //    save the new value
-    const updateTask = await foundTask.save();
+    const updateActionItem = await foundActionItem.save();
 
     return res.status(200).json({
       success: true,
-      updateTask,
-      message: "task updated successfully!",
+      updateActionItem,
+      message: "actionItem updated successfully!",
     });
   } catch (error) {
     return res.status(500).json({
@@ -373,8 +373,8 @@ export const updateTask = async (req, res) => {
   }
 };
 
-//delete task ////tested
-export const deleteTask = async (req, res) => {
+//delete actionItem ////tested
+export const deleteActionItem = async (req, res) => {
   // fetch id from req params
   const { id } = req.params;
 
@@ -383,7 +383,7 @@ export const deleteTask = async (req, res) => {
     if (!id) {
       return res.status(400).json({
         success: false,
-        message: "task id is invalid or null!",
+        message: "actionItem id is invalid or null!",
       });
     }
 
@@ -392,17 +392,17 @@ export const deleteTask = async (req, res) => {
     if (designationType != "Manager") {
       return res.status(400).json({
         success: false,
-        message: "Only manager can delete the task!",
+        message: "Only manager can delete the actionItem!",
       });
     }
 
-    //delete task from db
-    const deleteTask = await Task.deleteOne({ _id: id });
+    //delete actionItem from db
+    const deleteActionItem = await actionItem.deleteOne({ _id: id });
 
     return res.status(200).json({
       success: true,
-      deleteTask,
-      message: "Task deleted successfully",
+      deleteActionItem,
+      message: "actionItem deleted successfully",
     });
   } catch (error) {
     return res.status(500).json({
@@ -412,8 +412,8 @@ export const deleteTask = async (req, res) => {
   }
 };
 
-//get all task of specific task // tested
-export const specificProjectTask = async (req, res) => {
+//get all actionItem of specific actionItem // tested
+export const specificProjectActionItem = async (req, res) => {
   // Fetch project id from params
   const { id } = req.params;
   try {
@@ -425,28 +425,28 @@ export const specificProjectTask = async (req, res) => {
       });
     }
 
-    // Fetch tasks filtered by project ID
+    // Fetch actionItems filtered by project ID
 
-    const specificProjectTasks = await Task.find({ project: id }).populate({
+    const specificProjectActionItems = await actionItem.find({ project: id }).populate({
       path: "tags",
       select: "tagName",
       model: Tags,
     });
 
-    if (!specificProjectTasks || specificProjectTasks.length === 0) {
+    if (!specificProjectActionItems || specificProjectActionItems.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No tasks available for this project",
+        message: "No actionItems available for this project",
       });
     }
 
     return res.status(200).json({
       success: true,
-      tasks: specificProjectTasks,
-      message: "Tasks fetched successfully!",
+      actionItems: specificProjectActionItems,
+      message: "actionItems fetched successfully!",
     });
   } catch (error) {
-    console.error("Error fetching tasks:", error);
+    console.error("Error fetching actionItems:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -454,7 +454,7 @@ export const specificProjectTask = async (req, res) => {
   }
 };
 
-export const closeTask = async (req, res) => {
+export const closeActionItem = async (req, res) => {
   // fetch id from params
   const { id } = req.params;
   // fetch all data from req  body
@@ -467,26 +467,26 @@ export const closeTask = async (req, res) => {
       });
     }
 
-    //find task
-    const foundTask = await Task.findById(id);
+    //find actionItem
+    const foundActionItem = await actionItem.findById(id);
 
-    if (!foundTask) {
+    if (!foundActionItem) {
       return res.status(400).json({
         success: false,
-        message: "Task is not found!",
+        message: "actionItem is not found!",
       });
     }
 
     //udate with new value
-    foundTask.status = "Close";
+    foundActionItem.status = "Close";
 
     //    save the new value
-    const closeTask = await foundTask.save();
+    const closeActionItem = await foundActionItem.save();
 
     return res.status(200).json({
       success: true,
-      closeTask,
-      message: "task closed successfully!",
+      closeActionItem,
+      message: "actionItem closed successfully!",
     });
   } catch (error) {
     return res.status(500).json({
@@ -495,7 +495,7 @@ export const closeTask = async (req, res) => {
     });
   }
 };
-export const reopenTask = async (req, res) => {
+export const reopenActionItem = async (req, res) => {
   // fetch id from params
   const { id } = req.params;
   // fetch all data from req  body
@@ -508,26 +508,26 @@ export const reopenTask = async (req, res) => {
       });
     }
 
-    //find task
-    const foundTask = await Task.findById(id);
+    //find actionItem
+    const foundActionItem = await actionItem.findById(id);
 
-    if (!foundTask) {
+    if (!foundActionItem) {
       return res.status(400).json({
         success: false,
-        message: "Task is not found!",
+        message: "actionItem is not found!",
       });
     }
 
     //udate with new value
-    foundTask.status = "Open";
+    foundActionItem.status = "Open";
 
     //    save the new value
-    const closeTask = await foundTask.save();
+    const closeActionItem = await foundActionItem.save();
 
     return res.status(200).json({
       success: true,
-      closeTask,
-      message: "task closed successfully!",
+      closeActionItem,
+      message: "actionItem closed successfully!",
     });
   } catch (error) {
     return res.status(500).json({
@@ -537,53 +537,53 @@ export const reopenTask = async (req, res) => {
   }
 };
 
-export const putTaskOnHold = async (req, res) => {
+export const putActionItemOnHold = async (req, res) => {
   try {
-    const { taskId } = req.params;
+    const { actionItemId } = req.params;
 
-    // Find the task by ID and update its status to "on hold"
-    const task = await Task.findByIdAndUpdate(
-      taskId,
+    // Find the actionItem by ID and update its status to "on hold"
+    const actionItem = await actionItem.findByIdAndUpdate(
+      actionItemId,
       { status: "On Hold" },
       { new: true }
     );
 
-    if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+    if (!actionItem) {
+      return res.status(404).json({ message: "actionItem not found" });
     }
 
     res.status(200).json({
       success: true,
-      message: "Task status updated to On Hold",
-      task,
+      message: "actionItem status updated to On Hold",
+      actionItem,
     });
   } catch (error) {
-    res.status(500).json({ message: "Failed to update task status", error });
+    res.status(500).json({ message: "Failed to update actionItem status", error });
   }
 };
 
-// Controller to submit a task for review
-export const submitTaskForReview = async (req, res) => {
+// Controller to submit a actionItem for review
+export const submitActionItemForReview = async (req, res) => {
   try {
-    const { taskId } = req.params;
+    const { actionItemId } = req.params;
 
-    // Find the task by ID and update its status to "in review"
-    const task = await Task.findByIdAndUpdate(
-      taskId,
+    // Find the actionItem by ID and update its status to "in review"
+    const actionItem = await actionItem.findByIdAndUpdate(
+      actionItemId,
       { status: "In Review" },
       { new: true }
     );
 
-    if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+    if (!actionItem) {
+      return res.status(404).json({ message: "actionItem not found" });
     }
 
     res.status(200).json({
       success: true,
-      message: "Task status updated to In Review",
-      task,
+      message: "actionItem status updated to In Review",
+      actionItem,
     });
   } catch (error) {
-    res.status(500).json({ message: "Failed to update task status", error });
+    res.status(500).json({ message: "Failed to update actionItem status", error });
   }
 };

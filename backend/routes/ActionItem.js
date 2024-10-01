@@ -1,16 +1,16 @@
 import express from "express";
 import {
-  allTask,
-  closeTask,
-  deleteTask,
-  putTaskOnHold,
-  reopenTask,
-  specificProjectTask,
-  submitTaskForReview,
-  task,
-  taskOfEmployee,
-  updateTask,
-} from "../controller/Task.js";
+  allActionItem,
+  closeActionItem,
+  deleteActionItem,
+  putActionItemOnHold,
+  reopenActionItem,
+  specificProjectActionItem,
+  submitActionItemForReview,
+  actionItem,
+  actionItemOfEmployee,
+  updateActionItem,
+} from "../controller/actionItems.js";
 import { isAuthenticated } from "../middleware/auth.js";
 import upload from "../middleware/multer.middleware.js";
 
@@ -23,35 +23,35 @@ const logRequestDetails = (req, next) => {
   next();
 };
 //routes for new task
-router.post("/new", isAuthenticated, upload.single("file"), task);
+router.post("/new", isAuthenticated, upload.single("file"), actionItem);
 
 //router for get all task
-router.get("/all", isAuthenticated, allTask);
+router.get("/all", isAuthenticated, allActionItem);
 
 //route for get task of employee
-router.get("/:id", isAuthenticated, taskOfEmployee);
+router.get("/:id", isAuthenticated, actionItemOfEmployee);
 
 //router for update
-router.put("/:id", isAuthenticated, updateTask);
+router.put("/:id", isAuthenticated, updateActionItem);
 
 //route for close and reopen task
 
-router.put("/close/:id", isAuthenticated, closeTask);
+router.put("/close/:id", isAuthenticated, closeActionItem);
 
-router.put("/reopen/:id", isAuthenticated, reopenTask);
+router.put("/reopen/:id", isAuthenticated, reopenActionItem);
 
 //route for update task status
 
 // Route to put a task on hold
-router.put("/hold/:taskId", putTaskOnHold);
+router.put("/hold/:actionItemId", putActionItemOnHold);
 
 // Route to submit a task for review
-router.put("/review/:taskId", submitTaskForReview);
+router.put("/review/:actionItemId", submitActionItemForReview);
 
 //route for delete task
-router.delete("/:id", isAuthenticated, deleteTask);
+router.delete("/:id", isAuthenticated, deleteActionItem);
 
 //route for specific task according to project
-router.get("/specific/:id", isAuthenticated, specificProjectTask);
+router.get("/specific/:id", isAuthenticated, specificProjectActionItem);
 
 export default router;
