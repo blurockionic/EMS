@@ -140,6 +140,7 @@ function App() {
           <Route path="taskreportfeedback" element={<TaskReportFeedback />} />
           <Route path="*" element={<NotFound />} />
           <Route path="NewActionItem" element={<NewActionItem/>}/>
+          <Route path="allActionItem" element={<ActionItemsManager/>}/>
         </Route>
         {/* Catch-All Route for Undefined Paths */}
         <Route path="*" element={<NotFound />} />

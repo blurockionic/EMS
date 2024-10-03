@@ -1,8 +1,8 @@
 // backend\controller\actionItem.js
 import { Project } from "../model/project.js";
-import { actionItem } from "../model/actionItem.js";
 import { uploadOnCloudinary } from "../utilities/cloudinary.js";
 import mongoose from "mongoose";
+import { ActionItem } from "../model/actionItem.js"; // Adjust this line
 const { ObjectId } = mongoose.Types;
 import { Tags } from "../model/tagsSchema.js";
 import { User } from "../model/user.js";
@@ -27,34 +27,60 @@ export const actionItem = async (req, res) => {
 
   //   return newActionItemId;
   // };
+  // const generateActionItemId = async () => {
+  //   // Get the current date components
+  //   const currentDate = new Date();
+  //   const year = currentDate.getFullYear().toString().slice(2); // Get last 2 digits of the year
+  //   const month = (currentDate.getMonth() + 1).toString().padStart(2, "0"); // Ensure month is 2 digits
+  //   const day = currentDate.getDate().toString().padStart(2, "0"); // Ensure day is 2 digits
+  
+  //   // Get the last actionItem created and increment its actionItemId number
+  //   const lastActionItem = await actionItem.findOne().sort({ createdAt: -1 });
+  //   let newActionItemNumber = "001"; // Default to "001" if no previous actionItem exists
+  
+  //   if (lastActionItem && lastActionItem.actionItemId) {
+  //     // Extract the last 3 digits (numeric part) of the actionItemId for comparison
+  //     const lastActionItemDatePart = lastActionItem.actionItemId.split("-")[1];
+  //     const lastActionItemNumber = lastActionItem.actionItemId.split("-")[2]; // Get the numeric part
+  
+  //     // Only increment the number if the date part matches today's date
+  //     if (lastActionItemDatePart === `${year}${month}${day}`) {
+  //       const newNumber = parseInt(lastActionItemNumber, 10) + 1; // Increment the last number
+  //       newActionItemNumber = newNumber.toString().padStart(3, "0"); // Ensure it's 3 digits
+  //     }
+  //   }
+  
+  //   // Combine the parts into the desired format T-YYMMDD-XXX
+  //   const newActionItemId = `T-${year}${month}${day}-${newActionItemNumber}`;
+  
+  //   return newActionItemId;
+  // };
+
   const generateActionItemId = async () => {
     // Get the current date components
     const currentDate = new Date();
-    const year = currentDate.getFullYear().toString().slice(2); // Get last 2 digits of the year
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0"); // Ensure month is 2 digits
-    const day = currentDate.getDate().toString().padStart(2, "0"); // Ensure day is 2 digits
+    const year = currentDate.getFullYear().toString().slice(2);
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const day = currentDate.getDate().toString().padStart(2, "0");
   
-    // Get the last actionItem created and increment its actionItemId number
-    const lastActionItem = await actionItem.findOne().sort({ createdAt: -1 });
-    let newActionItemNumber = "001"; // Default to "001" if no previous actionItem exists
+    // Use the correct model reference here
+    const lastActionItem = await ActionItem.findOne().sort({ createdAt: -1 });
+    let newActionItemNumber = "001";
   
     if (lastActionItem && lastActionItem.actionItemId) {
-      // Extract the last 3 digits (numeric part) of the actionItemId for comparison
       const lastActionItemDatePart = lastActionItem.actionItemId.split("-")[1];
-      const lastActionItemNumber = lastActionItem.actionItemId.split("-")[2]; // Get the numeric part
+      const lastActionItemNumber = lastActionItem.actionItemId.split("-")[2];
   
-      // Only increment the number if the date part matches today's date
       if (lastActionItemDatePart === `${year}${month}${day}`) {
-        const newNumber = parseInt(lastActionItemNumber, 10) + 1; // Increment the last number
-        newActionItemNumber = newNumber.toString().padStart(3, "0"); // Ensure it's 3 digits
+        const newNumber = parseInt(lastActionItemNumber, 10) + 1;
+        newActionItemNumber = newNumber.toString().padStart(3, "0");
       }
     }
   
-    // Combine the parts into the desired format T-YYMMDD-XXX
     const newActionItemId = `T-${year}${month}${day}-${newActionItemNumber}`;
-  
     return newActionItemId;
   };
+  
   
   try {
     // Destructure required fields from the request body
@@ -121,7 +147,7 @@ export const actionItem = async (req, res) => {
     const actionItemId = await generateActionItemId();
 
     // Create a new actionItem using the actionItem model
-    const newActionItem = await actionItem.create({
+    const newActionItem = await ActionItem.create({
       title,
       description,
       actionItemhashId,
@@ -238,7 +264,7 @@ const createInSiteNotifications = async (assignedUsers, actionItem) => {
 export const allActionItem = async (req, res) => {
   try {
     //validation
-    const allActionItem = await actionItem.find({})
+    const allActionItem = await ActionItem.find({})
       .populate({
         path: "tags",
         select: "tagName",
@@ -293,7 +319,7 @@ export const actionItemOfEmployee = async (req, res) => {
     //   }
 
     //validation
-    const allActionItemOfEmployee = await actionItem.find({ assignTo: id })
+    const allActionItemOfEmployee = await ActionItem.find({ assignTo: id })
       .populate({
         path: "tags",
         select: "tagName",
@@ -343,7 +369,7 @@ export const updateActionItem = async (req, res) => {
     }
 
     //find actionItem
-    const foundActionItem = await actionItem.findById(id);
+    const foundActionItem = await ActionItem.findById(id);
 
     if (!foundActionItem) {
       return res.status(400).json({
@@ -397,7 +423,7 @@ export const deleteActionItem = async (req, res) => {
     }
 
     //delete actionItem from db
-    const deleteActionItem = await actionItem.deleteOne({ _id: id });
+    const deleteActionItem = await ActionItem.deleteOne({ _id: id });
 
     return res.status(200).json({
       success: true,
@@ -427,7 +453,7 @@ export const specificProjectActionItem = async (req, res) => {
 
     // Fetch actionItems filtered by project ID
 
-    const specificProjectActionItems = await actionItem.find({ project: id }).populate({
+    const specificProjectActionItems = await ActionItem.find({ project: id }).populate({
       path: "tags",
       select: "tagName",
       model: Tags,
@@ -468,7 +494,7 @@ export const closeActionItem = async (req, res) => {
     }
 
     //find actionItem
-    const foundActionItem = await actionItem.findById(id);
+    const foundActionItem = await ActionItem.findById(id);
 
     if (!foundActionItem) {
       return res.status(400).json({
@@ -509,7 +535,7 @@ export const reopenActionItem = async (req, res) => {
     }
 
     //find actionItem
-    const foundActionItem = await actionItem.findById(id);
+    const foundActionItem = await ActionItem.findById(id);
 
     if (!foundActionItem) {
       return res.status(400).json({
@@ -542,7 +568,7 @@ export const putActionItemOnHold = async (req, res) => {
     const { actionItemId } = req.params;
 
     // Find the actionItem by ID and update its status to "on hold"
-    const actionItem = await actionItem.findByIdAndUpdate(
+    const actionItem = await ActionItem.findByIdAndUpdate(
       actionItemId,
       { status: "On Hold" },
       { new: true }
@@ -568,7 +594,7 @@ export const submitActionItemForReview = async (req, res) => {
     const { actionItemId } = req.params;
 
     // Find the actionItem by ID and update its status to "in review"
-    const actionItem = await actionItem.findByIdAndUpdate(
+    const actionItem = await ActionItem.findByIdAndUpdate(
       actionItemId,
       { status: "In Review" },
       { new: true }

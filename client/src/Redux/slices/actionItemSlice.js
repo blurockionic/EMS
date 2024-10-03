@@ -2,27 +2,27 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { server } from "../../App";
 
-// Thunk for fetching all tasks
-export const fetchTasks = createAsyncThunk(
-  "tasks/fetchTasks",
+// Thunk for fetching all actionItem
+export const fetchActionItems = createAsyncThunk(
+  "actionItem/fetchActionItem",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get(`${server}/task/all`, {
+      const response = await axios.get(`${server}/actionItem/all`, {
         withCredentials: true,
       });
-      return response.data.allTask;
+      return response.data.allActionItem;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.message);
     }
   }
 );
 
-// Thunk for submitting a new task
-export const submitNewTask = createAsyncThunk(
-  "tasks/submitNewTask",
+// Thunk for submitting a new actionItem
+export const submitNewActionItem = createAsyncThunk(
+  "actionItem/submitNewActionItem",
   async (formData, thunkAPI) => {
     try {
-      const response = await axios.post(`${server}/task/new`, formData, {
+      const response = await axios.post(`${server}/actionItem/new`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -35,13 +35,13 @@ export const submitNewTask = createAsyncThunk(
   }
 );
 
-// Thunk for closing a task
-export const closeTask = createAsyncThunk(
-  "tasks/closeTask",
-  async (taskId, thunkAPI) => {
+// Thunk for closing a actionItem
+export const closeActionItem = createAsyncThunk(
+  "actionItem/closeActionItem",
+  async (actionItemId, thunkAPI) => {
     try {
       const response = await axios.put(
-        `${server}/task/close/${taskId}`,
+        `${server}/actionItem/close/${actionItemId}`,
         {},
         {
           withCredentials: true,
@@ -54,13 +54,13 @@ export const closeTask = createAsyncThunk(
   }
 );
 
-// Thunk for reopening a task
-export const reopenTask = createAsyncThunk(
-  "tasks/reopenTask",
-  async (taskId, thunkAPI) => {
+// Thunk for reopening a actionItem
+export const reopenActionItem = createAsyncThunk(
+  "actionItem/reopenActionItem",
+  async (actionItemId, thunkAPI) => {
     try {
       const response = await axios.put(
-        `${server}/task/reopen/${taskId}`,
+        `${server}/actionItem/reopen/${actionItemId}`,
         {},
         {
           headers: {
@@ -76,13 +76,13 @@ export const reopenTask = createAsyncThunk(
   }
 );
 
-// Thunk for putting a task on hold
-export const putTaskOnHold = createAsyncThunk(
-  "tasks/putTaskOnHold",
-  async (taskId, thunkAPI) => {
+// Thunk for putting a actionItem on hold
+export const putActionItemOnHold = createAsyncThunk(
+  "actionItem/putActionItemOnHold",
+  async (actionItemId, thunkAPI) => {
     try {
       const response = await axios.put(
-        `${server}/task/hold/${taskId}`,
+        `${server}/actionItem/hold/${actionItemId}`,
         {},
         {
           withCredentials: true,
@@ -95,13 +95,13 @@ export const putTaskOnHold = createAsyncThunk(
   }
 );
 
-// Thunk for submitting a task for review
-export const submitTaskForReview = createAsyncThunk(
-  "tasks/submitTaskForReview",
-  async (taskId, thunkAPI) => {
+// Thunk for submitting a actionItem for review
+export const submitActionItemForReview = createAsyncThunk(
+  "actionItem/submitActionItemForReview",
+  async (actionItemId, thunkAPI) => {
     try {
       const response = await axios.put(
-        `${server}/task/review/${taskId}`,
+        `${server}/actionItem/review/${actionItemId}`,
         {},
         {
           withCredentials: true,
@@ -114,12 +114,12 @@ export const submitTaskForReview = createAsyncThunk(
   }
 );
 
-// Thunk for fetching specific project tasks
-export const specificProjectTask = createAsyncThunk(
-  "tasks/specificProjectTask",
-  async (taskId, thunkAPI) => {
+// Thunk for fetching specific project actionItem
+export const specificProjectActionItem = createAsyncThunk(
+  "actionItem/specificProjectActionItem",
+  async (ActionItemId, thunkAPI) => {
     try {
-      const response = await axios.get(`${server}/task/specific/${taskId}`, {
+      const response = await axios.get(`${server}/actionItem/specific/${ActionItemId}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -132,157 +132,157 @@ export const specificProjectTask = createAsyncThunk(
   }
 );
 
-// Thunk for fetching specific employee tasks
-export const specificEmployeeTasks = createAsyncThunk(
-  "tasks/specificEmployeeTasks",
+// Thunk for fetching specific employee actionItem
+export const specificEmployeeActionItem = createAsyncThunk(
+  "actionItem/specificEmployeeActionItem",
   async (employeeId, thunkAPI) => {
     try {
-      const response = await axios.get(`${server}/task/${employeeId}`, {
+      const response = await axios.get(`${server}/actionItem/${employeeId}`, {
         headers: {
           "Content-Type": "application/json",
         },
         withCredentials: true,
       });
-      return response.data.allTaskOfEmployee;
+      return response.data.allActionItemOfEmployee;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.message);
     }
   }
 );
 
-// Create the tasks slice
-const taskSlice = createSlice({
-  name: "tasks",
+// Create the actionItem slice
+const actionItemSlice = createSlice({
+  name: "actionItem",
   initialState: {
-    tasks: [],
-    projectSpecificTasks: [], // Add a new property for project-specific tasks
-    employeeSpecificTasks: [], // Add a new property for employee-specific tasks
+    actionItem: [],
+    projectSpecificActionItem: [], // Add a new property for project-specific actionItem
+    employeeSpecificActionItem: [], // Add a new property for employee-specific actionItem
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Fetching tasks
-      .addCase(fetchTasks.pending, (state) => {
+      // Fetching actionItem
+      .addCase(fetchActionItems.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchTasks.fulfilled, (state, action) => {
+      .addCase(fetchActionItems.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks = action.payload;
+        state.actionItem = action.payload;
       })
-      .addCase(fetchTasks.rejected, (state, action) => {
+      .addCase(fetchActionItems.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Submitting a new task
-      .addCase(submitNewTask.pending, (state) => {
+      // Submitting a new actionItem
+      .addCase(submitNewActionItem.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(submitNewTask.fulfilled, (state, action) => {
+      .addCase(submitNewActionItem.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks.push(action.payload);
+        state.actionItem.push(action.payload);
       })
-      .addCase(submitNewTask.rejected, (state, action) => {
+      .addCase(submitNewActionItem.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Closing a task
-      .addCase(closeTask.pending, (state) => {
+      // Closing a actionItem
+      .addCase(closeActionItem.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(closeTask.fulfilled, (state, action) => {
+      .addCase(closeActionItem.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks = state.tasks.map((task) =>
-          task._id === action.meta.arg ? { ...task, status: "closed" } : task
+        state.actionItem = state.actionItem.map((actionItem) =>
+          actionItem._id === action.meta.arg ? { ...actionItem, status: "closed" } : actionItem
         );
       })
-      .addCase(closeTask.rejected, (state, action) => {
+      .addCase(closeActionItem.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Reopening a task
-      .addCase(reopenTask.pending, (state) => {
+      // Reopening a actionItem
+      .addCase(reopenActionItem.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(reopenTask.fulfilled, (state, action) => {
+      .addCase(reopenActionItem.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks = state.tasks.map((task) =>
-          task._id === action.meta.arg ? { ...task, status: "open" } : task
+        state.actionItem = state.actionItem.map((actionItem) =>
+          actionItem._id === action.meta.arg ? { ...actionItem, status: "open" } : actionItem
         );
       })
-      .addCase(reopenTask.rejected, (state, action) => {
+      .addCase(reopenActionItem.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Putting a task on hold
-      .addCase(putTaskOnHold.pending, (state) => {
+      // Putting a actionItem on hold
+      .addCase(putActionItemOnHold.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(putTaskOnHold.fulfilled, (state, action) => {
+      .addCase(putActionItemOnHold.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks = state.tasks.map((task) =>
-          task._id === action.meta.arg ? { ...task, status: "on hold" } : task
+        state.actionItem = state.actionItem.map((actionItem) =>
+          actionItem._id === action.meta.arg ? { ...actionItem, status: "on hold" } : actionItem
         );
       })
-      .addCase(putTaskOnHold.rejected, (state, action) => {
+      .addCase(putActionItemOnHold.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Submitting a task for review
-      .addCase(submitTaskForReview.pending, (state) => {
+      // Submitting a actionItem for review
+      .addCase(submitActionItemForReview.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(submitTaskForReview.fulfilled, (state, action) => {
+      .addCase(submitActionItemForReview.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks = state.tasks.map((task) =>
-          task._id === action.meta.arg ? { ...task, status: "in review" } : task
+        state.actionItem = state.actionItem.map((actionItem) =>
+          actionItem._id === action.meta.arg ? { ...actionItem, status: "in review" } : actionItem
         );
       })
-      .addCase(submitTaskForReview.rejected, (state, action) => {
+      .addCase(submitActionItemForReview.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Fetching specific project tasks
-      .addCase(specificProjectTask.pending, (state) => {
+      // Fetching specific project actionItem
+      .addCase(specificProjectActionItem.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(specificProjectTask.fulfilled, (state, action) => {
+      .addCase(specificProjectActionItem.fulfilled, (state, action) => {
         state.loading = false;
-        state.projectSpecificTasks = action.payload;
+        state.projectSpecificActionItem = action.payload;
       })
-      .addCase(specificProjectTask.rejected, (state, action) => {
+      .addCase(specificProjectActionItem.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Fetching specific employee tasks
-      .addCase(specificEmployeeTasks.pending, (state) => {
+      // Fetching specific employee actionItem
+      .addCase(specificEmployeeActionItem.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(specificEmployeeTasks.fulfilled, (state, action) => {
+      .addCase(specificEmployeeActionItem.fulfilled, (state, action) => {
         state.loading = false;
-        state.employeeSpecificTasks = action.payload || [];
+        state.employeeSpecificActionItem = action.payload || [];
       })
-      .addCase(specificEmployeeTasks.rejected, (state, action) => {
+      .addCase(specificEmployeeActionItem.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });
   },
 });
 
-export default taskSlice.reducer;
+export default actionItemSlice.reducer;

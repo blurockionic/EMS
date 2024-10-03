@@ -11,6 +11,8 @@ import taskRoutes from "./routes/TaskRoutes.js";
 import tagRouters from "./routes/TagsRoutes.js";
 import toDoRoutes from "./routes/toDoRoutes.js";
 
+import actionItemRoutes from "./routes/ActionItemRoutes.js"
+
 import commentRoutes from "./routes/CommentRoutes.js";
 
 import reportProjectRoutes from "./routes/ReportProjectRoutes.js";
@@ -114,6 +116,8 @@ app.use("/api/v1/meeting", meetingRoutes);
 
 // use notification router
 app.use("/api/v1/notifications", NotificationsRoutes);
+
+app.use("/api/v1/actionItem", actionItemRoutes)
 
 //default route
 app.get("/", (req, res) => {
