@@ -250,7 +250,7 @@ const ActionItemsManager = () => {
         >
           {uiState.activeTab === "Action Items" && (
             <ul className="space-y-2">
-              <div>"this is action"</div>
+              <div>Action Items coming soon</div>
             </ul>
           )}
         </div>
