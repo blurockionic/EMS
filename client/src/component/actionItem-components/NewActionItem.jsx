@@ -8,8 +8,8 @@ import { fetchProjects } from "../../Redux/slices/projectSlice";
 import { fetchProfile } from "../../Redux/slices/profileSlice";
 import { fetchUsers } from "../../Redux/slices/allUserSlice";
 import { fetchTags } from "../../Redux/slices/tagSlice";
-import { submitNewTask } from "../../Redux/slices/taskSlice";
-// Importing Redux actions to fetch data and submit the task
+import { submitNewActionItem } from "../../Redux/slices/actionItemSlice";
+// Importing Redux actions to fetch data and submit the ActionItem
 
 import { toast, ToastContainer } from "react-toastify";
 // Importing ToastContainer for notifications and toast for triggering notifications
@@ -39,19 +39,19 @@ const NewActionItem = () => {
   const { tags } = useSelector((state) => state.tags); // Fetching tags from Redux store
   const profile = useSelector((state) => state.profile.data); // Fetching user profile from Redux store
 
-  const [title, setTitle] = useState(""); // State for task title
-  const [description, setDescription] = useState(""); // State for task description
-  const [status] = useState("Open"); // State for task status (default is "Open")
-  const [assignBy, setAssignBy] = useState(""); // State for who is assigning the task
-  const [assignTo, setAssignTo] = useState([]); // State for who the task is assigned to
+  const [title, setTitle] = useState(""); // State for ActionItem title
+  const [description, setDescription] = useState(""); // State for ActionItem description
+  const [status] = useState("Open"); // State for ActionItem status (default is "Open")
+  const [assignBy, setAssignBy] = useState(""); // State for who is assigning the ActionItem
+  const [assignTo, setAssignTo] = useState([]); // State for who the ActionItem is assigned to
   const [project, setProject] = useState(""); // State for selected project
   const [assignDate, setAssignDate] = useState(""); // State for the assignment date
-  const [dueDate, setDueDate] = useState(""); // State for the task due date
+  const [dueDate, setDueDate] = useState(""); // State for the ActionItem due date
 
   const [tagDropdown, setTagDropdown] = useState(false); // State to toggle the tag dropdown
   const [selectedTags, setSelectedTags] = useState([]); // State for selected tags
   const [errorMessage, setErrorMessage] = useState(""); // State for error messages
-  const [activeTab, setActiveTab] = useState("Create Task"); // State to track the active tab
+  const [activeTab, setActiveTab] = useState("Create ActionItem"); // State to track the active tab
   const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file for upload
   const [isDragActive, setIsDragActive] = useState(false); // State to manage drag-and-drop area status
 
@@ -96,7 +96,7 @@ const NewActionItem = () => {
     dispatch(fetchTags());
   }, [dispatch]);
 
-  // Function to handle tab switching (e.g., Create Task)
+  // Function to handle tab switching (e.g., Create ActionItem)
   const handleTabClick = (tab) => {
     setActiveTab(tab); // Set the active tab
   };
@@ -110,7 +110,7 @@ const NewActionItem = () => {
     );
   };
 
-  // Function to handle selection of users to assign task to
+  // Function to handle selection of users to assign ActionItem to
   const handleAssignToSelection = (userId) => {
     setAssignTo((prevAssignTo) =>
       prevAssignTo.includes(userId)
@@ -119,7 +119,7 @@ const NewActionItem = () => {
     );
   };
 
-  // Function to handle form submission for creating a new task
+  // Function to handle form submission for creating a new ActionItem
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // Set loading state
@@ -139,18 +139,18 @@ const NewActionItem = () => {
     }
 
     try {
-      const response = await dispatch(submitNewTask(data)); // Submit task to backend
+      const response = await dispatch(submitNewActionItem(data)); // Submit ActionItem to backend
       if (response.payload.success) {
         toast.success(response.payload.message); // Show success message
-        setTimeout(() => navigate("../alltask"), 3000); // Navigate to all tasks after 3 seconds
+        setTimeout(() => navigate("../allActionItem"), 3000); // Navigate to all tasks after 3 seconds
         resetForm(); // Reset form after successful submission
         setLoading(false); // Reset loading state
       } else {
-        setErrorMessage(response.payload.message || "Error creating task."); // Set error message
+        setErrorMessage(response.payload.message || "Error creating ActionItem."); // Set error message
       }
     } catch (error) {
-      console.error("Error creating task:", error);
-      setErrorMessage("Error creating task."); // Set error message
+      console.error("Error creating ActionItem:", error);
+      setErrorMessage("Error creating ActionItem."); // Set error message
       setLoading(false); // Reset loading state
     }
   };
@@ -191,11 +191,11 @@ const NewActionItem = () => {
           <div className="flex cursor-pointer transition duration-300 ease-in-out px-4 py-2 gap-2 dark:border-[#30363D] rounded-md text-start">
             <button
               className={`px-3 py-2 rounded-md text-sm font-medium ${
-                activeTab === "Create Task" ? "bg-gray-900 text-white" : ""
+                activeTab === "Create ActionItem" ? "bg-gray-900 text-white" : ""
               } hover:bg-gray-700 dark:hover:bg-gray-900 dark:hover:text-white cursor-pointer`}
-              onClick={() => handleTabClick("Create Task")}
+              onClick={() => handleTabClick("Create ActionItem")}
             >
-              Create Task
+              Create ActionItem
             </button>
           </div>
         </div>
@@ -215,14 +215,14 @@ const NewActionItem = () => {
             <div>
               <label className="block mb-2">
                 <span className="text-gray-600 dark:text-white font-bold ">
-                  Add a task title
+                  Add a ActionItem title
                 </span>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="form-input p-2 mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded focus:ring-slate-900 focus:border-slate-900"
-                  placeholder="Enter task title"
+                  placeholder="Enter ActionItem title"
                 />
               </label>
             </div>
@@ -237,7 +237,7 @@ const NewActionItem = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full h-24 border border-gray-300 dark:border-gray-600 rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-slate-950 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                    placeholder="Write your task description here..."
+                    placeholder="Write your ActionItem description here..."
                   />
                 </div>
 
@@ -481,7 +481,7 @@ const NewActionItem = () => {
                     Loading...
                   </div>
                 ) : (
-                  "Create New Task"
+                  "Create New ActionItem"
                 )}
               </button>
             </div>
