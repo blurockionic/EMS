@@ -16,10 +16,12 @@ import eventReducer from "./slices/eventSlice"
 import toDoReducer from "./slices/toDoSlice";
 import meetingReducer from "./slices/meetingSlice"
 import notificationReducer from "./slices/notificationSlice"; // Import the notification slice
+import actionItemReducer from "./slices/actionItemSlice"
 
 import chatReducer from "./slices/chatSlice"; // Add the chat reducer
 const store = configureStore({
   reducer: {
+    actionItem: actionItemReducer,
     auth: authReducer,
     employee: employeeReducer,
     profile: profileReducer,

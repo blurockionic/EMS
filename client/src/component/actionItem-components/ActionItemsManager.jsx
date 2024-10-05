@@ -1,12 +1,13 @@
-import React, { useState, useRef, useMemo, useCallback } from "react";
+import React, { useState, useRef, useMemo, useCallback, useEffect } from "react";
 import { IoMdAdd, IoMdTrash } from "react-icons/io";
 import { BsThreeDots, } from "react-icons/bs";
 import { FaBorderAll, FaTable } from "react-icons/fa6";
 import { IoCalendar, IoSearchSharp } from "react-icons/io5";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import { MdOutlineAttractions, MdOutlineViewTimeline } from "react-icons/md";
 import { GoIssueClosed } from "react-icons/go";
 import { Link } from "react-router-dom";
+import { fetchActionItems } from "../../Redux/slices/actionItemSlice";
 
 const ActionItemsManager = () => {
   const [uiState, setUiState] = useState({
@@ -17,6 +18,13 @@ const ActionItemsManager = () => {
     tabs: ["Action Items", "Calendar", "All"], // Initialize tabs list
   });
 
+  const dispatch = useDispatch();
+  const { actionItem: items } = useSelector((state) => state.actionItem);
+
+  useEffect(() => {
+    dispatch(fetchActionItems());
+  }, [dispatch]);
+  
   const [notes, setNotes] = useState([]);
   const [newNoteContent, setNewNoteContent] = useState("");
   const [showMentionList, setShowMentionList] = useState(false);
@@ -159,6 +167,8 @@ const ActionItemsManager = () => {
     }));
   };
 
+
+
   return (
     <div className="w-[90%] mx-auto mt-2">
       {/* Loader only appears at the top of the screen when loading */}
@@ -243,14 +253,18 @@ const ActionItemsManager = () => {
       </nav>
 
       <div className="p-2">
-        <div
-          className={`flex flex-col space-y-4 mx-auto ${
-            uiState.activeTab === "Action Items" ? "w-[90%]" : "w-[90%]"
-          }`}
-        >
-          {uiState.activeTab === "Action Items" && (
-            <ul className="space-y-2">
-              <div>Action Items coming soon</div>
+        <div className="flex flex-col space-y-4 mx-auto w-[90%]">
+          {items.length === 0 ? (
+            <p>No action items found.</p>
+          ) : (
+            <ul>
+              {items.map((item) => (
+                <li key={item._id}>
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                  <p>Status: {item.status}</p>
+                </li>
+              ))}
             </ul>
           )}
         </div>
