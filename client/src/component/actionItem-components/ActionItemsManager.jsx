@@ -80,6 +80,12 @@ const ActionItemsManager = () => {
     }));
   };
 
+  const renderUserFullName = (userId) => {
+    const user = users.find((user) => user._id === userId);
+    // If the user is found, return the full name, otherwise return an empty string
+    return user ? `${user.firstName} ${user.lastName}` : "";
+  };
+
   const handleNewClick = () => {
     setModals({ ...modals, activeNewMeeting: true });
   };
@@ -257,15 +263,78 @@ const ActionItemsManager = () => {
           {items.length === 0 ? (
             <p>No action items found.</p>
           ) : (
-            <ul>
-              {items.map((item) => (
-                <li key={item._id}>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                  <p>Status: {item.status}</p>
-                </li>
-              ))}
-            </ul>
+              <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                          <tr>
+                              <th scope="col" class="px-6 py-3">
+                                  Title
+                              </th>
+                              <th scope="col" class="px-6 py-3">
+                                  Description
+                              </th>
+                              <th scope="col" class="px-6 py-3">
+                                  Status
+                              </th>
+                              <th scope="col" class="px-6 py-3">
+                                  Assigned By
+                              </th>
+                              <th scope="col" class="px-6 py-3">
+                                  Assigned To
+                              </th>
+                              <th scope="col" class="px-6 py-3">
+                                  Due Date
+                              </th>
+                              {/* <th scope="col" class="px-6 py-3">
+                                  Weight
+                              </th> */}
+                              <th scope="col" class="px-6 py-3">
+                                  Action
+                              </th>
+                          </tr>
+                      </thead>
+                      
+                
+                      <tbody>
+                        {items.map((item) => (
+                          <tr key={item._id} class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                  {item.title}
+                              </th>
+                              <td class="px-6 py-4">
+                                  {item.description}
+                              </td>
+                              <td class="px-6 py-4">
+                                  {item.status}
+                              </td>
+                              <td class="px-6 py-4">
+                                {renderUserFullName(item?.assignBy)}
+                              </td>
+                              <td class="px-6 py-4">
+                                {item?.assignTo?.map((assignTo) => (
+                                <span key={assignTo._id} className="space-x-1">
+                                  {" "}
+                                  {renderUserFullName(assignTo._id)} <br/>
+                                </span>
+                                ))}
+                              </td>
+                              <td class="px-6 py-4">
+                              {new Date(item?.dueDate).toLocaleDateString("en-GB") ??
+                                "No due date available"}
+                              </td>
+                              {/* <td class="px-6 py-4">
+                                  3.0 lb.
+                              </td> */}
+                              <td class="flex items-center px-6 py-4">
+                                  <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                  <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline ms-3">Remove</a>
+                              </td>
+                          </tr>
+                  ))}
+                      </tbody>
+                      
+                  </table>
+              </div>
           )}
         </div>
       </div>
