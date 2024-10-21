@@ -13,7 +13,7 @@ const initialState = {
 // Async thunk for fetching comments from the server
 export const fetchComments = createAsyncThunk(
   "comments/fetchComments",
-  async ({ relatedTaskId, relatedIssueId }) => {
+  async ({ relatedTaskId, relatedIssueId, relatedActionItemId }) => {
     try {
       let query = "";
       // Construct query string based on provided IDs
@@ -23,6 +23,10 @@ export const fetchComments = createAsyncThunk(
       } else if (relatedIssueId) {
         // Add relatedIssueId to query string
         query = `?relatedIssueId=${relatedIssueId}`;
+      }else if (relatedActionItemId) {
+        // Add relatedIssueId to query string
+        query = `?relatedActionItemId=${relatedActionItemId}`;
+        console.log(relatedActionItemId)
       } else {
         // Throw error if neither relatedTaskId nor relatedIssueId is provided 
         throw new Error(

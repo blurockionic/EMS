@@ -1,15 +1,26 @@
-import React, { useState, useRef, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useRef, useMemo, useCallback, useEffect,  } from "react";
 import { IoMdAdd, IoMdTrash } from "react-icons/io";
 import { BsThreeDots, } from "react-icons/bs";
 import { FaBorderAll, FaTable } from "react-icons/fa6";
 import { IoCalendar, IoSearchSharp } from "react-icons/io5";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { MdOutlineAttractions, MdOutlineViewTimeline } from "react-icons/md";
 import { GoIssueClosed } from "react-icons/go";
-import { Link } from "react-router-dom";
-import { fetchActionItems } from "../../Redux/slices/actionItemSlice";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { fetchActionItems, closeActionItem, updateActionItem } from "../../Redux/slices/actionItemSlice";
+import { toast, ToastContainer } from "react-toastify";
+
+
+/**
+ * A table component to render a list of actionItem with their details and clickable to navigate to the actionItem details page
+ * @param {Array} actionItemList - A list of actionItem objects
+ * @param {Function} handleActionItemDetails - Function to navigate to a actionItem details page
+ * @param {Array} users - An array of all available users
+ * @returns A table with actionItem details
+ */
 
 const ActionItemsManager = () => {
+  const navigate = useNavigate();
   const [uiState, setUiState] = useState({
     showMoreTabs: false,
     searchInputBox: false,
@@ -17,6 +28,8 @@ const ActionItemsManager = () => {
     loading: false, // Loading state for showing Loader
     tabs: ["Action Items", "Calendar", "All"], // Initialize tabs list
   });
+
+  
 
   const dispatch = useDispatch();
   const { actionItem: items } = useSelector((state) => state.actionItem);
@@ -90,10 +103,25 @@ const ActionItemsManager = () => {
     setModals({ ...modals, activeNewMeeting: true });
   };
 
+  const handleActionItemDetails = (actionItemId) =>
+    // dispatch(`../singleActionItem/${actionItemId}`);
+    dispatch(updateActionItem(actionItemId))
+
   const handleNoteChange = (index, value) => {
     const updatedNotes = [...notes];
     updatedNotes[index] = value;
     setNotes(updatedNotes);
+  };
+
+  const handleActionItemClose = (actionItemId) => {
+    dispatch(closeActionItem(actionItemId))
+      .then((response) => {
+        dispatch(fetchActionItems());
+        toast.success(response?.payload?.message ?? "Error");
+      })
+      .catch((error) => {
+        console.error("Error closing actionItem:", error);
+      });
   };
 
   const handleMention = (index, e) => {
@@ -263,54 +291,55 @@ const ActionItemsManager = () => {
           {items.length === 0 ? (
             <p>No action items found.</p>
           ) : (
-              <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            
+              <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                  <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                           <tr>
-                              <th scope="col" class="px-6 py-3">
+                              <th scope="col" className="px-6 py-3">
                                   Title
                               </th>
-                              <th scope="col" class="px-6 py-3">
+                              <th scope="col" className="px-6 py-3">
                                   Description
                               </th>
-                              <th scope="col" class="px-6 py-3">
+                              <th scope="col" className="px-6 py-3">
                                   Status
                               </th>
-                              <th scope="col" class="px-6 py-3">
+                              <th scope="col" className="px-6 py-3">
                                   Assigned By
                               </th>
-                              <th scope="col" class="px-6 py-3">
+                              <th scope="col" className="px-6 py-3">
                                   Assigned To
                               </th>
-                              <th scope="col" class="px-6 py-3">
+                              <th scope="col" className="px-6 py-3">
                                   Due Date
                               </th>
-                              {/* <th scope="col" class="px-6 py-3">
+                              {/* <th scope="col" className="px-6 py-3">
                                   Weight
                               </th> */}
-                              <th scope="col" class="px-6 py-3">
+                              {/* <th scope="col" className="px-6 py-3">
                                   Action
-                              </th>
+                              </th> */}
                           </tr>
                       </thead>
                       
                 
                       <tbody>
                         {items.map((item) => (
-                          <tr key={item._id} class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          <tr key={item._id} onClick={() => handleActionItemDetails(item._id)} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                              <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                   {item.title}
                               </th>
-                              <td class="px-6 py-4">
+                              <td className="px-6 py-4">
                                   {item.description}
                               </td>
-                              <td class="px-6 py-4">
+                              <td className="px-6 py-4">
                                   {item.status}
                               </td>
-                              <td class="px-6 py-4">
+                              <td className="px-6 py-4">
                                 {renderUserFullName(item?.assignBy)}
                               </td>
-                              <td class="px-6 py-4">
+                              <td className="px-6 py-4">
                                 {item?.assignTo?.map((assignTo) => (
                                 <span key={assignTo._id} className="space-x-1">
                                   {" "}
@@ -318,19 +347,32 @@ const ActionItemsManager = () => {
                                 </span>
                                 ))}
                               </td>
-                              <td class="px-6 py-4">
+                              <td className="px-6 py-4">
                               {new Date(item?.dueDate).toLocaleDateString("en-GB") ??
                                 "No due date available"}
                               </td>
-                              {/* <td class="px-6 py-4">
+                              {/* <td className="px-6 py-4">
                                   3.0 lb.
                               </td> */}
-                              <td class="flex items-center px-6 py-4">
-                                  <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                  <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline ms-3">Remove</a>
-                              </td>
+                              {/* <td className="flex items-center px-6 py-4">
+                                  <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                  <a href="#" className="font-medium text-red-600 dark:text-red-500 hover:underline ms-3">Close</a>
+                                  <a href="#" className="font-medium text-gray-600 dark:text-gray-500 hover:underline ms-3">Review</a>
+                                  <a href="#" className="font-medium text-green-600 dark:text-green-500 hover:underline ms-3">Open</a>
+                                  
+                              </td> */}
+                              {/* <td>
+                              {item.status === "Open" && (
+                                  <button
+                                    className="px-4 py-1.5 bg-slate-800 text-white rounded-lg focus:outline-none ml-2"
+                                    onClick={handleActionItemClose}
+                                  >
+                                    Close ActionItem
+                                  </button>
+                                )} 
+                              </td> */}
                           </tr>
-                  ))}
+                          ))}
                       </tbody>
                       
                   </table>

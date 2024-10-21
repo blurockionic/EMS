@@ -6,6 +6,7 @@ const commentSchema = new mongoose.Schema(
     commentedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     relatedTaskId: { type: mongoose.Schema.Types.ObjectId, ref: "Task" },
     relatedIssueId: { type: mongoose.Schema.Types.ObjectId, ref: "Issue" },
+    relatedActionItemId: { type: mongoose.Schema.Types.ObjectId, ref: "ActionItem" },
     createdAt: { type: Date, default: Date.now },
     documentFile: { type: String },
   },

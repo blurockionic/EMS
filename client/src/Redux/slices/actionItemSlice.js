@@ -150,6 +150,26 @@ export const specificEmployeeActionItem = createAsyncThunk(
   }
 );
 
+// Thunk for updating an actionItem
+export const updateActionItem = createAsyncThunk(
+  "actionItem/updateActionItem",
+  async ({ id, updatedData }, thunkAPI) => {
+    try {
+      console.log(id)
+      const response = await axios.put(`${server}/actionItem/${id}`, updatedData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+
 // Create the actionItem slice
 const actionItemSlice = createSlice({
   name: "actionItem",
@@ -281,6 +301,23 @@ const actionItemSlice = createSlice({
       .addCase(specificEmployeeActionItem.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+
+      // Add this to extraReducers for handling updating action items
+      .addCase(updateActionItem.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateActionItem.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.actionItem.findIndex(item => item._id === action.payload.actionItem._id);
+        if (index !== -1) {
+          state.actionItem[index] = action.payload.actionItem; // Update the item in state
+        }
+      })
+      .addCase(updateActionItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

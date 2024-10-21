@@ -30,6 +30,7 @@ import Team from "./page/admin/team/Team";
 import EmpTeam from "./page/employee/EmpTeam";
 import AppVersion from "./page/admin/AppVersion/AppVersion";
 import SingleTaskDetails from "./component/task-components/SingleTaskDetails";
+import SingleActionItem from "./component/actionItem-components/SingleActionItem";
 import { fetchProfile } from "./Redux/slices/profileSlice";
 import { useEffect } from "react";
 import YourProfilePage from "./component/pages-components/YourProfilePage";
@@ -46,6 +47,7 @@ import { selectLoggedIn } from "./Redux/slices/authSlice";
 import ProtectedRoute from "./page/auth/ProtectedRoute";
 import NewActionItem from "./component/actionItem-components/NewActionItem";
 import NotFound from "./component/pages-components/NotFound";
+import { fetchActionItems } from "./Redux/slices/actionItemSlice";
 // export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 
 export const server = "http://localhost:4000/api/v1";
@@ -54,6 +56,12 @@ function App() {
 
   const theme = useSelector((state) => state.theme.mode);
   const dispatch = useDispatch();
+
+  const { actionItem: items } = useSelector((state) => state.actionItem);
+
+  useEffect(() => {
+    dispatch(fetchActionItems());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchProfile());
@@ -115,6 +123,10 @@ function App() {
           <Route path="events" element={<MyEvents />} />
           <Route path="myTodo" element={<ToDo />} />
           <Route path="actionItems" element={<ActionItemsManager />} />
+          <Route
+            path="SingleActionItem/:actionItemId"
+            element={<SingleActionItem/>}
+          />
           <Route
             path="singleTaskDetails/:taskId"
             element={<SingleTaskDetails />}
