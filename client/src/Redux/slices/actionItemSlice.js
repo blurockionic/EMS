@@ -151,23 +151,101 @@ export const specificEmployeeActionItem = createAsyncThunk(
 );
 
 // Thunk for updating an actionItem
+// export const updateActionItem = createAsyncThunk(
+//   "actionItem/updateActionItem",
+//   async ({ id, updatedData }, thunkAPI) => {
+//     try {
+//       console.log(id)
+//       const response = await axios.put(`${server}/actionItem/${id}`, updatedData, {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         withCredentials: true,
+//       });
+//       return response.data;
+//     } catch (error) {
+//       return thunkAPI.rejectWithValue(error.response.data.message);
+//     }
+//   }
+// );
+
+// export const updateActionItem = createAsyncThunk(
+//   'actionItem/updateActionItem',
+//   async ({ actionItemId, dataToUpdate }, thunkAPI) => {
+//     try {
+//       console.log(actionItemId)
+//       // Replace with the actual API request logic
+//       const response = await fetch(`${server}/actionItem/singleActionItem/${actionItemId}`, {
+//         method: 'GET',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(dataToUpdate), // Assuming dataToUpdate has the required fields
+//       });
+//       const data = await response.json();
+//       console.log(data)
+//       return data;
+//     } catch (error) {
+//       return thunkAPI.rejectWithValue(error.message);
+//     }
+//   } 
+// );
+
+// export const submitNewActionItem = createAsyncThunk(
+//   "actionItem/submitNewActionItem",
+//   async (formData, thunkAPI) => {
+//     try {
+//       const response = await axios.post(`${server}/actionItem/new`, formData, {
+       
+//       });
+//       return response.data; // Assuming the response contains success and message
+//     } catch (error) {
+//       return thunkAPI.rejectWithValue(error.response.data.message);
+//     }
+//   }
+// );
+
 export const updateActionItem = createAsyncThunk(
-  "actionItem/updateActionItem",
-  async ({ id, updatedData }, thunkAPI) => {
+  'actionItem/updateActionItem',
+  async ({ actionItemId }, thunkAPI) => {
     try {
-      console.log(id)
-      const response = await axios.put(`${server}/actionItem/${id}`, updatedData, {
+      const response = await fetch(`${server}/actionItem/singleActionItem/${actionItemId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      // Checking if the response is OK
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log(data)
+      return data; // Returning the fetched data to be handled by the reducer
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+// actionItemSlice.js
+export const updateActionItemDetails = createAsyncThunk(
+  'actionItem/updateActionItemDetails',
+  async ({ id, ...updatedDetails }, { rejectWithValue }) => {
+    try {
+      // Adjusted header and removed unnecessary "multipart/form-data"
+      const response = await axios.put(`${server}/actionItem/updateDetails/${id}`, updatedDetails, {
         headers: {
           "Content-Type": "application/json",
         },
         withCredentials: true,
       });
-      return response.data;
+      console.log('update slice response:', response)
+      return response.data; // Return the response data if successful
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data.message);
+      return rejectWithValue(error.response?.data || 'Error updating action item');
     }
   }
 );
+
 
 
 // Create the actionItem slice
@@ -183,6 +261,8 @@ const actionItemSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+
+      
       // Fetching actionItem
       .addCase(fetchActionItems.pending, (state) => {
         state.loading = true;
@@ -310,12 +390,22 @@ const actionItemSlice = createSlice({
       })
       .addCase(updateActionItem.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.actionItem.findIndex(item => item._id === action.payload.actionItem._id);
-        if (index !== -1) {
-          state.actionItem[index] = action.payload.actionItem; // Update the item in state
-        }
+        state.data = action.payload.data;  // Update to store only `data` field
+        console.log("Data from API:", action.payload.data);  // This will now log only the action item data
       })
       .addCase(updateActionItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateActionItemDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateActionItemDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload.data; // Updated data from the response
+      })
+      .addCase(updateActionItemDetails.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

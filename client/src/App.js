@@ -124,7 +124,7 @@ function App() {
           <Route path="myTodo" element={<ToDo />} />
           <Route path="actionItems" element={<ActionItemsManager />} />
           <Route
-            path="SingleActionItem/:actionItemId"
+            path="singleActionItem/:actionItemId"
             element={<SingleActionItem/>}
           />
           <Route

@@ -1,15 +1,13 @@
-import React, { useState, useRef, useMemo, useCallback, useEffect,  } from "react";
-import { IoMdAdd, IoMdTrash } from "react-icons/io";
+import React, { useState, useMemo, useCallback, useEffect,  } from "react";
+import { IoMdAdd } from "react-icons/io";
 import { BsThreeDots, } from "react-icons/bs";
 import { FaBorderAll, FaTable } from "react-icons/fa6";
 import { IoCalendar, IoSearchSharp } from "react-icons/io5";
 import { useSelector, useDispatch } from "react-redux";
 import { MdOutlineAttractions, MdOutlineViewTimeline } from "react-icons/md";
 import { GoIssueClosed } from "react-icons/go";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { fetchActionItems, closeActionItem, updateActionItem } from "../../Redux/slices/actionItemSlice";
-import { toast, ToastContainer } from "react-toastify";
-
+import { Link, useNavigate } from "react-router-dom";
+import { fetchActionItems, updateActionItem } from "../../Redux/slices/actionItemSlice";
 
 /**
  * A table component to render a list of actionItem with their details and clickable to navigate to the actionItem details page
@@ -38,19 +36,19 @@ const ActionItemsManager = () => {
     dispatch(fetchActionItems());
   }, [dispatch]);
   
-  const [notes, setNotes] = useState([]);
-  const [newNoteContent, setNewNoteContent] = useState("");
-  const [showMentionList, setShowMentionList] = useState(false);
-  const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [currentNoteIndex, setCurrentNoteIndex] = useState(null);
-  const textareaRef = useRef(null);
+  // const [notes, setNotes] = useState([]);
+  // const [newNoteContent, setNewNoteContent] = useState("");
+  // const [ setShowMentionList] = useState(false);
+  // const [ setMentionPosition] = useState({ top: 0, left: 0 });
+  // const [ setFilteredUsers] = useState([]);
+  // const [ setCurrentNoteIndex] = useState(null);
+  // const textareaRef = useRef(null);
   const { data: users } = useSelector((state) => state.user);
 
-  const memoizedUsers = useMemo(
-    () => [{ _id: "all", firstName: "all", lastName: "" }, ...users],
-    [users]
-  );
+  // const memoizedUsers = useMemo(
+  //   () => [{ _id: "all", firstName: "all", lastName: "" }, ...users],
+  //   [users]
+  // );
 
   // Memoized function to get the icon associated with each tab
   const getTabIcon = useCallback((tab) => {
@@ -65,7 +63,7 @@ const ActionItemsManager = () => {
     return icons[tab] || null; // Return the corresponding icon or null if not found
   }, []);
 
-  const [modals, setModals] = useState();
+  // const [modals, setModals] = useState();
 
   // Memoized list of tabs to optimize rendering
   const tabsList = useMemo(
@@ -99,68 +97,69 @@ const ActionItemsManager = () => {
     return user ? `${user.firstName} ${user.lastName}` : "";
   };
 
-  const handleNewClick = () => {
-    setModals({ ...modals, activeNewMeeting: true });
+  // const handleNewClick = () => {
+  //   setModals({ ...modals, activeNewMeeting: true });
+  // };
+
+  const handleActionItemDetails = (actionItemId) => {
+    navigate(`../singleActionItem/${actionItemId}`);
+    dispatch(updateActionItem({ actionItemId }));  // Send actionItemId
   };
+  
+  // const handleNoteChange = (index, value) => {
+  //   const updatedNotes = [...notes];
+  //   updatedNotes[index] = value;
+  //   setNotes(updatedNotes);
+  // };
 
-  const handleActionItemDetails = (actionItemId) =>
-    // dispatch(`../singleActionItem/${actionItemId}`);
-    dispatch(updateActionItem(actionItemId))
+  // const handleActionItemClose = (actionItemId) => {
+  //   dispatch(closeActionItem(actionItemId))
+  //     .then((response) => {
+  //       dispatch(fetchActionItems());
+  //       toast.success(response?.payload?.message ?? "Error");
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error closing actionItem:", error);
+  //     });
+  // };
 
-  const handleNoteChange = (index, value) => {
-    const updatedNotes = [...notes];
-    updatedNotes[index] = value;
-    setNotes(updatedNotes);
-  };
+  // const handleMention = (index, e) => {
+  //   const isExistingNote = index !== -1;
+  //   const content = isExistingNote ? notes[index] : newNoteContent;
 
-  const handleActionItemClose = (actionItemId) => {
-    dispatch(closeActionItem(actionItemId))
-      .then((response) => {
-        dispatch(fetchActionItems());
-        toast.success(response?.payload?.message ?? "Error");
-      })
-      .catch((error) => {
-        console.error("Error closing actionItem:", error);
-      });
-  };
+  //   const mentionRegex = /@([a-zA-Z]*)$/;
+  //   const match = content.slice(0, e.target.selectionEnd).match(mentionRegex);
 
-  const handleMention = (index, e) => {
-    const isExistingNote = index !== -1;
-    const content = isExistingNote ? notes[index] : newNoteContent;
+  //   if (match) {
+  //     const mentionTrigger = match[1];
+  //     const cursorPosition = e.target.selectionEnd;
+  //     const { offsetTop, offsetLeft } = textareaRef.current;
+  //     const rect = e.target.getBoundingClientRect();
+  //     const lineNumber = content.slice(0, cursorPosition).split("\n").length;
 
-    const mentionRegex = /@([a-zA-Z]*)$/;
-    const match = content.slice(0, e.target.selectionEnd).match(mentionRegex);
+  //     setMentionPosition({
+  //       top: rect.top + window.scrollY + lineNumber * 24,
+  //       left: rect.left + window.scrollX + lineNumber * 8,
+  //     });
+  //     setShowMentionList(true);
+  //     setFilteredUsers(
+  //       memoizedUsers.filter((user) =>
+  //         `${user.firstName} ${user.lastName}`
+  //           .toLowerCase()
+  //           .includes(mentionTrigger.toLowerCase())
+  //       )
+  //     );
+  //     setCurrentNoteIndex(isExistingNote ? index : -1);
+  //   } else {
+  //     setShowMentionList(false);
+  //     setCurrentNoteIndex(null);
+  //   }
+  // };
 
-    if (match) {
-      const mentionTrigger = match[1];
-      const cursorPosition = e.target.selectionEnd;
-      const { offsetTop, offsetLeft } = textareaRef.current;
-      const rect = e.target.getBoundingClientRect();
-      const lineNumber = content.slice(0, cursorPosition).split("\n").length;
-
-      setMentionPosition({
-        top: rect.top + window.scrollY + lineNumber * 24,
-        left: rect.left + window.scrollX + lineNumber * 8,
-      });
-      setShowMentionList(true);
-      setFilteredUsers(
-        memoizedUsers.filter((user) =>
-          `${user.firstName} ${user.lastName}`
-            .toLowerCase()
-            .includes(mentionTrigger.toLowerCase())
-        )
-      );
-      setCurrentNoteIndex(isExistingNote ? index : -1);
-    } else {
-      setShowMentionList(false);
-      setCurrentNoteIndex(null);
-    }
-  };
-
-  const handleUserSelect = (user) => {
-    // Logic for handling user selection from mention list
-    console.log(`User selected: ${user.firstName} ${user.lastName}`);
-  };
+  // const handleUserSelect = (user) => {
+  //   // Logic for handling user selection from mention list
+  //   console.log(`User selected: ${user.firstName} ${user.lastName}`);
+  // };
 
   // Memoized function to add a new tab and update state accordingly
   const addTab = useCallback(
@@ -178,21 +177,21 @@ const ActionItemsManager = () => {
     [uiState.tabs] // Dependency array: update if tabs change
   );
 
-  const handleRemoveNote = (index) => {
-    const updatedNotes = notes.filter((_, i) => i !== index);
-    setNotes(updatedNotes);
-  };
+  // const handleRemoveNote = (index) => {
+  //   const updatedNotes = notes.filter((_, i) => i !== index);
+  //   setNotes(updatedNotes);
+  // };
 
-  const handleNoteSubmit = () => {
-    if (newNoteContent.trim()) {
-      setNotes([...notes, newNoteContent]);
-      setNewNoteContent("");
-    }
-  };
+  // const handleNoteSubmit = () => {
+  //   if (newNoteContent.trim()) {
+  //     setNotes([...notes, newNoteContent]);
+  //     setNewNoteContent("");
+  //   }
+  // };
 
-  const handleKeyDown = (event) => {
-    // Logic for handling key down events in textarea
-  };
+  // const handleKeyDown = (event) => {
+  //   // Logic for handling key down events in textarea
+  // };
 
   const handleTabClick = (tab) => {
     setUiState((prevState) => ({

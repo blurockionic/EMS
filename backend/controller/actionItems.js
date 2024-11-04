@@ -11,6 +11,15 @@ import { User } from "../model/user.js";
 import nodemailer from "nodemailer";
 import { Notification } from "../model/NotificationSchema.js"; // importing Notification model
 
+
+// Other imports...
+
+// Add this method to your controller
+
+
+// Export your routes and use the getActionItem method for GET requests
+
+
 export const actionItem = async (req, res) => {
   // const generateActionItemId = async () => {
   //   const lastActionItem = await actionItem.findOne().sort({ createdAt: -1 });
@@ -55,6 +64,8 @@ export const actionItem = async (req, res) => {
   
   //   return newActionItemId;
   // };
+
+  
 
   const generateActionItemId = async () => {
     // Get the current date components
@@ -302,6 +313,42 @@ export const allActionItem = async (req, res) => {
   }
 };
 
+export const getActionItem = async (req, res) => {
+  console.log("isworkinggetactionitem")
+  const { id } = req.params; // Get the ID from request parameters
+
+  // Validate the ObjectId
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid action item ID format.",
+    });
+  }
+
+  
+
+  try {
+    const actionItem = await ActionItem.findById(id); // Fetch the action item by ID
+    if (!actionItem) {
+      return res.status(404).json({
+        success: false,
+        message: "Action item not found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: actionItem,
+    });
+  } catch (error) {
+    console.error("Error fetching action item:", error); // Log the error
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
+};
+
 //get employee actionItem // tested
 export const actionItemOfEmployee = async (req, res) => {
   //fetch employee id from params
@@ -353,14 +400,71 @@ export const actionItemOfEmployee = async (req, res) => {
 };
 
 //update actionItem //tested
-export const updateActionItem = async (req, res) => {
-  // fetch id from params
+// export const updateActionItemDetails = async (req, res) => {
+//   console.log("Updating action item details...");
+
+//   // Fetch id from params
+//   const { id } = req.params;
+
+//   // Fetch all data from request body
+//   const { title, description, assignDate, dueDate, status, assignBy, assignTo, project } = req.body;
+
+//   try {
+//     // Validate that ID is provided
+//     if (!id) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "ID is invalid or null",
+//       });
+//     }
+
+//     // Find the action item by ID
+//     const actionItem = await ActionItem.findById(id);
+//     if (!actionItem) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Action item not found",
+//       });
+//     }
+
+//     // Update only the fields that are provided in the request body
+//     if (title !== undefined) actionItem.title = title;
+//     if (description !== undefined) actionItem.description = description;
+//     if (assignDate !== undefined) actionItem.assignDate = new Date(assignDate);
+//     if (dueDate !== undefined) actionItem.dueDate = new Date(dueDate);
+//     if (status !== undefined) actionItem.status = status;
+//     if (assignBy !== undefined) actionItem.assignBy = assignBy;
+//     if (assignTo !== undefined) actionItem.assignTo = assignTo;
+//     if (project !== undefined) actionItem.project = project;
+
+//     // Save the updated action item
+//     const updatedActionItem = await actionItem.save();
+
+//     return res.status(200).json({
+//       success: true,
+//       data: updatedActionItem,
+//       message: "Action item updated successfully!",
+//     });
+//   } catch (error) {
+//     console.error("Error updating action item:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server error while updating action item",
+//     });
+//   }
+// };
+
+export const updateActionItemDetails = async (req, res) => {
+  console.log("Updating action item details...");
+
+  // Fetch id from params
   const { id } = req.params;
-  // fetch all data from req  body
-  const { actionItemTitle, actionItemDescription, assignTo } = req.body;
+
+  // Fetch all data from request body
+  const { title, description, assignDate, dueDate, status, assignBy, assignTo, project } = req.body;
 
   try {
-    //VALIDATION
+    // Validate that ID is provided
     if (!id) {
       return res.status(400).json({
         success: false,
@@ -368,75 +472,79 @@ export const updateActionItem = async (req, res) => {
       });
     }
 
-    //find actionItem
-    const foundActionItem = await ActionItem.findById(id);
+    // Find the action item by ID
+    const actionItem = await ActionItem.findById(id);
 
-    if (!foundActionItem) {
-      return res.status(400).json({
+    // Check if the action item was found
+    if (!actionItem) {
+      return res.status(404).json({
         success: false,
-        message: "actionItem is not found!",
+        message: "Action item not found",
       });
     }
 
-    //update with new value
-    foundActionItem.actionItemTitle = actionItemTitle;
-    foundActionItem.actionItemDescription = actionItemDescription;
-    foundActionItem.assignTo = assignTo;
+    console.log(`Old title: ${actionItem.title}, New title: ${title}`);
 
-    //    save the new value
-    const updateActionItem = await foundActionItem.save();
+    // Update only the fields that are provided in the request body
+    if (title !== undefined) actionItem.title = title;
+    if (description !== undefined) actionItem.description = description;
+    if (assignDate !== undefined) actionItem.assignDate = new Date(assignDate);
+    if (dueDate !== undefined) actionItem.dueDate = new Date(dueDate);
+    if (status !== undefined) actionItem.status = status;
+    if (assignBy !== undefined) actionItem.assignBy = assignBy;
+    if (assignTo !== undefined) actionItem.assignTo = assignTo;
+    if (project !== undefined) actionItem.project = project;
 
+    // Save the updated action item
+    const updatedActionItem = await actionItem.save();
+
+    // Return a response with the updated action item
     return res.status(200).json({
       success: true,
-      updateActionItem,
-      message: "actionItem updated successfully!",
+      data: updatedActionItem,
+      message: "Action item updated successfully!",
     });
   } catch (error) {
+    console.error("Error updating action item:", error);
     return res.status(500).json({
       success: false,
-      message: error,
+      message: "Server error while updating action item",
     });
   }
 };
 
 //delete actionItem ////tested
 export const deleteActionItem = async (req, res) => {
-  // fetch id from req params
+  //fetch id from params
   const { id } = req.params;
 
   try {
-    // validation
+    //validation
     if (!id) {
       return res.status(400).json({
         success: false,
-        message: "actionItem id is invalid or null!",
+        message: "Id is invalid or null",
       });
     }
 
-    // check user
-    const { designationType } = req.user;
-    if (designationType != "Manager") {
-      return res.status(400).json({
-        success: false,
-        message: "Only manager can delete the actionItem!",
-      });
-    }
-
-    //delete actionItem from db
+    //delete report
     const deleteActionItem = await ActionItem.deleteOne({ _id: id });
 
     return res.status(200).json({
       success: true,
       deleteActionItem,
-      message: "actionItem deleted successfully",
+      message: " Action Item deleted successfully!",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Please check the delete code above",
+      message: "Internal server error",
     });
   }
 };
+
+
+
 
 //get all actionItem of specific actionItem // tested
 export const specificProjectActionItem = async (req, res) => {

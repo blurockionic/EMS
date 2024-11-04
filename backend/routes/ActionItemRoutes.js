@@ -9,7 +9,8 @@ import {
   submitActionItemForReview,
   actionItem,
   actionItemOfEmployee,
-  updateActionItem,
+  updateActionItemDetails,
+  getActionItem
 } from "../controller/actionItems.js";
 import { isAuthenticated } from "../middleware/auth.js";
 import upload from "../middleware/multer.middleware.js";
@@ -28,11 +29,17 @@ router.post("/new", isAuthenticated, upload.single("file"), actionItem);
 //router for get all task
 router.get("/all", isAuthenticated, allActionItem);
 
+
+router.get('/singleActionItem/:id', getActionItem);
+
+
 //route for get task of employee
 router.get("/:id", isAuthenticated, actionItemOfEmployee);
 
 //router for update
-router.put("/:id", isAuthenticated, updateActionItem);
+//router.put("/:id", isAuthenticated, updateActionItem);
+
+router.put("/updateDetails/:id", isAuthenticated, updateActionItemDetails);
 
 //route for close and reopen task
 
