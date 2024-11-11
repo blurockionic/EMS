@@ -16,7 +16,7 @@ connectDB();
 // })
 // Allow requests only from http://localhost:3000
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "https://ems-beta-brown.vercel.app",
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   credentials: true,
 };
