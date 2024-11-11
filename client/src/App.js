@@ -50,7 +50,7 @@ import NotFound from "./component/pages-components/NotFound";
 import { fetchActionItems } from "./Redux/slices/actionItemSlice";
 // export const server = "https://ems-backend-66x8.onrender.com/api/v1"
 
-export const server = "http://localhost:4000/api/v1";
+export const server = "https://ems-backend-66x8.onrender.com/api/v1";
 function App() {
   const loggedIn = useSelector(selectLoggedIn);
 
