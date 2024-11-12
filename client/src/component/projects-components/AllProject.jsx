@@ -12,8 +12,10 @@ import ManagerProject from "./ManagerProject";
 import Loader from "../utilities-components/Loader";
 import ProjectCard from "./ProjectCard";
 import { LuLayoutList } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 
 const AllProject = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [userProjects, setUserProjects] = useState([]);
   const [uiState, setUiState] = useState({
@@ -74,8 +76,6 @@ const AllProject = () => {
     );
   }, [profile._id]);
 
-  console.log(userProjects);
-
   const tabsList = useMemo(
     () =>
       uiState.tabs.map((tab) => (
@@ -103,6 +103,8 @@ const AllProject = () => {
 
   const handleNewClick = () => {
     // New project creation logic or modal opening
+    console.log("New project clicked");
+    navigate("../newProject");
   };
 
   const handleTabClick = (tab) => {
