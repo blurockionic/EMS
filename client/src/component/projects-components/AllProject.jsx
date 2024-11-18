@@ -18,6 +18,7 @@ const AllProject = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [userProjects, setUserProjects] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [uiState, setUiState] = useState({
     showMoreTabs: false,
     searchInputBox: false,
@@ -100,6 +101,19 @@ const AllProject = () => {
       searchInputBox: !prevState.searchInputBox,
     }));
   };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value.toLowerCase());
+  };
+
+  const filteredProjects = useMemo(() => {
+    return allProject.filter((project) =>
+      project.projectName.toLowerCase().includes(searchQuery) ||
+      project.description?.toLowerCase().includes(searchQuery) ||
+      project.teamName?.toLowerCase().includes(searchQuery)
+    );
+  }, [allProject, searchQuery]);
+  
 
   const handleNewClick = () => {
     // New project creation logic or modal opening
@@ -201,6 +215,8 @@ const AllProject = () => {
               type="search"
               placeholder="Type to search..."
               className="bg-transparent p-1 outline-none"
+              value={searchQuery}
+              onChange={handleSearchChange}
             />
           )}
           {profile.role === "admin" && (
@@ -217,7 +233,7 @@ const AllProject = () => {
       <div className="p-2">
         {uiState.activeTab === "All Project" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-12">
-            {allProject.map((project) => (
+            {filteredProjects.map((project) => (
               <ProjectCard key={project._id} project={project} />
             ))}
           </div>
@@ -309,7 +325,7 @@ const AllProject = () => {
                 </tr>
               </thead>
               <tbody>
-                {allProject.map((project, index) => (
+                {filteredProjects.map((project, index) => (
                   <tr
                     key={project._id}
                     className={`text-center ${
