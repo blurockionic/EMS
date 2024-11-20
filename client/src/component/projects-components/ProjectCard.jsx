@@ -62,14 +62,17 @@ const ProjectCard = ({ project }) => {
                 {project.teamMembers.map((member, index) => (
                   <img
                     key={index}
-                    src="/path/to/avatar.png"
+                    src={
+                      member?.profilePicture ??
+                      "https://via.placeholder.com/150"
+                    }
                     alt="Team Member"
                     className="h-6 w-6 rounded-full border-2 border-white dark:border-gray-800"
                   />
                 ))}
-                <span className="ml-2 text-sm text-gray-500">
+                {/* <span className="ml-2 text-sm text-gray-500">
                   {project.teamMembers.length}
-                </span>
+                </span> */}
               </div>
 
               <div className="flex flex-row space-x-4">
