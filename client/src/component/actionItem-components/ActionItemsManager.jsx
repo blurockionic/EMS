@@ -325,7 +325,11 @@ const ActionItemsManager = () => {
                 
                       <tbody>
                         {items.map((item) => (
-                          <tr key={item._id} onClick={() => handleActionItemDetails(item._id)} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                          <tr key={item._id} onClick={() => handleActionItemDetails(item._id)} className={`${
+                            item.status === "Close"
+                              ? "bg-red-100 dark:bg-red-700" // Soothing red background for "close"
+                              : "bg-white dark:bg-gray-800"
+                          } border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600`}>
                               <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                   {item.title}
                               </th>
